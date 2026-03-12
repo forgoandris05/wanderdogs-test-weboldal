@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wander Dogs – Kutyakiképzés, Panzió & Napközi | Solymár</title>
+  <meta name="description" content="Szakmai kutyakiképzés, panzió és napközi Solymáron. Egyéni és csoportos tréning, viselkedésterápia. Pozitív módszer, büntetés nélkül. Foglalj online!">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: var(--black);
+      display: flex; align-items: center;
+      padding: 140px 80px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 20% 50%, rgba(255,215,0,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,215,0,0.04) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      max-width: 1440px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.3);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 4.5vw, 60px);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+    .hero p {
+      font-size: 17px;
+      color: var(--text-dim);
+      line-height: 1.75;
+      max-width: 480px;
+      margin-bottom: 40px;
+    }
+    .hero-btns {
+      display: flex; gap: 14px; flex-wrap: wrap;
+    }
+    .hero-props {
+      display: flex; gap: 28px; margin-top: 48px;
+      flex-wrap: wrap;
+    }
+    .hero-prop {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; font-weight: 600;
+      color: var(--text-dim);
+    }
+    .hero-prop::before {
+      content: '✓';
+      width: 22px; height: 22px;
+      background: rgba(255,215,0,0.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    /* Hero right – visual */
+    .hero-visual {
+      position: relative;
+      height: 620px;
+      display: flex;
+      flex-direction: column;
+    }
+    .hero-visual .hero-photo {
+      flex: 1;
+      overflow: hidden;
+      height: 0;
+      /* Smooth fade into black background on all edges */
+      -webkit-mask-image: radial-gradient(ellipse 82% 88% at 54% 28%, black 32%, transparent 76%);
+      mask-image: radial-gradient(ellipse 82% 88% at 54% 28%, black 32%, transparent 76%);
+    }
+    .hero-visual .hero-photo::after { display: none; } /* disable styles.css ::after */
+    .hero-visual .hero-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: top center; /* show Timi's head */
+    }
+    .hero-card-main {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 20px;
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card-main::before {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(255,215,0,0.08) 0%, transparent 70%);
+    }
+    .hero-stat-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+      margin-bottom: 24px;
+    }
+    .h-stat {
+      background: var(--black-4);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .h-stat-num {
+      font-size: 30px; font-weight: 900;
+      color: var(--gold); line-height: 1;
+      margin-bottom: 6px;
+    }
+    .h-stat-label {
+      font-size: 11.5px; color: var(--text-dim); font-weight: 500;
+    }
+    .hero-service-tag {
+      background: var(--black-4);
+      border: 1px solid var(--border-dim);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 10px;
+      transition: border-color 0.2s;
+      text-decoration: none;
+    }
+    .hero-service-tag:last-child { margin-bottom: 0; }
+    .hero-service-tag:hover { border-color: var(--gold); }
+    .hst-icon { font-size: 20px; }
+    .hst-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .hst-price { font-size: 12px; color: var(--gold); margin-left: auto; font-weight: 700; }
+
+    /* ── VALUE PROPS ── */
+    .value-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border: 1px solid var(--border-dim);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .value-item {
+      padding: 36px 28px;
+      border-right: 1px solid var(--border-dim);
+      transition: background 0.2s;
+    }
+    .value-item:last-child { border-right: none; }
+    .value-item:hover { background: var(--gold-faint); }
+    .value-icon { font-size: 28px; margin-bottom: 14px; }
+    .value-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .value-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+    /* ── SERVICES ── */
+    .service-card {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      display: flex; flex-direction: column;
+    }
+    .service-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--gold);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .service-card-top {
+      padding: 32px 28px 20px;
+      flex: 1;
+    }
+    .service-emoji { font-size: 36px; margin-bottom: 16px; display: block; }
+    .service-card h3 { font-size: 18px; margin-bottom: 10px; }
+    .service-card p { font-size: 13.5px; color: var(--text-dim); line-height: 1.65; }
+    .service-card-footer {
+      padding: 18px 28px;
+      border-top: 1px solid var(--border-dim);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .service-price { font-size: 18px; font-weight: 800; color: var(--gold); }
+    .service-price span { font-size: 12px; color: var(--text-faint); font-weight: 400; }
+    .service-link {
+      font-size: 13px; font-weight: 700;
+      color: var(--gold);
+      display: flex; align-items: center; gap: 6px;
+      transition: gap 0.2s;
+    }
+    .service-link:hover { gap: 10px; }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .about-img-placeholder {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 20px;
+      aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 80px;
+    }
+    .about-text h2 { font-size: clamp(28px, 3.5vw, 42px); margin-bottom: 20px; }
+    .about-text p { color: var(--text-dim); margin-bottom: 20px; font-size: 15.5px; }
+    .about-checks { list-style: none; margin: 24px 0 36px; }
+    .about-checks li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-dim);
+      display: flex; align-items: center; gap: 12px;
+      font-size: 14px; font-weight: 500;
+    }
+    .about-checks li::before {
+      content: '✦';
+      color: var(--gold); font-size: 12px; flex-shrink: 0;
+    }
+
+    /* ── STATS ── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border-dim);
+      border: 1px solid var(--border-dim);
+      border-radius: 16px; overflow: hidden;
+    }
+    .stat-item {
+      background: var(--black-3);
+      padding: 44px 28px;
+      text-align: center;
+    }
+    .stat-num { font-size: 44px; font-weight: 900; color: var(--gold); line-height: 1; }
+    .stat-label { font-size: 13px; color: var(--text-dim); margin-top: 8px; font-weight: 500; }
+
+    /* ── TESTIMONIALS ── */
+    .testimonial-card {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 16px;
+      padding: 32px;
+    }
+    .testi-stars { color: var(--gold); font-size: 16px; margin-bottom: 16px; letter-spacing: 2px; }
+    .testi-text { font-size: 15px; color: var(--text-dim); line-height: 1.75; margin-bottom: 24px; font-style: italic; }
+    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .testi-avatar {
+      width: 42px; height: 42px;
+      background: var(--gold-faint);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .testi-name { font-size: 14px; font-weight: 700; }
+    .testi-meta { font-size: 12px; color: var(--text-faint); }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 24px;
+      padding: 72px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 100% at 50% 50%, rgba(255,215,0,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-banner h2 { font-size: clamp(26px, 4vw, 44px); margin-bottom: 16px; position: relative; z-index: 1; }
+    .cta-banner p { font-size: 17px; color: var(--text-dim); margin-bottom: 36px; position: relative; z-index: 1; }
+    .cta-banner .btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+
+    /* ── HERO CYCLING WORD ── */
+    .hero-cycling {
+      font-style: normal;
+      color: var(--gold);
+      display: inline-block;
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .hero-cycling.cycle-out {
+      opacity: 0;
+      transform: translateY(-18px);
+    }
+    .hero-cycling.cycle-in {
+      opacity: 0 !important;
+      transform: translateY(18px) !important;
+      transition: none !important;
+    }
+
+    /* ── CONTACT FORM ── */
+    .contact-form {
+      max-width: 580px;
+      margin: 32px auto 0;
+      text-align: left;
+      position: relative; z-index: 1;
+    }
+    .form-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+      margin-bottom: 14px;
+    }
+    .form-group {
+      display: flex; flex-direction: column; gap: 7px;
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .form-group input,
+    .form-group select {
+      background: var(--black-4);
+      border: 1px solid var(--border-dim);
+      border-radius: 8px;
+      padding: 13px 15px;
+      font-family: inherit; font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      -webkit-appearance: none; appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus { border-color: var(--gold); }
+    .form-group input::placeholder { color: var(--text-faint); }
+    .form-group select option { background: #1a1a1a; }
+    .cf-submit { width: 100%; justify-content: center; margin-top: 8px; }
+    .cf-success {
+      display: none;
+      background: rgba(255,215,0,0.07);
+      border: 1px solid rgba(255,215,0,0.4);
+      border-radius: 12px;
+      padding: 28px 24px;
+      text-align: center;
+      font-size: 16px; line-height: 1.6;
+      color: var(--text);
+      position: relative; z-index: 1;
+      margin-top: 16px;
+    }
+    .cf-check { font-size: 36px; display: block; margin-bottom: 10px; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+      .hero-visual { display: none; }
+      .value-grid { grid-template-columns: repeat(2, 1fr); }
+      .value-item { border-right: none; border-bottom: 1px solid var(--border-dim); }
+      .value-item:nth-child(odd) { border-right: 1px solid var(--border-dim); }
+      .value-item:nth-last-child(-n+2) { border-bottom: none; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-img-placeholder { display: none; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .hero { padding: 110px 20px 60px; }
+      .hero-btns { flex-direction: column; }
+      .hero-btns .btn { text-align: center; justify-content: center; }
+      .value-grid { grid-template-columns: 1fr; border-radius: 12px; }
+      .value-item { border-right: none !important; border-bottom: 1px solid var(--border-dim); }
+      .value-item:last-child { border-bottom: none; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .cta-banner { padding: 48px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVIGATION ══ -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">WANDERDOGS</a>
+
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html" class="active">Főoldal</a></li>
+    <li class="nav-dropdown">
+      <a href="#">Szolgáltatások</a>
+      <ul class="dropdown-menu">
+        <li><a href="egyeni-ora.html">🎯 Egyéni oktatás</a></li>
+        <li><a href="csoportos.html">🐶 Csoportos kutyaiskola</a></li>
+        <li><a href="napkozi.html">🏫 Napközi</a></li>
+        <li><a href="panzio.html">🏨 Panzió</a></li>
+        <li><a href="kutyataxi.html">🚐 Kutya taxi</a></li>
+        <li><a href="kutyatura.html">🥾 Kutyatúra</a></li>
+        <li><a href="viselkedesterapia.html">🧠 Viselkedésterápia</a></li>
+        <li><a href="vip.html">👑 VIP program</a></li>
+        <li><a href="orzo-vedo.html">🛡️ Őrző-védő képzés</a></li>
+      </ul>
+    </li>
+    <li><a href="kurzusok.html">Kurzusok</a></li>
+    <li class="nav-dropdown">
+      <a href="#">Rólunk</a>
+      <ul class="dropdown-menu">
+        <li><a href="rolunk.html">👩‍🏫 Timi és a csapat</a></li>
+        <li><a href="rolunk.html#modszer">🌿 A módszerünk</a></li>
+        <li><a href="rolunk.html#gyik">❓ GYIK</a></li>
+      </ul>
+    </li>
+    <li><a href="kapcsolat.html">Kapcsolat</a></li>
+    <li><a href="egyeni-ora.html" class="nav-cta">Foglalj időpontot</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <span class="nav-phone">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+      0670/5626926
+    </span>
+    <button class="nav-burger" id="burger" aria-label="Menü">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-grid">
+    <!-- Left -->
+    <div class="hero-content">
+      <div class="hero-tag">🐾 Solymár · Pozitív, büntetés nélküli módszer</div>
+      <h1>Segítünk a kutyádnak<br><em id="heroWord" class="hero-cycling">boldogabb</em><br>életet élni</h1>
+      <p>Szakmai kutyakiképzés, gondozási tippek és online kurzusok – hogy te és kutyád közelebb kerüljetek egymáshoz.</p>
+      <div class="hero-btns">
+        <a href="#szolgaltatasok" class="btn btn-gold btn-lg">Képzést kezdek →</a>
+        <a href="kurzusok.html" class="btn btn-outline btn-lg">Megnézem a kurzusokat</a>
+      </div>
+      <div class="hero-props">
+        <div class="hero-prop">Büntetés nélkül</div>
+        <div class="hero-prop">Online előre fizethető</div>
+        <div class="hero-prop">Solymár, 2085</div>
+      </div>
+    </div>
+
+    <!-- Right visual -->
+    <div class="hero-visual">
+      <div class="hero-photo">
+        <img src="kepek/timi a kutyaval.png" alt="Timi és a kutya" loading="eager">
+      </div>
+      <div class="hero-stat-grid">
+        <div class="h-stat">
+          <div class="h-stat-num">253+</div>
+          <div class="h-stat-label">Boldog gazdi</div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-num">10+</div>
+          <div class="h-stat-label">Éve a pályán</div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-num">9</div>
+          <div class="h-stat-label">Szolgáltatás</div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-num">50</div>
+          <div class="h-stat-label">Max kutya/nap</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="gold-line">
+
+<!-- ══ ÉRTÉKEK ══ -->
+<div class="section-full">
+  <div style="max-width:1440px; margin:0 auto; padding:80px 0;">
+    <div class="value-grid reveal">
+      <div class="value-item">
+        <div class="value-icon">🌿</div>
+        <div class="value-title">Pozitív megerősítés</div>
+        <div class="value-desc">Kizárólag pozitív alapú módszer – erő és büntetés nélkül, kapcsolatalapú munka.</div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">👩‍🏫</div>
+        <div class="value-title">Tapasztalt oktató</div>
+        <div class="value-desc">Timi 10+ éve foglalkozik kutyákkal – egyéni figyelmet kap minden gazdi és kutya.</div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">📱</div>
+        <div class="value-title">Online foglalás & fizetés</div>
+        <div class="value-desc">Foglalj és fizess előre a weboldalon – nincs telefonálgatás, nincs várakozás.</div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">📍</div>
+        <div class="value-title">Solymár, Budapest közelében</div>
+        <div class="value-desc">Könnyen megközelíthető helyszín, saját tágas pálya – kutya taxi is elérhető.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="gold-line">
+
+<!-- ══ SZOLGÁLTATÁSOK ══ -->
+<section class="section" id="szolgaltatasok">
+  <div class="section-header reveal">
+    <span class="overline">Amit kínálunk</span>
+    <h2 class="section-title">Minden, amire <em class="gold">kutyádnak szüksége van</em></h2>
+    <p class="section-sub">A kiképzéstől a gondozásig – egy helyen, Solymáron.</p>
+  </div>
+
+  <div class="grid-3">
+    <a href="egyeni-ora.html" class="service-card reveal">
+      <div class="service-card-top">
+        <span class="service-emoji">🎯</span>
+        <h3>Egyéni oktatás</h3>
+        <p>Személyre szabott tréning a pályán vagy nálad otthon. Konkrét problémákra, gyors eredményekkel.</p>
+      </div>
+      <div class="service-card-footer">
+        <div class="service-price">15–20 000 Ft<span>/alkalom</span></div>
+        <span class="service-link">Foglalj →</span>
+      </div>
+    </a>
+
+    <a href="csoportos.html" class="service-card reveal reveal-delay-1">
+      <div class="service-card-top">
+        <span class="service-emoji">🐶</span>
+        <h3>Csoportos kutyaiskola</h3>
+        <p>Minden szombat 9:00–10:00-ig Solymáron. Alap engedelmesség, szocializáció, közösségi tanulás.</p>
+      </div>
+      <div class="service-card-footer">
+        <div class="service-price">7 000 Ft<span>/alkalom</span></div>
+        <span class="service-link">Tudj meg többet →</span>
+      </div>
+    </a>
+
+    <a href="napkozi.html" class="service-card reveal reveal-delay-2">
+      <div class="service-card-top">
+        <span class="service-emoji">🏫</span>
+        <h3>Napközi</h3>
+        <p>Kedd–Péntek, 8:00–17:00. Bérletrendszerrel, kutya taxival is. Biztonságos, szociális környezet.</p>
+      </div>
+      <div class="service-card-footer">
+        <div class="service-price">7 000 Ft<span>/nap vagy bérlet</span></div>
+        <span class="service-link">Bérletek →</span>
+      </div>
+    </a>
+
+    <a href="panzio.html" class="service-card reveal">
+      <div class="service-card-top">
+        <span class="service-emoji">🏨</span>
+        <h3>Kutyapanzió</h3>
+        <p>Max 30 kutya egyszerre, biztonságos és szeretetteljes környezetben. Hétfő–Péntek leadás/átvétel.</p>
+      </div>
+      <div class="service-card-footer">
+        <div class="service-price">8 000 Ft<span>/nap</span></div>
+        <span class="service-link">Kalkulátor →</span>
+      </div>
+    </a>
+
+    <a href="viselkedesterapia.html" class="service-card reveal reveal-delay-1">
+      <div class="service-card-top">
+        <span class="service-emoji">🧠</span>
+        <h3>Viselkedésterápia</h3>
+        <p>Agresszió, szorongás, szeparáció – mélyen, szakszerűen, több hónapos programban.</p>
+      </div>
+      <div class="service-card-footer">
+        <div class="service-price">Egyéni ár</div>
+        <span class="service-link">Felmérés →</span>
+      </div>
+    </a>
+
+    <a href="vip.html" class="service-card reveal reveal-delay-2">
+      <div class="service-card-top">
+        <span class="service-emoji">👑</span>
+        <h3>VIP / Intenzív program</h3>
+        <p>Gyors, mélyreható fejlődés prémium, intenzív képzéssel. Ha a cél magas, az eszközök is azok.</p>
+      </div>
+      <div class="service-card-footer">
+        <div class="service-price">Egyéni ár</div>
+        <span class="service-link">Konzultáció →</span>
+      </div>
+    </a>
+
+    <a href="kutyataxi.html" class="service-card reveal">
+      <div class="service-card-top">
+        <span class="service-emoji">🚐</span>
+        <h3>Kutya taxi</h3>
+        <p>Elviszük és visszahozzuk a kutyádat – napközihez, panzióhoz vagy orvoshoz is.</p>
+      </div>
+      <div class="service-card-footer">
+        <div class="service-price">3 300 Ft<span>/út (10 km)</span></div>
+        <span class="service-link">Részletek →</span>
+      </div>
+    </a>
+
+    <a href="kutyatura.html" class="service-card reveal reveal-delay-1">
+      <div class="service-card-top">
+        <span class="service-emoji">🥾</span>
+        <h3>Kutyatúra</h3>
+        <p>Közös erdei kalandok, természetjárás kutyusokkal. Sportolj velünk a szabadban!</p>
+      </div>
+      <div class="service-card-footer">
+        <div class="service-price">Értesítési lista</div>
+        <span class="service-link">Feliratkozás →</span>
+      </div>
+    </a>
+
+    <a href="orzo-vedo.html" class="service-card reveal reveal-delay-2">
+      <div class="service-card-top">
+        <span class="service-emoji">🛡️</span>
+        <h3>Őrző-védő képzés</h3>
+        <p>Nem agresszió-tanítás – kontroll, felelősség és stabil idegrendszer fejlesztése sportcélra.</p>
+      </div>
+      <div class="service-card-footer">
+        <div class="service-price">3 500 Ft<span>/alkalom</span></div>
+        <span class="service-link">Felmérés →</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<hr class="gold-line">
+
+<!-- ══ RÓLUNK ══ -->
+<section class="section-full section-dark">
+  <div style="max-width:1440px; margin:0 auto; padding:100px 48px;">
+    <div class="about-grid">
+      <div class="about-photo reveal">
+        <img src="kepek/timi a kutyaval.png" alt="Timi és a kutyák Solymáron" loading="lazy">
+      </div>
+      <div class="about-text reveal">
+        <span class="overline">Rólunk</span>
+        <h2>Magyarország megbízható kutyás <em class="gold">szakértői</em></h2>
+        <p>Timi több mint 10 éve foglalkozik kutyák kiképzésével és gondozásával Solymáron. A módszer alapja: <strong style="color:var(--text)">kapcsolat, pozitív megerősítés, büntetés nélkül.</strong></p>
+        <p>Nem a gyors eredmény a cél – hanem egy életre szóló, harmonikus gazdi-kutya kapcsolat.</p>
+        <ul class="about-checks">
+          <li>Pozitív, kapcsolatalapú módszer – büntetés nélkül</li>
+          <li>Egyéni figyelem – max. 20 kutya csoportban, max. 30 panzióban</li>
+          <li>Online foglalás és előre fizetés – kényelmes és átlátható</li>
+          <li>10+ év tapasztalat, 253+ elégedett gazdi</li>
+        </ul>
+        <a href="rolunk.html" class="btn btn-gold">Ismerj meg minket →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="gold-line">
+
+<!-- ══ STATISZTIKÁK ══ -->
+<div style="max-width:1440px; margin:0 auto; padding:80px 48px;">
+  <div class="stats-grid reveal">
+    <div class="stat-item">
+      <div class="stat-num">253+</div>
+      <div class="stat-label">Elégedett gazdi</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">10+</div>
+      <div class="stat-label">Év tapasztalat</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">50</div>
+      <div class="stat-label">Max kutya/nap (napközi)</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">9</div>
+      <div class="stat-label">Elérhető szolgáltatás</div>
+    </div>
+  </div>
+</div>
+
+<hr class="gold-line">
+
+<!-- ══ VÉLEMÉNYEK ══ -->
+<section class="section">
+  <div class="section-header center reveal">
+    <span class="overline">Ügyfeleink mondják</span>
+    <h2 class="section-title">Amit a gazdik <em class="gold">elmondtak rólunk</em></h2>
+  </div>
+
+  <div class="grid-3">
+    <div class="testimonial-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Borzasztóan húzott pórázon és egyáltalán nem jött vissza hívásra. 3 alkalom után más kutya lett belőle. Timi módszere teljesen más, mint amit eddig láttam."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">👩</div>
+        <div>
+          <div class="testi-name">Kovács Réka</div>
+          <div class="testi-meta">Budapest, Border Collie gazdi</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card reveal reveal-delay-1">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"A panzióban mindig biztonságban tudtam a kutyámat. Timi minden apró részletre odafigyelt, és mindig jött egy-egy fotó is. Ajánlom mindenkinek!"</p>
+      <div class="testi-author">
+        <div class="testi-avatar">👨</div>
+        <div>
+          <div class="testi-name">Nagy Péter</div>
+          <div class="testi-meta">Solymár, Golden Retriever gazdi</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card reveal reveal-delay-2">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Napközis bérlettel járunk hetek óta. A kutyám reggel alig vár, hogy mehessen! Szocializálódott, kiegyensúlyozott lett – köszönöm Timi!"</p>
+      <div class="testi-author">
+        <div class="testi-avatar">👩</div>
+        <div>
+          <div class="testi-name">Szabó Anita</div>
+          <div class="testi-meta">Pilisvörösvár, Labrador gazdi</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="gold-line">
+
+<!-- ══ GALÉRIA ══ -->
+<section class="section">
+  <div class="section-header center reveal">
+    <span class="overline">Nálunk a kutyáknál</span>
+    <h2 class="section-title">Képek az <em class="gold">életből</em></h2>
+    <p class="section-sub">Solymári pillanatok – kutyák, gazdik, mozgás és öröm.</p>
+  </div>
+  <div class="gallery-grid">
+    <div class="gallery-item reveal reveal-delay-1">
+      <img src="kepek/kutya jatszik fut.png" alt="Kutya fut a pályán" loading="lazy">
+    </div>
+    <div class="gallery-item reveal reveal-delay-2">
+      <img src="kepek/kutya alagutban.png" alt="Kutya az alagútban" loading="lazy">
+    </div>
+    <div class="gallery-item reveal reveal-delay-3">
+      <img src="kepek/kutya jatszik2.png" alt="Kutya játszik" loading="lazy">
+    </div>
+    <div class="gallery-item reveal reveal-delay-4">
+      <img src="kepek/kutya jatszik3.png" alt="Kutya játszik" loading="lazy">
+    </div>
+    <div class="gallery-item reveal reveal-delay-6">
+      <img src="kepek/kutya jatszik4.png" alt="Kutya játszik" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>🐾 Wander Dogs</h3>
+        <p>Szakmai kutyakiképzés és gondozás Solymáron, pozitív módszerrel. Mert a harmonikus kapcsolat tanulható.</p>
+        <div class="footer-socials">
+          <a href="#" title="Facebook">f</a>
+          <a href="#" title="Instagram">ig</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Szolgáltatások</h4>
+        <ul>
+          <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
+          <li><a href="csoportos.html">Csoportos kutyaiskola</a></li>
+          <li><a href="napkozi.html">Napközi</a></li>
+          <li><a href="panzio.html">Panzió</a></li>
+          <li><a href="kutyataxi.html">Kutya taxi</a></li>
+          <li><a href="kutyatura.html">Kutyatúra</a></li>
+          <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
+          <li><a href="vip.html">VIP program</a></li>
+          <li><a href="orzo-vedo.html">Őrző-védő</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Információ</h4>
+        <ul>
+          <li><a href="rolunk.html">Rólunk</a></li>
+          <li><a href="kurzusok.html">Online kurzusok</a></li>
+          <li><a href="rolunk.html#gyik">GYIK</a></li>
+          <li><a href="kapcsolat.html">Kapcsolat</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Elérhetőség</h4>
+        <p>📍 Rozália sor, Solymár 2085</p>
+        <p>📞 0670/5626926</p>
+        <p>✉️ info@wanderdogsworld.com</p>
+        <p style="margin-top:12px; font-size:12px; color:var(--text-faint);">
+          H–P: 8:00–17:00<br>
+          Szombat: 9:00–18:00
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2025 Wander Dogs World – Kucsera Tímea. Minden jog fenntartva.</span>
+      <span>wanderdogs.hu</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+/* ── HERO CYCLING WORD ── */
+(function() {
+  const words = ['boldogabb', 'egészségesebb', 'kiegyensúlyozottabb', 'okosabb', 'erősebb'];
+  let idx = 0;
+  const el = document.getElementById('heroWord');
+  if (!el) return;
+
+  function cycle() {
+    el.classList.add('cycle-out');
+    setTimeout(function() {
+      idx = (idx + 1) % words.length;
+      el.textContent = words[idx];
+      el.classList.remove('cycle-out');
+      el.classList.add('cycle-in');
+      void el.offsetWidth; // force reflow
+      el.classList.remove('cycle-in');
+    }, 460);
+  }
+
+  setTimeout(function() {
+    setInterval(cycle, 2800);
+  }, 2500);
+})();
+
+/* ── CONTACT FORM SUBMIT ── */
+(function() {
+  const form = document.getElementById('contactForm');
+  const success = document.getElementById('cfSuccess');
+  if (!form) return;
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = form.querySelector('.cf-submit');
+    btn.textContent = 'Küldés...';
+    btn.disabled = true;
+
+    fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nev: document.getElementById('cfNev').value,
+        email: document.getElementById('cfEmail').value,
+        szolgaltatas: document.getElementById('cfService').value
+      }),
+      mode: 'no-cors'
+    }).then(function() {
+      form.style.display = 'none';
+      if (success) success.style.display = 'block';
+    }).catch(function() {
+      btn.textContent = 'Küldöm – megkapom a részleteket →';
+      btn.disabled = false;
+    });
+  });
+})();
+</script>
+</body>
+</html>
