@@ -882,6 +882,15 @@ async function fizetesIndit() {
     return;
   }
 
+  // Telefon mentése localStorage-ba (következő látogatásnál auto-fill)
+  try {
+    const u = wdGetUser() || {};
+    if (!u.telefon && telefon) {
+      u.telefon = telefon;
+      localStorage.setItem('wd_user', JSON.stringify(u));
+    }
+  } catch(e) {}
+
   // Előző hiba elrejtése
   document.getElementById('panzio-tele-hiba').style.display = 'none';
 
@@ -947,21 +956,42 @@ szamol();
   // Belépett: auth prompt elrejtése
   if (authPrompt) authPrompt.style.display = 'none';
 
-  // Auto-fill személyes adatok (readonly, hidden fields-ként működnek a payloadhoz)
-  const nevEl    = document.getElementById('f-nev');
-  const emailEl  = document.getElementById('f-email');
+  // Auto-fill személyes adatok
+  const nevEl     = document.getElementById('f-nev');
+  const emailEl   = document.getElementById('f-email');
   const telefonEl = document.getElementById('f-telefon');
-  if (nevEl && user.nev)         { nevEl.value    = user.nev;      nevEl.readOnly    = true; }
-  if (emailEl && user.email)     { emailEl.value  = user.email;    emailEl.readOnly  = true; }
-  if (telefonEl && user.telefon) { telefonEl.value = user.telefon; telefonEl.readOnly = true; }
+  if (nevEl && user.nev)         { nevEl.value     = user.nev;      nevEl.readOnly     = true; }
+  if (emailEl && user.email)     { emailEl.value   = user.email;    emailEl.readOnly   = true; }
+  if (telefonEl && user.telefon) { telefonEl.value = user.telefon;  telefonEl.readOnly = true; }
 
   const kutyak = wdKutyak();
 
-  // Ha vannak regisztrált kutyák ÉS minden adat megvan: adatmezők elrejtése
-  // (ha telefon hiányzik, a szekció látszik hogy a user kitölthesse)
+  // Ha minden adat megvan (telefon is): adatmezők elrejtése
   if (kutyak.length > 0 && user.nev && user.email && user.telefon) {
     const adatmezok = document.getElementById('panzio-adatmezok');
     if (adatmezok) adatmezok.style.display = 'none';
+  } else if (kutyak.length > 0 && user.nev && user.email && !user.telefon) {
+    // Telefon hiányzik: csak a telefonszám mezőt mutassuk (nev/email/kutya hidden)
+    const adatmezok = document.getElementById('panzio-adatmezok');
+    if (adatmezok) {
+      adatmezok.querySelector('h3').style.display = 'none';
+      const formRows = adatmezok.querySelectorAll('.form-row');
+      // 1. form-row: nev + kutya → elrejt
+      if (formRows[0]) formRows[0].style.display = 'none';
+      // 2. form-row: email + telefon → email elrejtés, telefon látszik
+      if (formRows[1]) {
+        const emailGroup = formRows[1].querySelector('.form-group:first-child');
+        if (emailGroup) emailGroup.style.display = 'none';
+        const telefonGroup = formRows[1].querySelector('.form-group:last-child');
+        if (telefonGroup) {
+          const note = document.createElement('p');
+          note.style.cssText = 'font-size:13px;color:var(--text-dim);margin-bottom:8px;';
+          note.textContent = 'Telefonszámod (első alkalommal szükséges):';
+          telefonGroup.insertBefore(note, telefonGroup.firstChild);
+        }
+      }
+      adatmezok.querySelector('hr').style.display = 'none';
+    }
   }
 
   if (!kutyak.length) {
