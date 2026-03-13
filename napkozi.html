@@ -840,7 +840,11 @@ function initCalEmbed() {
 }
 
 // ── CAL.COM BOOKING SIKERES ───────────────────────────────────
+let _bookingHandled = false; // dupla Cal.com event ellen
 function onNapkoziBooked(e) {
+  if (_bookingHandled) return; // 2. hívás ignorálva
+  _bookingHandled = true;
+
   // Elmentjük a foglalás időpontját pending_booking-ba (bérlet vásárlásnál kellhet)
   const startTime = (e && e.data && e.data.startTime) ||
                     (e && e.data && e.data.booking && e.data.booking.startTime) ||
@@ -865,6 +869,7 @@ function onNapkoziBooked(e) {
     action:   'berlet_foglalas',
     email:    _user && _user.email,
     kutyaNev: _kutya_neve || (_user && _user.kutyaNev) || '',
+    startTime: startTime,
   })})
   .then(r => r.json())
   .then(result => {
@@ -878,8 +883,16 @@ function onNapkoziBooked(e) {
       }
       document.getElementById('napkozi-siker').scrollIntoView({behavior:'smooth'});
     } else {
-      // Nincs aktív bérlet → fizetési opciók mutatása
+      // Nincs aktív bérlet → függő foglalás rögzítése + fizetési opciók mutatása
       berletSikerEl.style.display = 'none';
+      // Küldünk user emailt + rögzítjük a függő foglalást (24h múlva Timinek is megy)
+      fetch(WEBAPP_URL, { method: 'POST', body: JSON.stringify({
+        action:   'napkozi_pending_email',
+        email:    _user && _user.email,
+        nev:      _user && _user.nev,
+        kutyaNev: _kutya_neve || (_user && _user.kutyaNev) || '',
+        startTime: startTime,
+      })}).catch(() => {}); // fire & forget, UI-t nem blokkolja
       const kutya = parseInt(_kutya) >= 2 ? '2' : '1';
       const taxi  = _taxi || 'notaxi';
       const opts  = STRIPE_LINKS[taxi]?.[kutya];
@@ -994,6 +1007,7 @@ document.getElementById('kutya-neve-input').addEventListener('input', e => {
     _vanBerlet = berletData.vanBerlet;
 
     if (_vanBerlet) {
+      document.getElementById('napkozi-konfigurator').style.display = 'none'; // explicit elrejtés
       // Kutya neve betöltése a bérlet adatokból
       if (berletData.kutya_neve) _kutya_neve = berletData.kutya_neve;
       _kutya = berletData.kutya || '1';
