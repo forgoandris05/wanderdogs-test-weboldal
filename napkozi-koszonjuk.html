@@ -217,7 +217,7 @@ function showBerletSuccess(result) {
   const pendingUsed = (result.osszes && result.maradek !== undefined && result.maradek < result.osszes);
   const foglalasStep = document.getElementById('foglalas-step');
   if (pendingUsed) {
-    foglalasStep.innerHTML = 'Első időpontod már rögzítve van! A visszaigazolást emailben kaptad.';
+    foglalasStep.innerHTML = 'Első időpontod már rögzítve van!';
   } else if (result.calcomLink) {
     foglalasStep.innerHTML = 'Időpontot foglalj: <a href="' + result.calcomLink + '" target="_blank" style="color:var(--gold);">itt kattints</a>';
   }

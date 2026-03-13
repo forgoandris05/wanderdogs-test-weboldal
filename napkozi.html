@@ -325,7 +325,7 @@
     <div class="section-header reveal">
       <div class="overline">Bérletek és árak</div>
       <h2 class="section-title">Válassz <span class="gold">csomagot</span></h2>
-      <p class="section-sub">Válaszd ki, hogy szükséged van-e taxiszolgáltatásra, és a többi magától adódik.</p>
+      <p class="section-sub">Válaszd ki mire van szükséged.</p>
     </div>
 
     <!-- Dinamikus állapot sáv (JS tölti ki) -->
@@ -367,10 +367,16 @@
 
     <!-- ── CAL.COM INLINE EMBED (visszatérő, JS mutatja) ── -->
     <div id="napkozi-cal-section" style="display:none; margin-bottom:40px;">
-      <h3>Válaszd ki a <span class="gold">napközi napot</span></h3>
-      <p style="color:var(--text-dim);font-size:14px;margin-bottom:12px;">
-        A foglaláskor a kutya neve és taxi igény automatikusan kitöltve lesz.
-      </p>
+      <!-- Foglalt napközi napok (bérlet esetén JS tölti ki) -->
+      <div id="napkozi-foglalt-napok" style="display:none; margin-bottom:20px;
+           background:rgba(255,215,0,0.04); border:1px solid rgba(255,215,0,0.15);
+           border-radius:12px; padding:16px 20px;">
+        <div style="font-size:12px;font-weight:800;color:var(--gold);text-transform:uppercase;
+             letter-spacing:0.08em;margin-bottom:10px;">Foglalt napközi napjaid</div>
+        <div id="foglalt-napok-lista" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      </div>
+      <h3 id="cal-napkozi-cim">Válaszd ki a <span class="gold">napközi napot</span></h3>
+      <p id="cal-intro-text" style="color:var(--text-dim);font-size:14px;margin-bottom:12px;"></p>
       <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,215,0,0.07); border:1px solid rgba(255,215,0,0.25); border-radius:8px; padding:9px 14px; margin-bottom:18px;">
         <span style="font-size:15px;">⏰</span>
         <span style="font-size:13px; color:var(--text-dim);">Foglalás legalább <strong style="color:var(--gold);">2 nappal előre</strong> lehetséges.</span>
@@ -1028,18 +1034,23 @@ document.getElementById('kutya-neve-input').addEventListener('input', e => {
       showBanner(
         '<p style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">Aktív bérletedből még</p>' +
         '<p style="font-size:40px;font-weight:900;color:var(--gold);line-height:1.1;margin-bottom:4px;">' + maradek + ' alkalom</p>' +
-        '<p style="font-size:13px;color:var(--text-faint);margin-bottom:12px;">maradt' +
+        '<p style="font-size:13px;color:var(--text-faint);margin-bottom:0;">maradt' +
         (berletData.tipus ? ' · <span style="color:var(--text-dim);">' + berletData.tipus + '</span>' : '') +
-        ' · lejár: ' + berletData.lejar + '</p>' +
-        '<p style="font-size:14px;color:var(--text-dim);">Foglalj napközi napot az alábbi naptárban.</p>',
+        ' · lejár: ' + berletData.lejar + '</p>',
         'gold'
       );
-    } else {
-      showBanner(
-        '<p style="font-size:15px;font-weight:700;margin-bottom:8px;">Válassz kutyát és taxi opciót, majd foglalj napot!</p>' +
-        '<p style="font-size:14px;color:var(--text-dim);">A foglalás rögzítése után felvesszük veled a kapcsolatot.</p>',
-        ''
-      );
+      // Foglalt időpontok megjelenítése (ha vannak)
+      if (berletData.idopontok && berletData.idopontok.length > 0) {
+        const lista = document.getElementById('foglalt-napok-lista');
+        const box   = document.getElementById('napkozi-foglalt-napok');
+        if (lista && box) {
+          lista.innerHTML = berletData.idopontok
+            .map(d => '<span style="background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.3);' +
+                 'border-radius:6px;padding:4px 10px;font-size:13px;font-weight:600;color:var(--gold);">' + d + '</span>')
+            .join('');
+          box.style.display = 'block';
+        }
+      }
     }
   } catch(e) {
     showBanner('<p>Hiba az adatok betöltésekor. Frissítsd az oldalt!</p>', '');
@@ -1052,6 +1063,18 @@ document.getElementById('kutya-neve-input').addEventListener('input', e => {
   }
   document.getElementById('napkozi-cal-section').style.display  = 'block';
   arFrissit();
+
+  // Cal.com intro szöveg – dinamikus (taxi / nem taxi)
+  const calIntroText = document.getElementById('cal-intro-text');
+  if (calIntroText) {
+    const kutyaNev = _kutya_neve || (_user && _user.kutyaNev) || 'a kutyádat';
+    if (_taxi !== 'notaxi') {
+      calIntroText.textContent = 'Válaszd ki melyik időpontban igyekezzünk ' + kutyaNev + '-ért.';
+    } else {
+      calIntroText.textContent = 'Válaszd ki melyik időpontban hozod ' + kutyaNev + '-t.';
+    }
+  }
+
   initCalEmbed();
 })();
 </script>
