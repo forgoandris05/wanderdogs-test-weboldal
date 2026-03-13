@@ -957,8 +957,9 @@ szamol();
 
   const kutyak = wdKutyak();
 
-  // Ha vannak regisztrált kutyák: adatmezők elrejtése
-  if (kutyak.length > 0) {
+  // Ha vannak regisztrált kutyák ÉS minden adat megvan: adatmezők elrejtése
+  // (ha telefon hiányzik, a szekció látszik hogy a user kitölthesse)
+  if (kutyak.length > 0 && user.nev && user.email && user.telefon) {
     const adatmezok = document.getElementById('panzio-adatmezok');
     if (adatmezok) adatmezok.style.display = 'none';
   }

@@ -398,7 +398,7 @@
            background:rgba(255,215,0,0.06); border:1px solid rgba(255,215,0,0.3);">
         <span class="siker-icon">✅</span>
         <h3>Foglalás rögzítve!</h3>
-        <p>Bérletedből levontunk 1 alkalmat. Emailt küldtünk visszaigazolással.</p>
+        <p id="berlet-siker-szoveg">Bérletedből levontunk 1 alkalmat. Emailt küldtünk visszaigazolással.</p>
         <div class="siker-gombok">
           <a href="napkozi.html" class="btn btn-outline">← Vissza a napközihez</a>
         </div>
@@ -406,8 +406,8 @@
       <!-- Nincs bérlete → fizetési opciók jelennek meg -->
       <div id="fizetes-szekció" class="siker-box" style="display:none;
            background:var(--black-3); border:1px solid var(--border);">
-        <span class="siker-icon">📅</span>
-        <h3>Időpont rögzítve!</h3>
+        <span class="siker-icon"></span>
+        <h3>Időpont hamarosan rögzítve!</h3>
         <p style="margin-bottom:20px;">Vásárold meg a bérleted az aktiváláshoz – az imént lefoglalt napot automatikusan beleszámítjuk.</p>
         <div id="berlet-opciok" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;"></div>
         <p style="font-size:13px;color:var(--text-faint);">Bérlet: 5 hetes érvényesség · Automatikus visszaigazoló email</p>
@@ -826,60 +826,74 @@ function initCalEmbed() {
 
 // ── CAL.COM BOOKING SIKERES ───────────────────────────────────
 function onNapkoziBooked(e) {
-  // Ha nincs bérlete, elmentjük a foglalás időpontját → bérlet vásárlásnál auto-levonódik
-  if (!_vanBerlet) {
-    const startTime = (e && e.data && e.data.startTime) ||
-                      (e && e.data && e.data.booking && e.data.booking.startTime) ||
-                      (e && e.detail && e.detail.data && e.detail.data.startTime) ||
-                      (e && e.detail && e.detail.data && e.detail.data.booking && e.detail.data.booking.startTime) ||
-                      new Date().toISOString(); // fallback: ha Cal.com event nem adja, az aktuális idő is elég a levonáshoz
-    localStorage.setItem('wd_pending_booking', JSON.stringify({ startTime }));
-  }
+  // Elmentjük a foglalás időpontját pending_booking-ba (bérlet vásárlásnál kellhet)
+  const startTime = (e && e.data && e.data.startTime) ||
+                    (e && e.data && e.data.booking && e.data.booking.startTime) ||
+                    (e && e.detail && e.detail.data && e.detail.data.startTime) ||
+                    (e && e.detail && e.detail.data && e.detail.data.booking && e.detail.data.booking.startTime) ||
+                    new Date().toISOString();
+  localStorage.setItem('wd_pending_booking', JSON.stringify({ startTime }));
+
   document.getElementById('napkozi-cal-section').style.display   = 'none';
   document.getElementById('napkozi-konfigurator').style.display  = 'none';
   document.getElementById('napkozi-3kutya-box').style.display    = 'none';
   document.getElementById('wd-status-banner').style.display      = 'none';
   document.getElementById('napkozi-siker').style.display         = 'block';
 
-  if (_vanBerlet) {
-    document.getElementById('berlet-siker').style.display = 'block';
-    // Alkalom levonása a bérletből + maradék frissítése
-    fetch(WEBAPP_URL, { method: 'POST', body: JSON.stringify({
-      action:   'berlet_foglalas',
-      email:    _user && _user.email,
-      kutyaNev: _kutya_neve || (_user && _user.kutyaNev) || '',
-    })})
-    .then(r => r.json())
-    .then(result => {
-      const p = document.getElementById('berlet-siker').querySelector('p');
-      if (p) p.innerHTML = result.ok
-        ? 'Bérletedből levontunk 1 alkalmat. Maradék: <strong>' + result.maradek + ' alkalom</strong> · lejár: ' + result.lejar
-        : 'Bérletedből levontunk 1 alkalmat. Emailt küldtünk visszaigazolással.';
-    })
-    .catch(() => {}); // hiba esetén alapszöveg marad
-  } else {
-    const kutya = parseInt(_kutya) >= 2 ? '2' : '1';
-    const taxi  = _taxi || 'notaxi';
-    const opts  = STRIPE_LINKS[taxi]?.[kutya];
-    const egysz = EGYSZERI_LINKS[kutya];
-    const div   = document.getElementById('berlet-opciok');
-    if (div) {
-      const btnStyle = 'padding:14px 10px;font-size:14px;text-align:center;line-height:1.5;display:block;';
-      div.innerHTML = (opts ? (
-        '<a href="' + opts['4alk'].link + '" class="btn btn-gold" style="' + btnStyle + '">' +
-          '4 alkalom<br><strong>' + opts['4alk'].ar + '</strong>' +
-        '</a>' +
-        '<a href="' + opts['8alk'].link + '" class="btn btn-gold" style="' + btnStyle + '">' +
-          '8 alkalom<br><strong>' + opts['8alk'].ar + '</strong>' +
-        '</a>'
-      ) : '') + (egysz ?
-        '<a href="' + egysz.link + '" class="btn btn-outline" style="' + btnStyle + '">' +
-          'Egyszeri<br><strong>' + egysz.ar + '</strong>' +
-        '</a>' : '');
+  // Mindig friss berlet_foglalas hívás – nem a page-load kori _vanBerlet-re támaszkodunk
+  const berletSikerEl = document.getElementById('berlet-siker');
+  const szovegEl      = document.getElementById('berlet-siker-szoveg');
+  if (szovegEl) szovegEl.textContent = 'Ellenőrizzük a bérletedett...';
+  berletSikerEl.style.display = 'block'; // loading állapot
+
+  fetch(WEBAPP_URL, { method: 'POST', body: JSON.stringify({
+    action:   'berlet_foglalas',
+    email:    _user && _user.email,
+    kutyaNev: _kutya_neve || (_user && _user.kutyaNev) || '',
+  })})
+  .then(r => r.json())
+  .then(result => {
+    if (result.ok) {
+      // Van aktív bérlet → levonás sikeres, részletek megjelenítése
+      localStorage.removeItem('wd_pending_booking'); // már nem kell pending
+      if (szovegEl) {
+        const tipusSzov = result.tipus ? 'Csomagod: <strong>' + result.tipus + '</strong><br>' : '';
+        szovegEl.innerHTML = tipusSzov +
+          'Bérletedből levontunk 1 alkalmat. Maradék: <strong>' + result.maradek + ' alkalom</strong> · lejár: ' + result.lejar;
+      }
+      document.getElementById('napkozi-siker').scrollIntoView({behavior:'smooth'});
+    } else {
+      // Nincs aktív bérlet → fizetési opciók mutatása
+      berletSikerEl.style.display = 'none';
+      const kutya = parseInt(_kutya) >= 2 ? '2' : '1';
+      const taxi  = _taxi || 'notaxi';
+      const opts  = STRIPE_LINKS[taxi]?.[kutya];
+      const egysz = EGYSZERI_LINKS[kutya];
+      const div   = document.getElementById('berlet-opciok');
+      if (div) {
+        const btnStyle = 'padding:14px 10px;font-size:14px;text-align:center;line-height:1.5;display:block;';
+        div.innerHTML = (opts ? (
+          '<a href="' + opts['4alk'].link + '" class="btn btn-gold" style="' + btnStyle + '">' +
+            '4 alkalom<br><strong>' + opts['4alk'].ar + '</strong>' +
+          '</a>' +
+          '<a href="' + opts['8alk'].link + '" class="btn btn-gold" style="' + btnStyle + '">' +
+            '8 alkalom<br><strong>' + opts['8alk'].ar + '</strong>' +
+          '</a>'
+        ) : '') + (egysz ?
+          '<a href="' + egysz.link + '" class="btn btn-outline" style="' + btnStyle + '">' +
+            'Egyszeri<br><strong>' + egysz.ar + '</strong>' +
+          '</a>' : '');
+      }
+      document.getElementById('fizetes-szekció').style.display = 'block';
+      document.getElementById('napkozi-siker').scrollIntoView({behavior:'smooth'});
     }
+  })
+  .catch(() => {
+    // Hálózati hiba → inkább fizetési opciók (biztonságos fallback)
+    berletSikerEl.style.display = 'none';
     document.getElementById('fizetes-szekció').style.display = 'block';
     document.getElementById('napkozi-siker').scrollIntoView({behavior:'smooth'});
-  }
+  });
 }
 
 // ── KONFIGURÁTOR GOMBOK ───────────────────────────────────────
