@@ -575,30 +575,19 @@
             <a href="regisztracio.html?return=panzio.html" style="display:block; margin-top:12px; font-size:13px; color:var(--gold);">Még nincs fiókom – Regisztráció →</a>
           </div>
 
-          <!-- Személyes adatmezők (panzioAutoFill() rejti el ha belépett + van kutya) -->
-          <div id="panzio-adatmezok">
-            <h3>👤 Az adataid</h3>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="f-nev">Teljes neved *</label>
-                <input type="text" id="f-nev" placeholder="Pl. Kiss Anna" required>
-              </div>
-              <div class="form-group">
-                <label for="f-kutya">Kutya neve *</label>
-                <input type="text" id="f-kutya" placeholder="Pl. Bodri" required>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="f-email">Email cím *</label>
-                <input type="email" id="f-email" placeholder="email@example.com" required>
-              </div>
-              <div class="form-group">
-                <label for="f-telefon">Telefonszám *</label>
-                <input type="tel" id="f-telefon" placeholder="+36 XX XXX XXXX" required>
-              </div>
-            </div>
-            <hr class="form-section-divider">
+          <!-- Rejtett mezők – adatok localStorage-ból jönnek (wdGetUser) -->
+          <input type="hidden" id="f-nev">
+          <input type="hidden" id="f-kutya">
+          <input type="hidden" id="f-email">
+          <!-- Telefonszám: csak akkor látszik ha hiányzik a localStorage-ból -->
+          <div id="panzio-telefon-wrapper" style="display:none; margin-bottom:16px;">
+            <label for="f-telefon" style="font-size:13px;color:var(--text-dim);margin-bottom:6px;display:block;">
+              Telefonszámod (egyszeri megadás):
+            </label>
+            <input type="tel" id="f-telefon" placeholder="+36 XX XXX XXXX"
+                   style="width:100%;max-width:320px;padding:11px 16px;background:var(--black-3);
+                          border:1px solid var(--border);border-radius:10px;
+                          color:var(--white);font-size:14px;font-family:inherit;">
           </div>
 
           <h3>⚠️ Lemondási feltételek</h3>
@@ -873,8 +862,14 @@ async function fizetesIndit() {
   const email   = document.getElementById('f-email').value.trim();
   const telefon = document.getElementById('f-telefon').value.trim();
 
-  if (!nev || !kutyaNev || !email || !telefon) {
-    alert('Kérlek töltsd ki az összes kötelező mezőt!');
+  if (!nev || !kutyaNev || !email) {
+    alert('Kérlek jelentkezz be és add meg a kutyád adatait a Profil oldalon!');
+    return;
+  }
+  if (!telefon) {
+    alert('Kérlek add meg a telefonszámodat!');
+    const telefonEl = document.getElementById('f-telefon');
+    if (telefonEl) telefonEl.focus();
     return;
   }
   if (!document.getElementById('elfogadom').checked) {
@@ -949,53 +944,34 @@ szamol();
   const authPrompt = document.getElementById('panzio-auth-prompt');
 
   if (!user || !user.registered) {
-    // Nem belépett: auth prompt látszik, adatmezők rejtve
+    // Nem belépett: auth prompt látszik
     return;
   }
 
   // Belépett: auth prompt elrejtése
   if (authPrompt) authPrompt.style.display = 'none';
 
-  // Auto-fill személyes adatok
+  // Hidden mezők auto-fill a localStorage-ból
   const nevEl     = document.getElementById('f-nev');
   const emailEl   = document.getElementById('f-email');
   const telefonEl = document.getElementById('f-telefon');
-  if (nevEl && user.nev)         { nevEl.value     = user.nev;      nevEl.readOnly     = true; }
-  if (emailEl && user.email)     { emailEl.value   = user.email;    emailEl.readOnly   = true; }
-  if (telefonEl && user.telefon) { telefonEl.value = user.telefon;  telefonEl.readOnly = true; }
+  if (nevEl)   nevEl.value   = user.nev   || '';
+  if (emailEl) emailEl.value = user.email || '';
+
+  // Telefon: ha van → hidden mezőbe, ha nincs → telefon wrapper megjelenik
+  if (user.telefon) {
+    if (telefonEl) telefonEl.value = user.telefon;
+  } else {
+    const telefonWrapper = document.getElementById('panzio-telefon-wrapper');
+    if (telefonWrapper) telefonWrapper.style.display = 'block';
+  }
 
   const kutyak = wdKutyak();
 
-  // Ha minden adat megvan (telefon is): adatmezők elrejtése
-  if (kutyak.length > 0 && user.nev && user.email && user.telefon) {
-    const adatmezok = document.getElementById('panzio-adatmezok');
-    if (adatmezok) adatmezok.style.display = 'none';
-  } else if (kutyak.length > 0 && user.nev && user.email && !user.telefon) {
-    // Telefon hiányzik: csak a telefonszám mezőt mutassuk (nev/email/kutya hidden)
-    const adatmezok = document.getElementById('panzio-adatmezok');
-    if (adatmezok) {
-      adatmezok.querySelector('h3').style.display = 'none';
-      const formRows = adatmezok.querySelectorAll('.form-row');
-      // 1. form-row: nev + kutya → elrejt
-      if (formRows[0]) formRows[0].style.display = 'none';
-      // 2. form-row: email + telefon → email elrejtés, telefon látszik
-      if (formRows[1]) {
-        const emailGroup = formRows[1].querySelector('.form-group:first-child');
-        if (emailGroup) emailGroup.style.display = 'none';
-        const telefonGroup = formRows[1].querySelector('.form-group:last-child');
-        if (telefonGroup) {
-          const note = document.createElement('p');
-          note.style.cssText = 'font-size:13px;color:var(--text-dim);margin-bottom:8px;';
-          note.textContent = 'Telefonszámod (első alkalommal szükséges):';
-          telefonGroup.insertBefore(note, telefonGroup.firstChild);
-        }
-      }
-      adatmezok.querySelector('hr').style.display = 'none';
-    }
-  }
-
   if (!kutyak.length) {
-    // 0 kutya: f-kutya szövegmező marad, adatmezők látszanak
+    // 0 kutya: f-kutya rejtett marad, user.kutyaNev-et használjuk
+    const kutyaEl = document.getElementById('f-kutya');
+    if (kutyaEl) kutyaEl.value = user.kutyaNev || '';
     frissitGomb();
     return;
   }

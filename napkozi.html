@@ -701,7 +701,8 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBuk
 
 // ── KONSTANSOK ────────────────────────────────────────────────
 const NAPKOZI_ISMERKEDO   = 'https://cal.com/timea-kucsera-6harfx/napkozi-ingyenes-felmeres';
-const CALCOM_NAPKOZI_SLUG = 'timea-kucsera-6harfx/napkozi-foglalas'; // ⚠️ Timi hozza létre!
+const CALCOM_NAPKOZI_SLUG       = 'timea-kucsera-6harfx/napkozi-foglalas';       // normál (időpont választás)
+const CALCOM_NAPKOZI_TAXI_SLUG  = 'timea-kucsera-6harfx/napkozi-foglalas-taxi'; // ✅ 7:30–9:00, 1,5 órás taxi felvételi ablak
 
 // ── STRIPE FIZETÉSI LINKEK ────────────────────────────────────
 const STRIPE_LINKS = {
@@ -785,10 +786,26 @@ function arFrissit() {
 }
 
 // ── CAL.COM EMBED INIT ────────────────────────────────────────
-function initCalEmbed() {
-  if (_calInitDone || parseInt(_kutya) >= 3) return;
+let _calCurrentTaxi = null; // melyik taxi módban töltöttük be az embedet
+
+function initCalEmbed(forceReload) {
+  if (parseInt(_kutya) >= 3) return;
+
+  // Ha már betöltve és ugyanaz a taxi mód → skip (hacsak nem force)
+  const isTaxi = _taxi && _taxi !== 'notaxi';
+  if (_calInitDone && _calCurrentTaxi === isTaxi && !forceReload) return;
+
+  // Ha újratöltés kell → embed konténer kiürítése
+  if (_calInitDone) {
+    document.getElementById('cal-napkozi').innerHTML = '';
+  }
+
   _calInitDone = true;
+  _calCurrentTaxi = isTaxi;
   prefsSave(); // mentjük az aktuális választást
+
+  // Taxi vs normál slug
+  const calSlug = isTaxi ? CALCOM_NAPKOZI_TAXI_SLUG : CALCOM_NAPKOZI_SLUG;
 
   const taxiLabel = {notaxi:'Nem', '10km':'Igen – ≤10 km', '25km':'Igen – 10-25 km'}[_taxi] || 'Nem';
   // Prefill Cal.com egyedi mezőit URL paraméterekkel (ne kelljen újra beírni)
@@ -809,7 +826,7 @@ function initCalEmbed() {
     notes:      notesStr,
   }).toString();
 
-  // Cal.com embed.js betöltése
+  // Cal.com embed.js betöltése (egyszer fut, utána cache-elt)
   (function(C,A,L){let p=function(a,ar){a.q.push(ar)};let d=C.document;C.Cal=C.Cal||
   function(){let cal=C.Cal;let ar=arguments;if(!cal.loaded){cal.ns={};cal.q=cal.q||[];
   d.head.appendChild(d.createElement("script")).src=A;cal.loaded=true}if(ar[0]===L){
@@ -817,8 +834,10 @@ function initCalEmbed() {
   typeof namespace==="string"?(cal.ns[namespace]=api)&&p(api,ar):p(cal,ar);return}
   p(cal,ar)}})(window,"https://app.cal.com/embed/embed.js","init");
 
-  Cal("init","napkozi",{origin:"https://app.cal.com"});
-  Cal.ns.napkozi("inline",{
+  // Egyedi namespace minden embed újratöltésnél (Cal.com nem engedi felülírni)
+  const nsName = 'napkozi_' + Date.now();
+  Cal("init", nsName, {origin:"https://app.cal.com"});
+  Cal.ns[nsName]("inline",{
     elementOrSelector: "#cal-napkozi",
     config: {
       layout: "month_view",
@@ -831,9 +850,9 @@ function initCalEmbed() {
       "taxi_kell":  taxiLabel,
       "helyszin":   _helyszin,
     },
-    calLink: CALCOM_NAPKOZI_SLUG + '?' + prefillParams,
+    calLink: calSlug + '?' + prefillParams,
   });
-  Cal.ns.napkozi("on",{
+  Cal.ns[nsName]("on",{
     action: "bookingSuccessful",
     callback: onNapkoziBooked,
   });
@@ -843,6 +862,18 @@ function initCalEmbed() {
 let _bookingHandled = false; // dupla Cal.com event ellen
 function onNapkoziBooked(e) {
   if (_bookingHandled) return; // 2. hívás ignorálva
+
+  // Taxi cím kötelező validáció – a Cal.com booking már megtörtént, prompt-tal kérjük be ha hiányzik
+  if (_taxi && _taxi !== 'notaxi' && (!_helyszin || !_helyszin.trim())) {
+    const cim = prompt('Taxi szolgáltatáshoz add meg a pontos címet (pl. Budaörs, Rózsa u. 5.):');
+    if (cim && cim.trim()) {
+      _helyszin = cim.trim();
+      const helyszinInput = document.getElementById('helyszin-input');
+      if (helyszinInput) helyszinInput.value = _helyszin;
+      prefsSave();
+    }
+  }
+
   _bookingHandled = true;
 
   // Elmentjük a foglalás időpontját pending_booking-ba (bérlet vásárlásnál kellhet)
@@ -939,9 +970,30 @@ document.querySelectorAll('[data-taxi]').forEach(btn => {
     document.querySelectorAll('[data-taxi]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     _taxi = btn.dataset.taxi;
-    document.getElementById('helyszin-row').style.display = _taxi !== 'notaxi' ? 'block' : 'none';
+    const helyszinRow = document.getElementById('helyszin-row');
+    const helyszinInput = document.getElementById('helyszin-input');
+    helyszinRow.style.display = _taxi !== 'notaxi' ? 'block' : 'none';
+    if (_taxi !== 'notaxi') {
+      helyszinInput.placeholder = 'Pontos cím (kötelező!) pl. Budaörs, Rózsa u. 5.';
+      helyszinInput.style.border = '1px solid rgba(255,215,0,0.4)';
+    } else {
+      helyszinInput.style.border = '1px solid var(--border)';
+    }
     arFrissit();
     prefsSave();
+    // Cal.com embed újratöltése (taxi → all-day event, nem-taxi → normál)
+    initCalEmbed(true);
+    // Cal.com intro szöveg frissítése
+    const calIntroText = document.getElementById('cal-intro-text');
+    if (calIntroText) {
+      const kutyaNev = _kutya_neve || (_user && _user.kutyaNev) || 'a kutyádat';
+      if (_taxi !== 'notaxi') {
+        calIntroText.innerHTML = 'Válaszd ki melyik <strong>napra</strong> jöjjünk ' + kutyaNev + '-ért.' +
+          '<br><span style="color:var(--gold);font-weight:600;">Reggel 7:30–9:00 között érkezünk a megadott címre.</span>';
+      } else {
+        calIntroText.textContent = 'Válaszd ki melyik időpontban hozod ' + kutyaNev + '-t.';
+      }
+    }
   });
 });
 document.getElementById('helyszin-input').addEventListener('input', e => {
@@ -955,6 +1007,9 @@ document.getElementById('kutya-neve-input').addEventListener('input', e => {
 
 // ── FŐ FLOW ───────────────────────────────────────────────────
 (async function napkoziBanner() {
+  // Defenszív: konfigurátor elrejtése bfcache flash ellen (mielőtt bármi async fut)
+  document.getElementById('napkozi-konfigurator').style.display = 'none';
+
   const user = wdGetUser();
   _user = user; // globálisan elérhető Cal.com prefillhez
 
@@ -1117,7 +1172,8 @@ document.getElementById('kutya-neve-input').addEventListener('input', e => {
   if (calIntroText) {
     const kutyaNev = _kutya_neve || (_user && _user.kutyaNev) || 'a kutyádat';
     if (_taxi !== 'notaxi') {
-      calIntroText.textContent = 'Válaszd ki melyik időpontban igyekezzünk ' + kutyaNev + '-ért.';
+      calIntroText.innerHTML = 'Válaszd ki melyik <strong>napra</strong> jöjjünk ' + kutyaNev + '-ért.' +
+        '<br><span style="color:var(--gold);font-weight:600;">Reggel 7:30–9:00 között érkezünk a megadott címre.</span>';
     } else {
       calIntroText.textContent = 'Válaszd ki melyik időpontban hozod ' + kutyaNev + '-t.';
     }
