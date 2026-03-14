@@ -959,6 +959,22 @@ const BERLET_CACHE_KEY = 'wd_berlet_cache';
 const BERLET_CACHE_TTL = 300000; // 5 perc
 
 function _applyNapkoziData(foglalasData, berletData, user) {
+  console.log('[WD napkozi] _applyNapkoziData →', { vanBerlet: berletData.vanBerlet, maradek: berletData.maradek, taxi: berletData.taxi, kutya: berletData.kutya });
+
+  // ── CLEANUP: idempotens újrahíváshoz ──
+  const existingSelector = document.getElementById('napkozi-kutya-valaszto');
+  if (existingSelector) existingSelector.remove();
+  const kutyaInputClean = document.getElementById('kutya-neve-input');
+  if (kutyaInputClean) { kutyaInputClean.type = 'text'; kutyaInputClean.readOnly = false; kutyaInputClean.style.opacity = ''; }
+  const kutyaBtnRowClean = document.querySelector('#napkozi-konfigurator .konfig-row:first-child');
+  if (kutyaBtnRowClean) kutyaBtnRowClean.style.display = '';
+  document.getElementById('napkozi-konfigurator').style.display = 'none';
+  document.getElementById('napkozi-cal-section').style.display = 'none';
+  const berletInfoClean = document.getElementById('berlet-info-cal');
+  if (berletInfoClean) berletInfoClean.style.display = 'none';
+  const foglaltNapokClean = document.getElementById('napkozi-foglalt-napok');
+  if (foglaltNapokClean) foglaltNapokClean.style.display = 'none';
+
   // Új ügyfél → csak az ingyenes felmérő
   if (foglalasData.ujUgyfel) {
     const felmeroEl = document.getElementById('napkozi-felmero-szekció');
@@ -1090,6 +1106,7 @@ function _applyNapkoziData(foglalasData, berletData, user) {
 
   const user = wdGetUser();
   _user = user;
+  console.log('[WD napkozi] user →', { email: user?.email, kutyaNev: user?.kutyaNev, registered: user?.registered, kutyak: user?.kutyak });
 
   // 1. Nem regisztrált
   if (!user || !user.registered) {
@@ -1107,9 +1124,12 @@ function _applyNapkoziData(foglalasData, berletData, user) {
 
   // 2. Cache-ből azonnali megjelenítés (ha van friss)
   let usedCache = false;
+  let cachedBerletJson = null;
   try {
     const cached = JSON.parse(localStorage.getItem(BERLET_CACHE_KEY) || 'null');
     if (cached && cached.email === user.email && (Date.now() - cached.ts) < BERLET_CACHE_TTL) {
+      console.log('[WD napkozi] cache HIT →', { vanBerlet: cached.berletData?.vanBerlet, maradek: cached.berletData?.maradek });
+      cachedBerletJson = JSON.stringify(cached.berletData);
       _applyNapkoziData(cached.foglalasData, cached.berletData, user);
       usedCache = true;
     }
@@ -1135,14 +1155,21 @@ function _applyNapkoziData(foglalasData, berletData, user) {
     if (!r1.ok) throw new Error('HTTP ' + r1.status);
     const foglalasData = await r1.json();
     const berletData   = await r2.json();
+    console.log('[WD napkozi] API válasz →', { foglalasData, berletData });
 
     // Cache mentés
     localStorage.setItem(BERLET_CACHE_KEY, JSON.stringify({
       ts: Date.now(), email: user.email, foglalasData, berletData,
     }));
 
-    // Friss adat alkalmazása (ha cache-ből már megjelent, frissítjük)
-    _applyNapkoziData(foglalasData, berletData, user);
+    // Friss adat alkalmazása (csak ha változott a cache-hez képest VAGY nem volt cache)
+    const freshBerletJson = JSON.stringify(berletData);
+    if (!usedCache || cachedBerletJson !== freshBerletJson) {
+      console.log('[WD napkozi] friss adat eltér cache-től, újrarenderelés');
+      _applyNapkoziData(foglalasData, berletData, user);
+    } else {
+      console.log('[WD napkozi] adat azonos cache-sel, nincs újrarenderelés');
+    }
   } catch(e) {
     if (!usedCache) {
       showBanner('<p style="color:#ff6b6b;">⚠️ Kapcsolati hiba: ' + e.message + '<br>Próbáld újra vagy frissítsd az oldalt.</p>', '');
