@@ -120,6 +120,12 @@ function fmt(n) {
   return parseInt(n).toLocaleString('hu-HU');
 }
 
+function _escHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = String(str || '');
+  return d.innerHTML;
+}
+
 async function megerosit() {
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get('session_id');
@@ -150,7 +156,7 @@ function showSuccess(result) {
   document.getElementById('page-icon').textContent    = '✅';
   document.getElementById('page-title').textContent   = 'Foglalás megerősítve!';
   document.getElementById('page-subtitle').innerHTML  =
-    'Köszönjük, <strong>' + (result.nev || '') + '</strong>! Visszaigazolást emailben elküldtük.';
+    'Köszönjük, <strong>' + _escHtml(result.nev) + '</strong>! Visszaigazolást emailben elküldtük.';
 
   if (result.reszletek) {
     const r = result.reszletek;

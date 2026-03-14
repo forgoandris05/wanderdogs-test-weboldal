@@ -205,10 +205,11 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBuk
 
       if (data.ok) {
         localStorage.setItem('wd_user', JSON.stringify({
-          nev:       data.nev       || '',
-          email:     email,
-          kutyaNev:  data.kutyaNev  || '',
-          kutyak:    data.kutyak    || [],
+          nev:        data.nev        || '',
+          email:      email,
+          kutyaNev:   data.kutyaNev   || '',
+          kutyak:     data.kutyak     || [],
+          auth_token: data.auth_token || '',
           registered: true,
         }));
         window.location.href = returnUrl;

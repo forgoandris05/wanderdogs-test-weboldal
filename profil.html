@@ -301,7 +301,7 @@ async function kutyaHozzaad() {
   try {
     const resp = await fetch(WEBAPP_URL, {
       method: 'POST',
-      body: JSON.stringify({ action: 'kutya_hozzaad', email: user.email, nev, fajta })
+      body: JSON.stringify({ action: 'kutya_hozzaad', email: user.email, auth_token: user.auth_token || '', nev, fajta })
     });
     const result = await resp.json();
     if (result.ok) {
@@ -331,7 +331,7 @@ async function kutyaTorol(kutyaNev) {
   try {
     const resp = await fetch(WEBAPP_URL, {
       method: 'POST',
-      body: JSON.stringify({ action: 'kutya_torol', email: user.email, kutya_nev: kutyaNev })
+      body: JSON.stringify({ action: 'kutya_torol', email: user.email, auth_token: user.auth_token || '', kutya_nev: kutyaNev })
     });
     const result = await resp.json();
     if (result.ok) {
