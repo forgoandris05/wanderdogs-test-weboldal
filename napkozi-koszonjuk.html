@@ -140,7 +140,7 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBuk
 async function megerosit() {
   const params    = new URLSearchParams(window.location.search);
   const sessionId = params.get('session_id');
-  const tipus     = params.get('tipus') || '';
+  const tipus     = params.get('tipus') || localStorage.getItem('wd_pending_tipus') || '';
 
   if (!sessionId) {
     showError('Hiányzó session azonosító. Ha fizettél, ellenőrizd az emailed – a visszaigazolás ott megjelenik.');
@@ -179,6 +179,7 @@ async function megerosit() {
 
     if (result.ok) {
       localStorage.removeItem('wd_pending_booking'); // cleanup
+      localStorage.removeItem('wd_pending_tipus');   // cleanup
       if (tipus === 'egyszeri') {
         showEgyszeriSuccess(result);
       } else {

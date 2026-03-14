@@ -356,7 +356,18 @@
                       border:1px solid var(--border);border-radius:10px;
                       color:var(--white);font-size:14px;font-family:inherit;">
       </div>
-      <!-- helyszin-row eltávolítva – cím Cal.com-ban kérjük -->
+    </div>
+
+    <!-- Helyszín input (taxi módban jelenik meg – konfigurátoron kívül, hogy bérletesnél is látható legyen) -->
+    <div id="helyszin-row" style="display:none; margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:8px;">
+        Taxi felvételi cím <span style="color:var(--gold);">*</span>
+      </div>
+      <input type="text" id="helyszin-input"
+             placeholder="Pl. Budapest, Petőfi u. 12."
+             style="width:100%;max-width:480px;padding:11px 16px;background:var(--black-3);
+                    border:1px solid var(--border);border-radius:10px;
+                    color:var(--white);font-size:14px;font-family:inherit;">
     </div>
 
     <!-- ── CAL.COM INLINE EMBED (visszatérő, JS mutatja) ── -->
@@ -913,6 +924,7 @@ function onNapkoziBooked(detail) {
     email:    _user && _user.email,
     kutyaNev: _kutya_neve || (_user && _user.kutyaNev) || '',
     startTime: startTime,
+    helyszin:  _helyszin || '',
   })})
   .then(r => r.json())
   .then(result => {
@@ -943,15 +955,16 @@ function onNapkoziBooked(detail) {
       const div   = document.getElementById('berlet-opciok');
       if (div) {
         const btnStyle = 'padding:14px 10px;font-size:14px;text-align:center;line-height:1.5;display:block;';
+        const saveTipus = function(t) { return 'onclick="localStorage.setItem(\'wd_pending_tipus\',\'' + t + '\')"'; };
         div.innerHTML = (opts ? (
-          '<a href="' + opts['4alk'].link + '" class="btn btn-gold" style="' + btnStyle + '">' +
+          '<a href="' + opts['4alk'].link + '" ' + saveTipus(opts['4alk'].tipus) + ' class="btn btn-gold" style="' + btnStyle + '">' +
             '4 alkalom<br><strong>' + opts['4alk'].ar + '</strong>' +
           '</a>' +
-          '<a href="' + opts['8alk'].link + '" class="btn btn-gold" style="' + btnStyle + '">' +
+          '<a href="' + opts['8alk'].link + '" ' + saveTipus(opts['8alk'].tipus) + ' class="btn btn-gold" style="' + btnStyle + '">' +
             '8 alkalom<br><strong>' + opts['8alk'].ar + '</strong>' +
           '</a>'
         ) : '') + (egysz ?
-          '<a href="' + egysz.link + '" class="btn btn-outline" style="' + btnStyle + '">' +
+          '<a href="' + egysz.link + '" ' + saveTipus('egyszeri') + ' class="btn btn-outline" style="' + btnStyle + '">' +
             'Egyszeri<br><strong>' + egysz.ar + '</strong>' +
           '</a>' : '');
       }
@@ -984,6 +997,8 @@ document.querySelectorAll('[data-taxi]').forEach(btn => {
     btn.classList.add('active');
     _taxi = btn.dataset.taxi;
     const newIsTaxi = _taxi !== 'notaxi';
+    const hRow = document.getElementById('helyszin-row');
+    if (hRow) hRow.style.display = newIsTaxi ? 'block' : 'none';
     arFrissit();
     prefsSave();
     // Cal.com naptár CSAK ha taxi ↔ notaxi váltás (10km↔25km-nél nem kell)
@@ -1003,7 +1018,10 @@ document.querySelectorAll('[data-taxi]').forEach(btn => {
     }
   });
 });
-// helyszin input eltávolítva – cím Cal.com-ban kérjük
+document.getElementById('helyszin-input').addEventListener('input', function() {
+  _helyszin = this.value;
+  prefsSave();
+});
 document.getElementById('kutya-neve-input').addEventListener('input', e => {
   _kutya_neve = e.target.value;
   prefsSave();
@@ -1052,6 +1070,17 @@ function _applyNapkoziData(foglalasData, berletData, user) {
     if (berletData.kutya_neve) _kutya_neve = berletData.kutya_neve;
     _kutya = berletData.kutya || '1';
     _taxi  = berletData.taxi  || 'notaxi';
+
+    // Taxi bérlet → helyszín input megjelenítése + pre-fill
+    if (_taxi && _taxi !== 'notaxi') {
+      const hRow = document.getElementById('helyszin-row');
+      if (hRow) hRow.style.display = 'block';
+      if (berletData.helyszin) {
+        _helyszin = berletData.helyszin;
+        const hInput = document.getElementById('helyszin-input');
+        if (hInput) hInput.value = berletData.helyszin;
+      }
+    }
 
     showBanner(
       '<p style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">Aktív bérletedből még</p>' +
