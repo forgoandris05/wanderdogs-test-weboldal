@@ -356,18 +356,19 @@
                       border:1px solid var(--border);border-radius:10px;
                       color:var(--white);font-size:14px;font-family:inherit;">
       </div>
-    </div>
-
-    <!-- Helyszín input (taxi módban jelenik meg – konfigurátoron kívül, hogy bérletesnél is látható legyen) -->
-    <div id="helyszin-row" style="display:none; margin-bottom:20px;">
-      <div style="font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:8px;">
-        Taxi felvételi cím <span style="color:var(--gold);">*</span>
+      <div class="konfig-row" id="helyszin-row" style="display:none;">
+        <span class="konfig-label">🚕 Felvételi cím *</span>
+        <div style="flex:1;max-width:480px;">
+          <input type="text" id="helyszin-input"
+                 placeholder="Pl. Budapest, Petőfi u. 12."
+                 style="width:100%;padding:13px 16px;background:var(--black-3);
+                        border:2px solid var(--gold);border-radius:10px;
+                        color:var(--white);font-size:15px;font-weight:600;font-family:inherit;">
+          <div id="helyszin-hiba" style="display:none;color:#ff6b6b;font-size:12px;margin-top:4px;font-weight:600;">
+            Add meg a taxi felvételi címet!
+          </div>
+        </div>
       </div>
-      <input type="text" id="helyszin-input"
-             placeholder="Pl. Budapest, Petőfi u. 12."
-             style="width:100%;max-width:480px;padding:11px 16px;background:var(--black-3);
-                    border:1px solid var(--border);border-radius:10px;
-                    color:var(--white);font-size:14px;font-family:inherit;">
     </div>
 
     <!-- ── CAL.COM INLINE EMBED (visszatérő, JS mutatja) ── -->
@@ -729,22 +730,22 @@ const CALCOM_NAPKOZI_TAXI_SLUG  = 'timea-kucsera-6harfx/napkozi-foglalas-taxi'; 
 // ── STRIPE FIZETÉSI LINKEK ────────────────────────────────────
 const STRIPE_LINKS = {
   notaxi: {
-    '1': { '4alk': { link: 'https://buy.stripe.com/test_00w7sM5Vnd2yaOhgSW9AA06', ar: '26 500 Ft', tipus: '4alk_1k_notaxi' },
-           '8alk': { link: 'https://buy.stripe.com/test_14AfZi1F7bYu4pTcCG9AA08', ar: '44 000 Ft', tipus: '8alk_1k_notaxi' } },
-    '2':  { '4alk': { link: 'https://buy.stripe.com/test_bJefZi5Vn8Mi3lP1Y29AA07', ar: '42 500 Ft', tipus: '4alk_2k_notaxi' },
-           '8alk': { link: 'https://buy.stripe.com/test_9B6eVe0B33rYaOhauy9AA09', ar: '70 500 Ft', tipus: '8alk_2k_notaxi' } },
+    '1': { '4alk': { link: 'https://buy.stripe.com/test_00w7sM5Vnd2yaOhgSW9AA06?client_reference_id=4alk_1k_notaxi', ar: '26 500 Ft', tipus: '4alk_1k_notaxi' },
+           '8alk': { link: 'https://buy.stripe.com/test_14AfZi1F7bYu4pTcCG9AA08?client_reference_id=8alk_1k_notaxi', ar: '44 000 Ft', tipus: '8alk_1k_notaxi' } },
+    '2':  { '4alk': { link: 'https://buy.stripe.com/test_bJefZi5Vn8Mi3lP1Y29AA07?client_reference_id=4alk_2k_notaxi', ar: '42 500 Ft', tipus: '4alk_2k_notaxi' },
+           '8alk': { link: 'https://buy.stripe.com/test_9B6eVe0B33rYaOhauy9AA09?client_reference_id=8alk_2k_notaxi', ar: '70 500 Ft', tipus: '8alk_2k_notaxi' } },
   },
   '10km': {
-    '1': { '4alk': { link: 'https://buy.stripe.com/test_28EdRa4Rj0fMcWp1Y29AA0a', ar: '39 500 Ft', tipus: '4alk_1k_10km' },
-           '8alk': { link: 'https://buy.stripe.com/test_9B6aEY83ve6C7C5eKO9AA0c', ar: '70 500 Ft', tipus: '8alk_1k_10km' } },
-    '2':  { '4alk': { link: 'https://buy.stripe.com/test_6oU3cwdnPgeK2hL0TY9AA0b', ar: '63 000 Ft', tipus: '4alk_2k_10km' },
-           '8alk': { link: 'https://buy.stripe.com/test_cNieVe2Jb7Ie09DcCG9AA0d', ar: '112 000 Ft', tipus: '8alk_2k_10km' } },
+    '1': { '4alk': { link: 'https://buy.stripe.com/test_28EdRa4Rj0fMcWp1Y29AA0a?client_reference_id=4alk_1k_10km', ar: '39 500 Ft', tipus: '4alk_1k_10km' },
+           '8alk': { link: 'https://buy.stripe.com/test_9B6aEY83ve6C7C5eKO9AA0c?client_reference_id=8alk_1k_10km', ar: '70 500 Ft', tipus: '8alk_1k_10km' } },
+    '2':  { '4alk': { link: 'https://buy.stripe.com/test_6oU3cwdnPgeK2hL0TY9AA0b?client_reference_id=4alk_2k_10km', ar: '63 000 Ft', tipus: '4alk_2k_10km' },
+           '8alk': { link: 'https://buy.stripe.com/test_cNieVe2Jb7Ie09DcCG9AA0d?client_reference_id=8alk_2k_10km', ar: '112 000 Ft', tipus: '8alk_2k_10km' } },
   },
   '25km': {
-    '1': { '4alk': { link: 'https://buy.stripe.com/test_7sYbJ283v7Ie8G90TY9AA0e', ar: '48 500 Ft', tipus: '4alk_1k_25km' },
-           '8alk': { link: 'https://buy.stripe.com/test_5kQ3cw1F7d2yf4x6ei9AA0g', ar: '88 000 Ft', tipus: '8alk_1k_25km' } },
-    '2':  { '4alk': { link: 'https://buy.stripe.com/test_cNicN6fvX4w2bSldGK9AA0f', ar: '77 500 Ft', tipus: '4alk_2k_25km' },
-           '8alk': { link: 'https://buy.stripe.com/test_3cIcN60B3faGbSlbyC9AA0h', ar: '140 000 Ft', tipus: '8alk_2k_25km' } },
+    '1': { '4alk': { link: 'https://buy.stripe.com/test_7sYbJ283v7Ie8G90TY9AA0e?client_reference_id=4alk_1k_25km', ar: '48 500 Ft', tipus: '4alk_1k_25km' },
+           '8alk': { link: 'https://buy.stripe.com/test_5kQ3cw1F7d2yf4x6ei9AA0g?client_reference_id=8alk_1k_25km', ar: '88 000 Ft', tipus: '8alk_1k_25km' } },
+    '2':  { '4alk': { link: 'https://buy.stripe.com/test_cNicN6fvX4w2bSldGK9AA0f?client_reference_id=4alk_2k_25km', ar: '77 500 Ft', tipus: '4alk_2k_25km' },
+           '8alk': { link: 'https://buy.stripe.com/test_3cIcN60B3faGbSlbyC9AA0h?client_reference_id=8alk_2k_25km', ar: '140 000 Ft', tipus: '8alk_2k_25km' } },
   },
 };
 // Egyszeri alkalom (Timi egyezteti a részleteket)
@@ -782,6 +783,15 @@ function preSelectKonfigurator(kutya, taxi, kutyaNeve, helyszin) {
   if (kutyaNeve) {
     _kutya_neve = kutyaNeve;
     document.getElementById('kutya-neve-input').value = kutyaNeve;
+  }
+  // Helyszín restore + helyszin-row megjelenítés ha taxi
+  const hRow = document.getElementById('helyszin-row');
+  if (_taxi !== 'notaxi' && hRow) {
+    hRow.style.display = 'flex';
+    if (helyszin) {
+      _helyszin = helyszin;
+      document.getElementById('helyszin-input').value = helyszin;
+    }
   }
 }
 
@@ -884,6 +894,16 @@ window.addEventListener('message', function(e) {
 let _bookingHandled = false; // dupla Cal.com event ellen
 function onNapkoziBooked(detail) {
   if (_bookingHandled) return; // 2. hívás ignorálva
+
+  // Taxi validáció: helyszín kötelező
+  const isTaxiBooking = _taxi && _taxi !== 'notaxi';
+  if (isTaxiBooking && !_helyszin.trim()) {
+    const hInput = document.getElementById('helyszin-input');
+    const hHiba = document.getElementById('helyszin-hiba');
+    if (hInput) { hInput.focus(); hInput.style.borderColor = '#ff6b6b'; }
+    if (hHiba) hHiba.style.display = 'block';
+    return;
+  }
 
   _bookingHandled = true;
 
@@ -998,7 +1018,7 @@ document.querySelectorAll('[data-taxi]').forEach(btn => {
     _taxi = btn.dataset.taxi;
     const newIsTaxi = _taxi !== 'notaxi';
     const hRow = document.getElementById('helyszin-row');
-    if (hRow) hRow.style.display = newIsTaxi ? 'block' : 'none';
+    if (hRow) hRow.style.display = newIsTaxi ? 'flex' : 'none';
     arFrissit();
     prefsSave();
     // Cal.com naptár CSAK ha taxi ↔ notaxi váltás (10km↔25km-nél nem kell)
@@ -1020,6 +1040,9 @@ document.querySelectorAll('[data-taxi]').forEach(btn => {
 });
 document.getElementById('helyszin-input').addEventListener('input', function() {
   _helyszin = this.value;
+  this.style.borderColor = 'var(--gold)';
+  const hHiba = document.getElementById('helyszin-hiba');
+  if (hHiba) hHiba.style.display = 'none';
   prefsSave();
 });
 document.getElementById('kutya-neve-input').addEventListener('input', e => {
@@ -1045,6 +1068,8 @@ function _applyNapkoziData(foglalasData, berletData, user) {
   document.getElementById('napkozi-cal-section').style.display = 'none';
   const berletInfoClean = document.getElementById('berlet-info-cal');
   if (berletInfoClean) berletInfoClean.style.display = 'none';
+  const helyszinRowClean = document.getElementById('helyszin-row');
+  if (helyszinRowClean) helyszinRowClean.style.display = 'none';
   const foglaltNapokClean = document.getElementById('napkozi-foglalt-napok');
   if (foglaltNapokClean) foglaltNapokClean.style.display = 'none';
 
@@ -1071,17 +1096,6 @@ function _applyNapkoziData(foglalasData, berletData, user) {
     _kutya = berletData.kutya || '1';
     _taxi  = berletData.taxi  || 'notaxi';
 
-    // Taxi bérlet → helyszín input megjelenítése + pre-fill
-    if (_taxi && _taxi !== 'notaxi') {
-      const hRow = document.getElementById('helyszin-row');
-      if (hRow) hRow.style.display = 'block';
-      if (berletData.helyszin) {
-        _helyszin = berletData.helyszin;
-        const hInput = document.getElementById('helyszin-input');
-        if (hInput) hInput.value = berletData.helyszin;
-      }
-    }
-
     showBanner(
       '<p style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">Aktív bérletedből még</p>' +
       '<p style="font-size:40px;font-weight:900;color:var(--gold);line-height:1.1;margin-bottom:4px;">' + berletData.maradek + ' alkalom</p>' +
@@ -1090,14 +1104,6 @@ function _applyNapkoziData(foglalasData, berletData, user) {
       ' · lejár: ' + berletData.lejar + '</p>',
       'gold'
     );
-    const berletInfoCal = document.getElementById('berlet-info-cal');
-    if (berletInfoCal) {
-      const maradekEl = document.getElementById('berlet-info-cal-maradek');
-      const lejarEl   = document.getElementById('berlet-info-cal-lejar');
-      if (maradekEl) maradekEl.textContent = berletData.maradek ?? '–';
-      if (lejarEl && berletData.lejar) lejarEl.textContent = 'lejár: ' + berletData.lejar;
-      berletInfoCal.style.display = 'block';
-    }
     if (berletData.idopontok && berletData.idopontok.length > 0) {
       const lista = document.getElementById('foglalt-napok-lista');
       const box   = document.getElementById('napkozi-foglalt-napok');
@@ -1115,7 +1121,7 @@ function _applyNapkoziData(foglalasData, berletData, user) {
   if (!_vanBerlet) {
     document.getElementById('wd-status-banner').style.display = 'none';
     if (savedPrefs) {
-      preSelectKonfigurator(savedPrefs.kutya, savedPrefs.taxi, savedPrefs.kutya_neve);
+      preSelectKonfigurator(savedPrefs.kutya, savedPrefs.taxi, savedPrefs.kutya_neve, savedPrefs.helyszin);
     }
     const kutyakLista = wdKutyak();
     if (kutyakLista.length >= 1) {
