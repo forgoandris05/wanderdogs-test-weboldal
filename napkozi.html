@@ -356,13 +356,7 @@
                       border:1px solid var(--border);border-radius:10px;
                       color:var(--white);font-size:14px;font-family:inherit;">
       </div>
-      <div id="helyszin-row" style="display:none; margin-top:4px;">
-        <input type="text" id="helyszin-input"
-               placeholder="Pontos cím, pl. Budaörs, Rózsa u. 5."
-               style="width:100%;max-width:480px;padding:11px 16px;background:var(--black-3);
-                      border:1px solid var(--border);border-radius:10px;
-                      color:var(--white);font-size:14px;font-family:inherit;">
-      </div>
+      <!-- helyszin-row eltávolítva – cím Cal.com-ban kérjük -->
     </div>
 
     <!-- ── CAL.COM INLINE EMBED (visszatérő, JS mutatja) ── -->
@@ -757,14 +751,9 @@ function preSelectKonfigurator(kutya, taxi, kutyaNeve, helyszin) {
   _taxi  = taxi || 'notaxi';
   document.querySelectorAll('[data-kutya]').forEach(b => b.classList.toggle('active', b.dataset.kutya === _kutya));
   document.querySelectorAll('[data-taxi]').forEach(b => b.classList.toggle('active', b.dataset.taxi === _taxi));
-  document.getElementById('helyszin-row').style.display = _taxi !== 'notaxi' ? 'block' : 'none';
   if (kutyaNeve) {
     _kutya_neve = kutyaNeve;
     document.getElementById('kutya-neve-input').value = kutyaNeve;
-  }
-  if (helyszin) {
-    _helyszin = helyszin;
-    document.getElementById('helyszin-input').value = helyszin;
   }
 }
 
@@ -785,94 +774,62 @@ function arFrissit() {
   document.getElementById('napkozi-cal-section').style.display = is3plus ? 'none'  : 'block';
 }
 
-// ── CAL.COM EMBED INIT ────────────────────────────────────────
-let _calCurrentTaxi = null; // melyik taxi módban töltöttük be az embedet
+// ── CAL.COM EMBED INIT (iframe megoldás) ──────────────────────
+let _calCurrentTaxi = null; // melyik taxi módban töltöttük be
 
 function initCalEmbed(forceReload) {
   if (parseInt(_kutya) >= 3) return;
 
-  // Ha már betöltve és ugyanaz a taxi mód → skip (hacsak nem force)
   const isTaxi = _taxi && _taxi !== 'notaxi';
+  // Skip ha ugyanaz a taxi mód (hacsak nem force VAGY első betöltés)
   if (_calInitDone && _calCurrentTaxi === isTaxi && !forceReload) return;
-
-  // Ha újratöltés kell → embed konténer kiürítése
-  if (_calInitDone) {
-    document.getElementById('cal-napkozi').innerHTML = '';
-  }
 
   _calInitDone = true;
   _calCurrentTaxi = isTaxi;
-  prefsSave(); // mentjük az aktuális választást
+  prefsSave();
 
-  // Taxi vs normál slug
   const calSlug = isTaxi ? CALCOM_NAPKOZI_TAXI_SLUG : CALCOM_NAPKOZI_SLUG;
-
   const taxiLabel = {notaxi:'Nem', '10km':'Igen – ≤10 km', '25km':'Igen – 10-25 km'}[_taxi] || 'Nem';
-  // Prefill Cal.com egyedi mezőit URL paraméterekkel (ne kelljen újra beírni)
   const notesStr = [
     (_kutya_neve || (_user && _user.kutyaNev)) ? 'Kutya: ' + (_kutya_neve || (_user && _user.kutyaNev)) : '',
     _kutya + ' kutya',
     taxiLabel !== 'Nem' ? 'Taxi: ' + taxiLabel : '',
-    _helyszin ? 'Cím: ' + _helyszin : '',
   ].filter(Boolean).join(' | ');
 
   const prefillParams = new URLSearchParams({
-    kutya_neve: _kutya_neve || (_user && _user.kutyaNev) || '',
-    kutya_db:   _kutya,
-    taxi_kell:  taxiLabel,
-    helyszin:   _helyszin,
     name:       (_user && _user.nev)   || '',
     email:      (_user && _user.email) || '',
     notes:      notesStr,
+    layout:     'month_view',
   }).toString();
 
-  // Cal.com embed.js betöltése (egyszer fut, utána cache-elt)
-  (function(C,A,L){let p=function(a,ar){a.q.push(ar)};let d=C.document;C.Cal=C.Cal||
-  function(){let cal=C.Cal;let ar=arguments;if(!cal.loaded){cal.ns={};cal.q=cal.q||[];
-  d.head.appendChild(d.createElement("script")).src=A;cal.loaded=true}if(ar[0]===L){
-  const api=function(){p(api,arguments)};const namespace=ar[1];api.q=api.q||[];
-  typeof namespace==="string"?(cal.ns[namespace]=api)&&p(api,ar):p(cal,ar);return}
-  p(cal,ar)}})(window,"https://app.cal.com/embed/embed.js","init");
-
-  // Egyedi namespace minden embed újratöltésnél (Cal.com nem engedi felülírni)
-  const nsName = 'napkozi_' + Date.now();
-  Cal("init", nsName, {origin:"https://app.cal.com"});
-  Cal.ns[nsName]("inline",{
-    elementOrSelector: "#cal-napkozi",
-    config: {
-      layout: "month_view",
-      name:        (_user && _user.nev)   || '',
-      email:       (_user && _user.email) || '',
-      notes:       notesStr,
-      // Custom field prefill a config objektumban is (inline embed megköveteli)
-      "kutya_neve": _kutya_neve || (_user && _user.kutyaNev) || '',
-      "kutya_db":   _kutya,
-      "taxi_kell":  taxiLabel,
-      "helyszin":   _helyszin,
-    },
-    calLink: calSlug + '?' + prefillParams,
-  });
-  Cal.ns[nsName]("on",{
-    action: "bookingSuccessful",
-    callback: onNapkoziBooked,
-  });
+  // Iframe létrehozása (megbízhatóbb mint Cal.com embed API)
+  const container = document.getElementById('cal-napkozi');
+  container.innerHTML = '';
+  const iframe = document.createElement('iframe');
+  iframe.src = 'https://cal.com/' + calSlug + '?' + prefillParams;
+  iframe.style.cssText = 'width:100%;min-height:650px;border:none;border-radius:12px;';
+  iframe.setAttribute('loading', 'lazy');
+  container.appendChild(iframe);
 }
+
+// Cal.com postMessage figyelése (booking sikeres)
+window.addEventListener('message', function(e) {
+  if (!e.data) return;
+  try {
+    const msg = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+    // Cal.com booking success: { type: 'CAL:booking_successful', data: {...} }
+    if ((msg.type && msg.type.includes('booking_successful')) ||
+        (msg.action && msg.action === 'bookingSuccessful')) {
+      onNapkoziBooked(msg);
+    }
+  } catch(ignored) {}
+});
 
 // ── CAL.COM BOOKING SIKERES ───────────────────────────────────
 let _bookingHandled = false; // dupla Cal.com event ellen
 function onNapkoziBooked(e) {
   if (_bookingHandled) return; // 2. hívás ignorálva
-
-  // Taxi cím kötelező validáció – a Cal.com booking már megtörtént, prompt-tal kérjük be ha hiányzik
-  if (_taxi && _taxi !== 'notaxi' && (!_helyszin || !_helyszin.trim())) {
-    const cim = prompt('Taxi szolgáltatáshoz add meg a pontos címet (pl. Budaörs, Rózsa u. 5.):');
-    if (cim && cim.trim()) {
-      _helyszin = cim.trim();
-      const helyszinInput = document.getElementById('helyszin-input');
-      if (helyszinInput) helyszinInput.value = _helyszin;
-      prefsSave();
-    }
-  }
 
   _bookingHandled = true;
 
@@ -967,27 +924,22 @@ document.querySelectorAll('[data-kutya]').forEach(btn => {
 });
 document.querySelectorAll('[data-taxi]').forEach(btn => {
   btn.addEventListener('click', () => {
+    const prevIsTaxi = _taxi && _taxi !== 'notaxi';
     document.querySelectorAll('[data-taxi]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     _taxi = btn.dataset.taxi;
-    const helyszinRow = document.getElementById('helyszin-row');
-    const helyszinInput = document.getElementById('helyszin-input');
-    helyszinRow.style.display = _taxi !== 'notaxi' ? 'block' : 'none';
-    if (_taxi !== 'notaxi') {
-      helyszinInput.placeholder = 'Pontos cím (kötelező!) pl. Budaörs, Rózsa u. 5.';
-      helyszinInput.style.border = '1px solid rgba(255,215,0,0.4)';
-    } else {
-      helyszinInput.style.border = '1px solid var(--border)';
-    }
+    const newIsTaxi = _taxi !== 'notaxi';
     arFrissit();
     prefsSave();
-    // Cal.com embed újratöltése (taxi → all-day event, nem-taxi → normál)
-    initCalEmbed(true);
+    // Cal.com naptár CSAK ha taxi ↔ notaxi váltás (10km↔25km-nél nem kell)
+    if (prevIsTaxi !== newIsTaxi) {
+      initCalEmbed(true);
+    }
     // Cal.com intro szöveg frissítése
     const calIntroText = document.getElementById('cal-intro-text');
     if (calIntroText) {
       const kutyaNev = _kutya_neve || (_user && _user.kutyaNev) || 'a kutyádat';
-      if (_taxi !== 'notaxi') {
+      if (newIsTaxi) {
         calIntroText.innerHTML = 'Válaszd ki melyik <strong>napra</strong> jöjjünk ' + kutyaNev + '-ért.' +
           '<br><span style="color:var(--gold);font-weight:600;">Reggel 7:30–9:00 között érkezünk a megadott címre.</span>';
       } else {
@@ -996,54 +948,18 @@ document.querySelectorAll('[data-taxi]').forEach(btn => {
     }
   });
 });
-document.getElementById('helyszin-input').addEventListener('input', e => {
-  _helyszin = e.target.value;
-  prefsSave();
-});
+// helyszin input eltávolítva – cím Cal.com-ban kérjük
 document.getElementById('kutya-neve-input').addEventListener('input', e => {
   _kutya_neve = e.target.value;
   prefsSave();
 });
 
-// ── FŐ FLOW ───────────────────────────────────────────────────
-(async function napkoziBanner() {
-  // Defenszív: konfigurátor elrejtése bfcache flash ellen (mielőtt bármi async fut)
-  document.getElementById('napkozi-konfigurator').style.display = 'none';
+// ── FŐ FLOW (cache-elt betöltés) ─────────────────────────────
+const BERLET_CACHE_KEY = 'wd_berlet_cache';
+const BERLET_CACHE_TTL = 300000; // 5 perc
 
-  const user = wdGetUser();
-  _user = user; // globálisan elérhető Cal.com prefillhez
-
-  // 1. Nem regisztrált
-  if (!user || !user.registered) {
-    showBanner(
-      '<p style="font-size:15px;color:var(--text-dim);margin-bottom:16px;">' +
-      'A foglaláshoz először <strong>regisztrálj</strong> – 1 perc, és nyomon követheted a bérleteidet!</p>' +
-      '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">' +
-      '<a href="regisztracio.html?return=napkozi.html" class="btn btn-gold">Regisztrálok</a>' +
-      '<a href="bejelentkezes.html?return=napkozi.html" class="btn btn-outline">Már van fiókom</a>' +
-      '</div>',
-      ''
-    );
-    return;
-  }
-
-  // 2–3. foglalas_check + berlet_check párhuzamosan
-  let foglalasData = {ujUgyfel: true};
-  let berletData   = {vanBerlet: false};
-  try {
-    const [r1, r2] = await Promise.all([
-      fetch(WEBAPP_URL, { method:'POST', body: JSON.stringify({action:'foglalas_check', email:user.email, kutyaNev:user.kutyaNev, service:'Napközi'}) }),
-      fetch(WEBAPP_URL, { method:'POST', body: JSON.stringify({action:'berlet_check',   email:user.email, kutyaNev:user.kutyaNev}) }),
-    ]);
-    if (!r1.ok) throw new Error('HTTP ' + r1.status);
-    foglalasData = await r1.json();
-    berletData   = await r2.json();
-  } catch(e) {
-    showBanner('<p style="color:#ff6b6b;">⚠️ Kapcsolati hiba: ' + e.message + '<br>Próbáld újra vagy frissítsd az oldalt.</p>', '');
-    return;
-  }
-
-  // 3. Új ügyfél → csak az ingyenes felmérő látható
+function _applyNapkoziData(foglalasData, berletData, user) {
+  // Új ügyfél → csak az ingyenes felmérő
   if (foglalasData.ujUgyfel) {
     const felmeroEl = document.getElementById('napkozi-felmero-szekció');
     if (felmeroEl) felmeroEl.style.display = 'block';
@@ -1056,63 +972,52 @@ document.getElementById('kutya-neve-input').addEventListener('input', e => {
     return;
   }
 
-  // 4. Bérlet adatok feldolgozása (már megvan a Promise.all-ból) – ELŐBB, mielőtt konfigurátor UI épül
+  // Bérlet adatok feldolgozása
   const savedPrefs = prefsLoad();
-  try {
-    _vanBerlet = berletData.vanBerlet;
+  _vanBerlet = berletData.vanBerlet;
 
-    if (_vanBerlet) {
-      document.getElementById('napkozi-konfigurator').style.display = 'none'; // explicit elrejtés
-      // Kutya neve betöltése a bérlet adatokból
-      if (berletData.kutya_neve) _kutya_neve = berletData.kutya_neve;
-      _kutya = berletData.kutya || '1';
-      _taxi  = berletData.taxi  || 'notaxi';
+  if (_vanBerlet) {
+    document.getElementById('napkozi-konfigurator').style.display = 'none';
+    if (berletData.kutya_neve) _kutya_neve = berletData.kutya_neve;
+    _kutya = berletData.kutya || '1';
+    _taxi  = berletData.taxi  || 'notaxi';
 
-      showBanner(
-        '<p style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">Aktív bérletedből még</p>' +
-        '<p style="font-size:40px;font-weight:900;color:var(--gold);line-height:1.1;margin-bottom:4px;">' + berletData.maradek + ' alkalom</p>' +
-        '<p style="font-size:13px;color:var(--text-faint);margin-bottom:0;">maradt' +
-        (berletData.tipus ? ' · <span style="color:var(--text-dim);">' + berletData.tipus + '</span>' : '') +
-        ' · lejár: ' + berletData.lejar + '</p>',
-        'gold'
-      );
-      // Bérlet info kártya a Cal szekción belül
-      const berletInfoCal = document.getElementById('berlet-info-cal');
-      if (berletInfoCal) {
-        const maradekEl = document.getElementById('berlet-info-cal-maradek');
-        const lejarEl   = document.getElementById('berlet-info-cal-lejar');
-        if (maradekEl) maradekEl.textContent = berletData.maradek ?? '–';
-        if (lejarEl && berletData.lejar) lejarEl.textContent = 'lejár: ' + berletData.lejar;
-        berletInfoCal.style.display = 'block';
-      }
-      // Foglalt időpontok megjelenítése (ha vannak)
-      if (berletData.idopontok && berletData.idopontok.length > 0) {
-        const lista = document.getElementById('foglalt-napok-lista');
-        const box   = document.getElementById('napkozi-foglalt-napok');
-        if (lista && box) {
-          lista.innerHTML = berletData.idopontok
-            .map(d => '<span style="background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.3);' +
-                 'border-radius:6px;padding:4px 10px;font-size:13px;font-weight:600;color:var(--gold);">' + d + '</span>')
-            .join('');
-          box.style.display = 'block';
-        }
+    showBanner(
+      '<p style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">Aktív bérletedből még</p>' +
+      '<p style="font-size:40px;font-weight:900;color:var(--gold);line-height:1.1;margin-bottom:4px;">' + berletData.maradek + ' alkalom</p>' +
+      '<p style="font-size:13px;color:var(--text-faint);margin-bottom:0;">maradt' +
+      (berletData.tipus ? ' · <span style="color:var(--text-dim);">' + berletData.tipus + '</span>' : '') +
+      ' · lejár: ' + berletData.lejar + '</p>',
+      'gold'
+    );
+    const berletInfoCal = document.getElementById('berlet-info-cal');
+    if (berletInfoCal) {
+      const maradekEl = document.getElementById('berlet-info-cal-maradek');
+      const lejarEl   = document.getElementById('berlet-info-cal-lejar');
+      if (maradekEl) maradekEl.textContent = berletData.maradek ?? '–';
+      if (lejarEl && berletData.lejar) lejarEl.textContent = 'lejár: ' + berletData.lejar;
+      berletInfoCal.style.display = 'block';
+    }
+    if (berletData.idopontok && berletData.idopontok.length > 0) {
+      const lista = document.getElementById('foglalt-napok-lista');
+      const box   = document.getElementById('napkozi-foglalt-napok');
+      if (lista && box) {
+        lista.innerHTML = berletData.idopontok
+          .map(d => '<span style="background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.3);' +
+               'border-radius:6px;padding:4px 10px;font-size:13px;font-weight:600;color:var(--gold);">' + d + '</span>')
+          .join('');
+        box.style.display = 'block';
       }
     }
-  } catch(e) {
-    showBanner('<p>Hiba az adatok betöltésekor. Frissítsd az oldalt!</p>', '');
-    return;
   }
 
-  // 5. Konfigurátor setup – CSAK ha nincs aktív bérlet
+  // Konfigurátor – CSAK ha nincs aktív bérlet
   if (!_vanBerlet) {
-    // Prefs betöltése
     if (savedPrefs) {
-      preSelectKonfigurator(savedPrefs.kutya, savedPrefs.taxi, savedPrefs.kutya_neve, savedPrefs.helyszin);
+      preSelectKonfigurator(savedPrefs.kutya, savedPrefs.taxi, savedPrefs.kutya_neve);
     }
-    // Kutya választó: checkboxok ha van regisztrált kutya
     const kutyakLista = wdKutyak();
     if (kutyakLista.length >= 1) {
-      // Kutya gombsor elrejtése, checkbox mód
       const kutyaBtnRow = document.querySelector('.konfig-row:first-child');
       if (kutyaBtnRow) kutyaBtnRow.style.display = 'none';
 
@@ -1144,7 +1049,6 @@ document.getElementById('kutya-neve-input').addEventListener('input', e => {
         });
         kutyaInput.parentNode.insertBefore(selector, kutyaInput);
 
-        // Kezdeti állapot ha 1 kutya van
         if (kutyakLista.length === 1) {
           _kutya_neve = kutyakLista[0].nev;
           kutyaInput.value = _kutya_neve;
@@ -1154,7 +1058,6 @@ document.getElementById('kutya-neve-input').addEventListener('input', e => {
         }
       }
     } else if (user.kutyaNev && !_kutya_neve) {
-      // 0 regisztrált kutya → auto-fill szövegmezőből (eredeti logika)
       _kutya_neve = user.kutyaNev;
       const el = document.getElementById('kutya-neve-input');
       if (el) { el.value = user.kutyaNev; el.readOnly = true; el.style.opacity = '0.7'; }
@@ -1163,11 +1066,10 @@ document.getElementById('kutya-neve-input').addEventListener('input', e => {
     document.getElementById('napkozi-konfigurator').style.display = 'block';
   }
 
-  // 6. Cal.com embed megjelenítése (mindig, bérletesnél is)
+  // Cal.com embed megjelenítése (mindig, bérletesnél is)
   document.getElementById('napkozi-cal-section').style.display = 'block';
   arFrissit();
 
-  // Cal.com intro szöveg – dinamikus
   const calIntroText = document.getElementById('cal-intro-text');
   if (calIntroText) {
     const kutyaNev = _kutya_neve || (_user && _user.kutyaNev) || 'a kutyádat';
@@ -1180,6 +1082,72 @@ document.getElementById('kutya-neve-input').addEventListener('input', e => {
   }
 
   initCalEmbed();
+}
+
+(async function napkoziBanner() {
+  // Defenszív: konfigurátor elrejtése bfcache flash ellen
+  document.getElementById('napkozi-konfigurator').style.display = 'none';
+
+  const user = wdGetUser();
+  _user = user;
+
+  // 1. Nem regisztrált
+  if (!user || !user.registered) {
+    showBanner(
+      '<p style="font-size:15px;color:var(--text-dim);margin-bottom:16px;">' +
+      'A foglaláshoz először <strong>regisztrálj</strong> – 1 perc, és nyomon követheted a bérleteidet!</p>' +
+      '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">' +
+      '<a href="regisztracio.html?return=napkozi.html" class="btn btn-gold">Regisztrálok</a>' +
+      '<a href="bejelentkezes.html?return=napkozi.html" class="btn btn-outline">Már van fiókom</a>' +
+      '</div>',
+      ''
+    );
+    return;
+  }
+
+  // 2. Cache-ből azonnali megjelenítés (ha van friss)
+  let usedCache = false;
+  try {
+    const cached = JSON.parse(localStorage.getItem(BERLET_CACHE_KEY) || 'null');
+    if (cached && cached.email === user.email && (Date.now() - cached.ts) < BERLET_CACHE_TTL) {
+      _applyNapkoziData(cached.foglalasData, cached.berletData, user);
+      usedCache = true;
+    }
+  } catch(e) { /* cache hiba → várunk az API-ra */ }
+
+  // Ha nincs cache → loading spinner
+  if (!usedCache) {
+    showBanner(
+      '<div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:8px 0;">' +
+      '<div style="width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;"></div>' +
+      '<span style="color:var(--text-dim);font-size:14px;">Betöltés...</span></div>' +
+      '<style>@keyframes spin{to{transform:rotate(360deg)}}</style>',
+      ''
+    );
+  }
+
+  // 3. API hívás háttérben (mindig, cache mellett is)
+  try {
+    const [r1, r2] = await Promise.all([
+      fetch(WEBAPP_URL, { method:'POST', body: JSON.stringify({action:'foglalas_check', email:user.email, kutyaNev:user.kutyaNev, service:'Napközi'}) }),
+      fetch(WEBAPP_URL, { method:'POST', body: JSON.stringify({action:'berlet_check',   email:user.email, kutyaNev:user.kutyaNev}) }),
+    ]);
+    if (!r1.ok) throw new Error('HTTP ' + r1.status);
+    const foglalasData = await r1.json();
+    const berletData   = await r2.json();
+
+    // Cache mentés
+    localStorage.setItem(BERLET_CACHE_KEY, JSON.stringify({
+      ts: Date.now(), email: user.email, foglalasData, berletData,
+    }));
+
+    // Friss adat alkalmazása (ha cache-ből már megjelent, frissítjük)
+    _applyNapkoziData(foglalasData, berletData, user);
+  } catch(e) {
+    if (!usedCache) {
+      showBanner('<p style="color:#ff6b6b;">⚠️ Kapcsolati hiba: ' + e.message + '<br>Próbáld újra vagy frissítsd az oldalt.</p>', '');
+    }
+  }
 })();
 </script>
 </body>
