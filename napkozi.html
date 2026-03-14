@@ -688,6 +688,23 @@
   </div>
 </footer>
 
+<!-- Cal.com Embed Loader -->
+<script>
+(function (C, A, L) {
+  let p = function (a, ar) { a.q.push(ar); };
+  let d = C.document;
+  C.Cal = C.Cal || function () {
+    let cal = C.Cal; let ar = arguments;
+    if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || [];
+      d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; }
+    if (ar[0] === L) { const api = function () { p(api, arguments); };
+      const namespace = ar[1]; api.q = api.q || [];
+      if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api;
+        p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar);
+      return; } p(cal, ar);
+  };
+})(window, "https://app.cal.com/embed/embed.js", "init");
+</script>
 <script src="js/main.js"></script>
 <script>
 // ── NAPKÖZI DINAMIKUS FLOW ────────────────────────────────────
@@ -774,14 +791,14 @@ function arFrissit() {
   document.getElementById('napkozi-cal-section').style.display = is3plus ? 'none'  : 'block';
 }
 
-// ── CAL.COM EMBED INIT (iframe megoldás) ──────────────────────
-let _calCurrentTaxi = null; // melyik taxi módban töltöttük be
+// ── CAL.COM EMBED INIT (Cal.com hivatalos embed API) ─────────
+let _calCurrentTaxi = null;
+let _calNsCounter = 0; // namespace counter a dinamikus újratöltéshez
 
 function initCalEmbed(forceReload) {
   if (parseInt(_kutya) >= 3) return;
 
   const isTaxi = _taxi && _taxi !== 'notaxi';
-  // Skip ha ugyanaz a taxi mód (hacsak nem force VAGY első betöltés)
   if (_calInitDone && _calCurrentTaxi === isTaxi && !forceReload) return;
 
   _calInitDone = true;
@@ -796,49 +813,87 @@ function initCalEmbed(forceReload) {
     taxiLabel !== 'Nem' ? 'Taxi: ' + taxiLabel : '',
   ].filter(Boolean).join(' | ');
 
-  const prefillParams = new URLSearchParams({
-    name:       (_user && _user.nev)   || '',
-    email:      (_user && _user.email) || '',
-    notes:      notesStr,
-    layout:     'month_view',
-  }).toString();
-
-  // Iframe létrehozása (megbízhatóbb mint Cal.com embed API)
+  // Konténer ürítése + új embed div
   const container = document.getElementById('cal-napkozi');
   container.innerHTML = '';
-  const iframe = document.createElement('iframe');
-  iframe.src = 'https://cal.com/' + calSlug + '?' + prefillParams;
-  iframe.style.cssText = 'width:100%;min-height:650px;border:none;border-radius:12px;';
-  iframe.setAttribute('loading', 'lazy');
-  container.appendChild(iframe);
+  const embedDiv = document.createElement('div');
+  embedDiv.id = 'cal-napkozi-embed';
+  embedDiv.style.cssText = 'width:100%;min-height:650px;overflow:auto;';
+  container.appendChild(embedDiv);
+
+  // Egyedi namespace minden embed példányhoz (taxi toggle)
+  _calNsCounter++;
+  const ns = 'napkozi' + _calNsCounter;
+
+  Cal("init", ns, {origin: "https://app.cal.com"});
+
+  Cal.ns[ns]("inline", {
+    elementOrSelector: "#cal-napkozi-embed",
+    calLink: calSlug,
+    config: {
+      name:   (_user && _user.nev)   || '',
+      email:  (_user && _user.email) || '',
+      notes:  notesStr,
+      layout: 'month_view',
+      theme:  'dark',
+    },
+  });
+
+  Cal.ns[ns]("ui", {
+    hideEventTypeDetails: false,
+    styles: { branding: { brandColor: "#FFD700" } },
+  });
+
+  // Booking siker figyelése
+  Cal.ns[ns]("on", {
+    action: "bookingSuccessfulV2",
+    callback: function(e) {
+      console.log('[WD napkozi] Cal.com bookingSuccessfulV2:', e.detail);
+      onNapkoziBooked(e.detail);
+    }
+  });
+
+  // Debug: minden Cal.com event logolása (teszteléshez)
+  Cal.ns[ns]("on", {
+    action: "*",
+    callback: function(e) {
+      console.log('[WD napkozi] Cal.com event:', e.detail.type, e.detail);
+    }
+  });
 }
 
-// Cal.com postMessage figyelése (booking sikeres)
+// Diagnosztikai logger: nyers postMessage-ek a Cal.com iframe-ből
 window.addEventListener('message', function(e) {
-  if (!e.data) return;
-  try {
-    const msg = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
-    // Cal.com booking success: { type: 'CAL:booking_successful', data: {...} }
-    if ((msg.type && msg.type.includes('booking_successful')) ||
-        (msg.action && msg.action === 'bookingSuccessful')) {
-      onNapkoziBooked(msg);
-    }
-  } catch(ignored) {}
+  if (e.origin && e.origin.includes('cal.com')) {
+    console.log('[WD napkozi] Raw Cal.com postMessage:', e.data);
+  }
 });
 
 // ── CAL.COM BOOKING SIKERES ───────────────────────────────────
 let _bookingHandled = false; // dupla Cal.com event ellen
-function onNapkoziBooked(e) {
+function onNapkoziBooked(detail) {
   if (_bookingHandled) return; // 2. hívás ignorálva
 
   _bookingHandled = true;
 
-  // Elmentjük a foglalás időpontját pending_booking-ba (bérlet vásárlásnál kellhet)
-  const startTime = (e && e.data && e.data.startTime) ||
-                    (e && e.data && e.data.booking && e.data.booking.startTime) ||
-                    (e && e.detail && e.detail.data && e.detail.data.startTime) ||
-                    (e && e.detail && e.detail.data && e.detail.data.booking && e.detail.data.booking.startTime) ||
+  // Védelem: user KELL legyen bejelentkezve
+  if (!_user || !_user.email) {
+    console.error('[WD napkozi] onNapkoziBooked: nincs bejelentkezett user!');
+    document.getElementById('napkozi-cal-section').style.display = 'none';
+    showBanner(
+      '<p style="color:#ff6b6b;font-weight:700;">Foglalás nem rögzíthető – kérlek jelentkezz be újra!</p>' +
+      '<a href="bejelentkezes.html?return=napkozi.html" class="btn btn-gold" style="margin-top:12px;">Bejelentkezés →</a>',
+      ''
+    );
+    return;
+  }
+
+  // bookingSuccessfulV2 formátum: detail = { type, data: { startTime, ... } }
+  const eventData = (detail && detail.data) || detail || {};
+  const startTime = eventData.startTime ||
+                    (eventData.allBookings && eventData.allBookings[0] && eventData.allBookings[0].startTime) ||
                     new Date().toISOString();
+  console.log('[WD napkozi] onNapkoziBooked – startTime:', startTime, 'email:', _user.email);
   localStorage.setItem('wd_pending_booking', JSON.stringify({ startTime }));
 
   document.getElementById('napkozi-cal-section').style.display   = 'none';
