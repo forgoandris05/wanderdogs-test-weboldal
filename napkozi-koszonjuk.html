@@ -180,6 +180,7 @@ async function megerosit() {
     if (result.ok) {
       localStorage.removeItem('wd_pending_booking'); // cleanup
       localStorage.removeItem('wd_pending_tipus');   // cleanup
+      localStorage.removeItem('wd_berlet_cache');    // cache invalidálás új bérlet aktiválás után
       if (tipus === 'egyszeri') {
         showEgyszeriSuccess(result);
       } else {
