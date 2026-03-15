@@ -1272,8 +1272,8 @@ function _applyNapkoziData(foglalasData, berletData, user) {
     const berletData   = await r2.json();
     console.log('[WD napkozi] API válasz →', { foglalasData, berletData });
 
-    // Auth token lejárat kezelése – ne írjuk felül a cache-t hamis adattal
-    if (!berletData.vanBerlet && berletData.error) {
+    // Auth token lejárat kezelése – csak ha a user RENDELKEZETT auth tokennel
+    if (!berletData.vanBerlet && berletData.error && user.auth_token) {
       console.log('[WD napkozi] auth hiba:', berletData.error);
       if (!usedCache) {
         showBanner('<p>Munkameneted lejárt. <a href="napkozi.html" style="color:var(--gold);font-weight:700;">Frissítsd az oldalt &rarr;</a></p>', '');
