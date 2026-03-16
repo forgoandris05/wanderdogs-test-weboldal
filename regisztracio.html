@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regisztráció – Wanderdogs</title>
+  <meta name="description" content="Regisztrálj a Wanderdogs oldalán – add meg a kutyád adatait, hogy Timi fel tudjon készülni az első találkozóra.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .reg-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 140px 24px 80px;
+      background: var(--black);
+    }
+    .reg-box {
+      width: 100%;
+      max-width: 580px;
+    }
+    .reg-overline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.3);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px;
+    }
+    .reg-title {
+      font-size: clamp(30px, 5vw, 46px);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+    .reg-title span { color: var(--gold); }
+    .reg-sub {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.75;
+      margin-bottom: 36px;
+    }
+    .reg-card {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 20px;
+      padding: 40px 36px;
+    }
+    .reg-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 28px 0 14px;
+    }
+    .reg-section-label:first-child { margin-top: 0; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+    .form-group input,
+    .form-group textarea {
+      background: var(--black-4);
+      border: 1px solid var(--border-dim);
+      border-radius: 10px;
+      padding: 13px 14px;
+      font-size: 14px;
+      font-family: Inter, sans-serif;
+      color: var(--text);
+      transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .form-group textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--text-faint);
+    }
+    .reg-submit {
+      width: 100%;
+      margin-top: 28px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .reg-already {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--text-faint);
+    }
+    .reg-already a {
+      color: var(--gold);
+      text-decoration: underline;
+    }
+    .reg-error {
+      background: rgba(255, 80, 80, 0.1);
+      border: 1px solid rgba(255, 80, 80, 0.3);
+      border-radius: 10px; padding: 12px 16px;
+      color: #ff6b6b; font-size: 13px; font-weight: 500;
+      margin-bottom: 16px; display: none;
+    }
+    /* Success */
+    .reg-success {
+      display: none;
+      background: rgba(255,215,0,0.06);
+      border: 1px solid rgba(255,215,0,0.35);
+      border-radius: 16px;
+      padding: 40px 32px;
+      text-align: center;
+    }
+    .reg-success-icon { font-size: 48px; margin-bottom: 16px; }
+    .reg-success h3 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+    .reg-success p { font-size: 14px; color: var(--text-dim); line-height: 1.7; }
+    .kutya-blokk {
+      padding: 16px;
+      background: var(--black-4);
+      border: 1px solid var(--border-dim);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .kutya-blokk-cim {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-dim); margin-bottom: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .kutya-torles {
+      background: none; border: none;
+      color: #ff6b6b; cursor: pointer;
+      font-size: 12px; font-weight: 600; padding: 2px 6px;
+    }
+    .btn-tobb-kutya {
+      background: none;
+      border: 1px dashed rgba(255,215,0,0.4);
+      border-radius: 10px;
+      color: var(--gold);
+      font-size: 13px; font-weight: 600;
+      padding: 10px 18px;
+      cursor: pointer;
+      width: 100%;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-tobb-kutya:hover {
+      background: rgba(255,215,0,0.06);
+      border-color: var(--gold);
+    }
+    @media (max-width: 600px) {
+      .reg-card { padding: 28px 20px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="paw">🐾</span> Wanderdogs
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Főoldal</a></li>
+    <li class="nav-dropdown">
+      <a href="#">Szolgáltatások</a>
+      <ul class="dropdown-menu">
+        <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
+        <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+        <li><a href="napkozi.html">Napközi</a></li>
+        <li><a href="panzio.html">Panzió</a></li>
+        <li><a href="kutyataxi.html">Kutya taxi</a></li>
+        <li><a href="vip.html">VIP program</a></li>
+        <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
+        <li><a href="kutyatura.html">Kutyatúra</a></li>
+        <li><a href="orzo-vedo.html">Őrző-védő képzés</a></li>
+      </ul>
+    </li>
+    <li><a href="index.html#rolunk">Rólunk</a></li>
+    <li><a href="index.html#kapcsolat">Kapcsolat</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="tel:+36705626926" class="nav-phone">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.92a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      0670/5626926
+    </a>
+  </div>
+  <button class="nav-burger" aria-label="Menü">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ── REGISZTRÁCIÓ ── -->
+<div class="reg-wrap">
+  <div class="reg-box">
+
+    <div class="reg-overline">🐾 Első lépés</div>
+    <h1 class="reg-title">Mesélj a <span>kutyádról</span></h1>
+    <p class="reg-sub">
+      Hogy Timi fel tudjon készülni az első találkozóra, kérjük töltsd ki az alábbi rövid formot.
+      Ez csak egyszer szükséges – utána azonnal foglalhatsz időpontot.
+    </p>
+
+    <!-- FORM -->
+    <div class="reg-card" id="regForm">
+      <div class="reg-error" id="reg-error"></div>
+      <form id="regisztracio" novalidate>
+
+        <div class="reg-section-label">Gazdi adataid</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regNev">Teljes neved *</label>
+            <input type="text" id="regNev" placeholder="pl. Kovács Anna" required>
+          </div>
+          <div class="form-group">
+            <label for="regTelefon">Telefonszámod *</label>
+            <input type="tel" id="regTelefon" placeholder="pl. +36 30 123 4567" required>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 14px;">
+          <label for="regEmail">Email cím *</label>
+          <input type="email" id="regEmail" placeholder="pl. anna@email.com" required>
+        </div>
+
+        <div class="reg-section-label">Jelszó</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regJelszo">Jelszó *</label>
+            <input type="password" id="regJelszo" placeholder="Min. 6 karakter" required>
+          </div>
+          <div class="form-group">
+            <label for="regJelszoIsmet">Jelszó mégegyszer *</label>
+            <input type="password" id="regJelszoIsmet" placeholder="Ugyanaz a jelszó" required>
+          </div>
+        </div>
+
+        <div class="reg-section-label">A kutyád / kutyáid</div>
+        <div id="kutyak-container">
+          <!-- 1. kutya -->
+          <div class="kutya-blokk" data-index="0">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Kutya neve *</label>
+                <input type="text" class="kutya-nev" placeholder="pl. Bodri" required>
+              </div>
+              <div class="form-group">
+                <label>Fajtája *</label>
+                <input type="text" class="kutya-fajta" placeholder="pl. Labrador keverék" required>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 14px;">
+              <label>Kora *</label>
+              <input type="text" class="kutya-kor" placeholder="pl. 2 éves, 8 hónapos" required>
+            </div>
+          </div>
+        </div>
+        <button type="button" id="tobbKutyaBtn" class="btn-tobb-kutya" style="margin-top:14px;">
+          + Még egy kutyát is hozok
+        </button>
+
+        <div class="reg-section-label" style="margin-top:28px;">Miért keresel minket?</div>
+        <div class="form-group">
+          <label for="regProblema">Probléma, cél, háttér *</label>
+          <textarea id="regProblema" placeholder="pl. Húz a pórázon, ugál az emberekre, nagyon félénk... Bármit leírhatsz, amit fontosnak tartasz." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-gold btn-lg reg-submit" id="regSubmitBtn">
+          Regisztrálok →
+        </button>
+
+      </form>
+
+      <p class="reg-already">
+        Már van fiókod? <a id="belepes-link" href="bejelentkezes.html">Bejelentkezés →</a>
+      </p>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="reg-success" id="regSuccess">
+      <div class="reg-success-icon">✅</div>
+      <h3>Sikeresen regisztráltál!</h3>
+      <p>
+        Köszönjük! Timi értesítést kapott a kutyád adatairól.<br><br>
+        Most visszairányítunk a kiválasztott szolgáltatáshoz, ahol időpontot foglalhatsz az ingyenes konzultációra.
+      </p>
+      <div id="regSuccessCountdown" style="margin-top: 20px; font-size: 13px; color: var(--text-faint);"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>🐾 Wanderdogs</h3>
+        <p>Szakmai kutyakiképzés és gondozás Solymáron. A te kutyád megérdemli a legjobb kezdetet.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Szolgáltatások</h4>
+        <ul>
+          <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
+          <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+          <li><a href="napkozi.html">Napközi</a></li>
+          <li><a href="panzio.html">Panzió</a></li>
+          <li><a href="vip.html">VIP program</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Egyéb</h4>
+        <ul>
+          <li><a href="kutyataxi.html">Kutya taxi</a></li>
+          <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
+          <li><a href="kutyatura.html">Kutyatúra</a></li>
+          <li><a href="orzo-vedo.html">Őrző-védő képzés</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Kapcsolat</h4>
+        <p>📍 Solymár és környéke</p>
+        <p>📞 <a href="tel:+36705626926">0670/5626926</a></p>
+        <p>✉️ <a href="mailto:info.wanderdogs@gmail.com">info.wanderdogs@gmail.com</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Wanderdogs. Minden jog fenntartva.</span>
+      <span>wanderdogsworld.hu</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+
+  function getReturnUrl() {
+    return new URLSearchParams(window.location.search).get('return') || 'index.html';
+  }
+
+  // Ha már be van lépve → redirect
+  (function() {
+    const user = wdGetUser();
+    if (user && user.registered) window.location.href = getReturnUrl();
+    // Bejelentkezés link ?return átadása
+    const bl = document.getElementById('belepes-link');
+    if (bl) bl.href = 'bejelentkezes.html?return=' + encodeURIComponent(getReturnUrl());
+  })();
+
+  // Több kutya gomb
+  document.getElementById('tobbKutyaBtn').addEventListener('click', function() {
+    const container = document.getElementById('kutyak-container');
+    const idx = container.querySelectorAll('.kutya-blokk').length;
+    if (idx >= 4) return;
+    const blokk = document.createElement('div');
+    blokk.className = 'kutya-blokk';
+    blokk.dataset.index = idx;
+    blokk.innerHTML =
+      '<div class="kutya-blokk-cim"><span>' + (idx + 1) + '. kutya</span>' +
+      '<button type="button" class="kutya-torles" onclick="this.closest(\'.kutya-blokk\').remove()">✕ Törlés</button></div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>Kutya neve</label><input type="text" class="kutya-nev" placeholder="pl. Max"></div>' +
+        '<div class="form-group"><label>Fajtája</label><input type="text" class="kutya-fajta" placeholder="pl. Puli"></div>' +
+      '</div>' +
+      '<div class="form-group" style="margin-top:14px;"><label>Kora</label>' +
+        '<input type="text" class="kutya-kor" placeholder="pl. 3 éves"></div>';
+    container.appendChild(blokk);
+    if (container.querySelectorAll('.kutya-blokk').length >= 4) {
+      document.getElementById('tobbKutyaBtn').style.display = 'none';
+    }
+  });
+
+  // Form submit
+  document.getElementById('regisztracio').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('regSubmitBtn');
+
+    const nev        = document.getElementById('regNev').value.trim();
+    const telefon    = document.getElementById('regTelefon').value.trim();
+    const email      = document.getElementById('regEmail').value.trim();
+    const jelszo     = document.getElementById('regJelszo').value;
+    const jelszoIsmet = document.getElementById('regJelszoIsmet').value;
+    const problema   = document.getElementById('regProblema').value.trim();
+
+    // Kutyák összegyűjtése
+    const kutyak = [];
+    document.querySelectorAll('#kutyak-container .kutya-blokk').forEach((blokk, i) => {
+      const nv = blokk.querySelector('.kutya-nev').value.trim();
+      const fj = blokk.querySelector('.kutya-fajta').value.trim();
+      const kr = blokk.querySelector('.kutya-kor').value.trim();
+      if (nv) kutyak.push({ nev: nv, fajta: fj, kor: kr });
+    });
+    const elsoKutya = kutyak[0] || {};
+
+    if (!nev || !telefon || !email || !jelszo || !kutyak.length || !elsoKutya.nev || !elsoKutya.fajta || !elsoKutya.kor || !problema) {
+      showRegError('Kérjük töltsd ki az összes kötelező mezőt!');
+      return;
+    }
+    if (jelszo.length < 6) {
+      showRegError('A jelszó legalább 6 karakter legyen.');
+      return;
+    }
+    if (jelszo !== jelszoIsmet) {
+      showRegError('A két jelszó nem egyezik.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Küldés...';
+
+    const jelszoHash = await hashJelszo(jelszo);
+
+    let regOk = false;
+    try {
+      const resp = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'regisztracio',
+          nev, email, telefon,
+          kutyaNev: elsoKutya.nev, kutyaFajta: elsoKutya.fajta, kutyaKor: elsoKutya.kor,
+          kutyak: JSON.stringify(kutyak),
+          problema,
+          jelszo_hash: jelszoHash,
+        })
+      });
+      const result = await resp.json();
+      if (!result.ok) {
+        showRegError(result.error || 'Hiba történt a regisztráció során. Kérjük próbáld újra.');
+        btn.disabled = false;
+        btn.textContent = 'Regisztrálok →';
+        return;
+      }
+      regOk = true;
+    } catch(err) {
+      showRegError('Kapcsolati hiba. Kérjük próbáld újra.');
+      btn.disabled = false;
+      btn.textContent = 'Regisztrálok →';
+      return;
+    }
+
+    localStorage.setItem('wd_user', JSON.stringify({
+      nev, email,
+      kutyaNev: elsoKutya.nev,
+      kutyak,
+      registered: true,
+    }));
+
+    document.getElementById('regForm').style.display = 'none';
+    document.getElementById('regSuccess').style.display = 'block';
+
+    const returnUrl = getReturnUrl();
+    let mp = 4;
+    const countdown = document.getElementById('regSuccessCountdown');
+    countdown.textContent = mp + ' másodperc múlva visszairányítunk...';
+    const t = setInterval(() => {
+      mp--;
+      if (mp <= 0) { clearInterval(t); window.location.href = returnUrl; }
+      else countdown.textContent = mp + ' másodperc múlva visszairányítunk...';
+    }, 1000);
+  });
+
+  function showRegError(msg) {
+    const el = document.getElementById('reg-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+</script>
+</body>
+</html>

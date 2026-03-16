@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kutya Taxi – Wanderdogs</title>
+  <meta name="description" content="Biztonságos kutyaszállítás Budapest és Pest megye területén. Tapasztalt gondozóval, stresszmentes utazás.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .taxi-zones {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 40px;
+    }
+    .zone-card {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 14px;
+      padding: 28px;
+      text-align: center;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .zone-card:hover { border-color: var(--gold); transform: translateY(-3px); }
+    .zone-icon { font-size: 36px; margin-bottom: 12px; }
+    .zone-title { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+    .zone-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; }
+    .zone-price { font-size: 26px; font-weight: 900; color: var(--gold); }
+    .zone-price small { font-size: 12px; font-weight: 400; color: var(--text-faint); }
+    @media (max-width: 768px) { .taxi-zones { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo"><span class="paw">🐾</span> Wanderdogs</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Főoldal</a></li>
+    <li class="nav-dropdown">
+      <a href="#">Szolgáltatások</a>
+      <ul class="dropdown-menu">
+        <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
+        <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+        <li><a href="napkozi.html">Napközi</a></li>
+        <li><a href="panzio.html">Panzió</a></li>
+        <li><a href="kutyataxi.html">Kutya taxi</a></li>
+        <li><a href="vip.html">VIP program</a></li>
+        <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
+        <li><a href="kutyatura.html">Kutyatúra</a></li>
+        <li><a href="orzo-vedo.html">Őrző-védő képzés</a></li>
+      </ul>
+    </li>
+    <li><a href="index.html#rolunk">Rólunk</a></li>
+    <li><a href="index.html#kapcsolat">Kapcsolat</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="tel:+36705626926" class="nav-phone">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.92a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      0670/5626926
+    </a>
+    <a href="#ajanlat" class="nav-cta">Árajánlatot kérek</a>
+  </div>
+  <button class="nav-burger" aria-label="Menü"><span></span><span></span><span></span></button>
+</nav>
+
+<section class="page-hero">
+  <div class="overline">Stresszmentes szállítás</div>
+  <h1>Kutya <span class="gold">taxi</span></h1>
+  <p class="subtitle">Tapasztalt gondozóval, biztonságos szállítással – a kutya nem érez stresszt, te meg nem kell, hogy felgöngyöld a napod miatta.</p>
+  <a href="#ajanlat" class="btn btn-gold btn-lg">Árajánlatot kérek</a>
+</section>
+
+<div class="section-full" style="background: var(--black);">
+  <div class="section">
+    <div class="section-header center reveal">
+      <div class="overline">Árak</div>
+      <h2 class="section-title">Egyszerű, <span class="gold">átlátható árak</span></h2>
+      <p class="section-sub">Az ár a távolság alapján változik. A napközi bérletbe beépítve kedvezőbb!</p>
+    </div>
+    <div class="taxi-zones">
+      <div class="zone-card reveal reveal-delay-1">
+        <div class="zone-icon">🟢</div>
+        <div class="zone-title">10 km-en belül</div>
+        <div class="zone-desc">Budapest belváros és agglomeráció közel</div>
+        <div class="zone-price">3 300 Ft <small>/ út</small></div>
+      </div>
+      <div class="zone-card reveal reveal-delay-2">
+        <div class="zone-icon">🟡</div>
+        <div class="zone-title">10–25 km között</div>
+        <div class="zone-desc">Pest megye távolabbi részei</div>
+        <div class="zone-price">5 500 Ft <small>/ út</small></div>
+      </div>
+      <div class="zone-card reveal reveal-delay-3">
+        <div class="zone-icon">🔴</div>
+        <div class="zone-title">25 km felett</div>
+        <div class="zone-desc">Alapdíj + kilométerdíj</div>
+        <div class="zone-price">+400 Ft <small>/ km</small></div>
+      </div>
+    </div>
+
+    <div class="card reveal" style="margin-top: 28px; padding: 24px; max-width: 600px;">
+      <h4 style="margin-bottom: 10px; color: var(--gold);">⏳ Várakozási díj</h4>
+      <p style="font-size: 14px; color: var(--text-dim);">Ha várakozásra van szükség: <strong style="color:var(--text)">100 Ft / perc</strong>. Napközi bérletbe épített taxinál nincs várakozási díj.</p>
+    </div>
+
+    <div class="card reveal reveal-delay-1" style="margin-top: 16px; padding: 24px; max-width: 600px; border-color: rgba(255,215,0,0.3);">
+      <h4 style="margin-bottom: 10px; color: var(--gold);">💡 Napközi bérlettel olcsóbb!</h4>
+      <p style="font-size: 14px; color: var(--text-dim);">Ha napközis bérletet vásárolsz taxival, az oda-vissza szállítás már bele van kalkulálva – nem számítunk fel plusz díjat. <a href="napkozi.html" style="color: var(--gold);">Megnézem a bérleteket →</a></p>
+    </div>
+  </div>
+</div>
+
+<div class="section-full section-dark" id="ajanlat">
+  <div class="section">
+    <div class="section-header center reveal">
+      <div class="overline">Szállítási igény</div>
+      <h2 class="section-title">Árajánlatot <span class="gold">kérek</span></h2>
+      <p class="section-sub">Írj vagy hívj – megbeszéljük a részleteket és pontosan megszabod a díjat.</p>
+    </div>
+    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 32px;" class="reveal">
+      <a href="tel:+36705626926" class="btn btn-gold btn-lg">📞 Hívj minket</a>
+      <a href="mailto:info.wanderdogs@gmail.com" class="btn btn-outline btn-lg">✉️ Emailt küldök</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>🐾 Wanderdogs</h3>
+        <p>Szakmai kutyakiképzés és gondozás Solymáron.</p>
+        <div class="footer-socials">
+          <a href="#">f</a><a href="#">ig</a><a href="#">tt</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Szolgáltatások</h4>
+        <ul>
+          <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
+          <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+          <li><a href="napkozi.html">Napközi</a></li>
+          <li><a href="panzio.html">Panzió</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Egyéb</h4>
+        <ul>
+          <li><a href="kutyataxi.html">Kutya taxi</a></li>
+          <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
+          <li><a href="kutyatura.html">Kutyatúra</a></li>
+          <li><a href="orzo-vedo.html">Őrző-védő képzés</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Kapcsolat</h4>
+        <p>📍 Solymár és környéke</p>
+        <p>📞 <a href="tel:+36705626926">0670/5626926</a></p>
+        <p>✉️ <a href="mailto:info.wanderdogs@gmail.com">info.wanderdogs@gmail.com</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Wanderdogs. Minden jog fenntartva.</span>
+      <span>wanderdogsworld.hu</span>
+    </div>
+  </div>
+</footer>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bejelentkezés – Wanderdogs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .login-wrap {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 120px 24px 80px;
+      background: var(--black);
+    }
+    .login-box {
+      width: 100%; max-width: 460px;
+    }
+    .login-overline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.3);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px;
+    }
+    .login-title {
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 900; line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    .login-title span { color: var(--gold); }
+    .login-sub {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7;
+      margin-bottom: 32px;
+    }
+    .login-card {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 20px;
+      padding: 36px 32px;
+    }
+    .form-group {
+      display: flex; flex-direction: column; gap: 6px;
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      font-size: 12px; font-weight: 600; color: var(--text-dim);
+    }
+    .form-group input {
+      background: var(--black-4);
+      border: 1px solid var(--border-dim);
+      border-radius: 10px;
+      padding: 13px 14px;
+      font-size: 14px; font-family: Inter, sans-serif;
+      color: var(--text);
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+    .form-group input:focus {
+      outline: none; border-color: var(--gold);
+    }
+    .form-group input::placeholder { color: var(--text-faint); }
+    .btn-belepes {
+      width: 100%;
+      background: var(--gold); color: var(--black);
+      font-weight: 800; font-size: 15px;
+      padding: 14px;
+      border: none; border-radius: 10px; cursor: pointer;
+      margin-top: 6px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-belepes:hover { background: #ffe033; transform: translateY(-1px); }
+    .btn-belepes:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .login-error {
+      background: rgba(255, 80, 80, 0.1);
+      border: 1px solid rgba(255, 80, 80, 0.3);
+      border-radius: 10px; padding: 12px 16px;
+      color: #ff6b6b; font-size: 13px; font-weight: 500;
+      margin-bottom: 16px; display: none;
+    }
+    .login-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 13px; color: var(--text-dim);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .login-footer a { color: var(--gold); font-weight: 600; }
+    .login-footer a:hover { text-decoration: underline; }
+    .login-divider {
+      border: none; border-top: 1px solid var(--border-dim);
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="paw">🐾</span> Wanderdogs
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Főoldal</a></li>
+    <li class="nav-dropdown">
+      <a href="#">Szolgáltatások</a>
+      <ul class="dropdown-menu">
+        <li><a href="egyeni-ora.html">Egyéni foglalkozás</a></li>
+        <li><a href="csoportos.html">Csoportos kutyaiskola</a></li>
+        <li><a href="napkozi.html">Napközi</a></li>
+        <li><a href="panzio.html">Panzió</a></li>
+        <li><a href="kutyataxi.html">Kutyataxi</a></li>
+        <li><a href="kutyatura.html">Kutyatúra</a></li>
+        <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
+        <li><a href="vip.html">VIP csomag</a></li>
+        <li><a href="orzo-vedo.html">Őrző-védő</a></li>
+      </ul>
+    </li>
+  </ul>
+  <div class="nav-right">
+    <a href="tel:+36705626926" class="nav-phone">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.93 19.79 19.79 0 01.22 1.36 2 2 0 012.18 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.14 7.91a16 16 0 006.95 6.95l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+      0670/5626926
+    </a>
+    <button class="nav-burger" id="navBurger" aria-label="Menü">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="login-overline">🔐 Fiók</div>
+    <h1 class="login-title">Bejelentkezés<br><span>a fiókodba</span></h1>
+    <p class="login-sub">Add meg az email címed és jelszavad.</p>
+
+    <div class="login-card">
+      <div class="login-error" id="login-error"></div>
+
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="email">Email cím</label>
+          <input type="email" id="email" name="email" placeholder="pl. gazdi@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="jelszo">Jelszó</label>
+          <input type="password" id="jelszo" name="jelszo" placeholder="Jelszavad" required>
+        </div>
+        <button type="submit" class="btn-belepes" id="submit-btn">Bejelentkezés →</button>
+      </form>
+
+      <hr class="login-divider">
+
+      <div class="login-footer">
+        <span>Nincs még fiókod? <a id="reg-link" href="regisztracio.html">Regisztrálj ingyen!</a></span>
+        <span>Elfelejtett jelszó? <a href="mailto:info.wanderdogs@gmail.com">Írj nekünk</a></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+
+(function init() {
+  // Ha már be van lépve → redirect
+  const user = wdGetUser();
+  const params = new URLSearchParams(window.location.search);
+  const returnUrl = params.get('return') || 'index.html';
+
+  if (user && user.registered) {
+    window.location.href = returnUrl;
+    return;
+  }
+
+  // Regisztráció link ?return param átadása
+  const regLink = document.getElementById('reg-link');
+  if (regLink) regLink.href = 'regisztracio.html?return=' + encodeURIComponent(returnUrl);
+
+  document.getElementById('login-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email  = document.getElementById('email').value.trim();
+    const jelszo = document.getElementById('jelszo').value;
+
+    if (!email || !jelszo) {
+      showError('Kérjük töltsd ki az összes mezőt.');
+      return;
+    }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Ellenőrzés...';
+    hideError();
+
+    try {
+      const jelszoHash = await hashJelszo(jelszo);
+      const resp = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'bejelentkezes', email, jelszo_hash: jelszoHash }),
+      });
+      const data = await resp.json();
+
+      if (data.ok) {
+        localStorage.setItem('wd_user', JSON.stringify({
+          nev:        data.nev        || '',
+          email:      email,
+          kutyaNev:   data.kutyaNev   || '',
+          kutyak:     data.kutyak     || [],
+          auth_token: data.auth_token || '',
+          registered: true,
+        }));
+        window.location.href = returnUrl;
+      } else {
+        showError(data.error || 'Hibás email vagy jelszó.');
+        btn.disabled = false;
+        btn.textContent = 'Bejelentkezés →';
+      }
+    } catch (err) {
+      showError('Hálózati hiba. Próbáld újra.');
+      btn.disabled = false;
+      btn.textContent = 'Bejelentkezés →';
+    }
+  });
+})();
+
+function showError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideError() {
+  document.getElementById('login-error').style.display = 'none';
+}
+</script>
+</body>
+</html>

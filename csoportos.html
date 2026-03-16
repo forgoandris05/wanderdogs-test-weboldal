@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Csoportos Tanfolyam – Wanderdogs</title>
+  <meta name="description" content="Minden szombat 9:00, Solymár. Kutyaiskola pozitív módszerrel, 7.000 Ft/alkalom. Max. 20 kutya.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .info-banner {
+      background: var(--gold-faint);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 36px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      max-width: 680px;
+      margin: 40px auto 0;
+    }
+    .info-banner .icon { font-size: 36px; flex-shrink: 0; }
+    .info-banner-text h4 { font-size: 16px; font-weight: 800; color: var(--gold); margin-bottom: 6px; }
+    .info-banner-text p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+
+    .program-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 40px;
+    }
+    .program-card {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 14px;
+      padding: 28px;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .program-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-3px);
+    }
+    .program-icon { font-size: 32px; margin-bottom: 14px; }
+    .program-card h4 { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
+    .program-card p { font-size: 14px; color: var(--text-dim); line-height: 1.65; }
+
+    .schedule-box {
+      background: var(--black-3);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 540px;
+    }
+    .schedule-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-dim);
+      font-size: 15px;
+    }
+    .schedule-row:last-child { border-bottom: none; }
+    .schedule-label { color: var(--text-dim); }
+    .schedule-value { font-weight: 700; }
+    .schedule-value.gold { color: var(--gold); }
+
+    .testimonial-inline {
+      background: var(--black-4);
+      border-left: 3px solid var(--gold);
+      padding: 24px 28px;
+      border-radius: 0 12px 12px 0;
+      margin-top: 40px;
+    }
+    .testimonial-inline p { font-size: 15px; font-style: italic; color: var(--text-dim); line-height: 1.7; margin-bottom: 12px; }
+    .testimonial-inline .author { font-size: 13px; font-weight: 700; color: var(--gold); }
+
+    @media (max-width: 768px) {
+      .program-grid { grid-template-columns: 1fr; }
+      .info-banner { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="paw">🐾</span> Wanderdogs
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Főoldal</a></li>
+    <li class="nav-dropdown">
+      <a href="#">Szolgáltatások</a>
+      <ul class="dropdown-menu">
+        <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
+        <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+        <li><a href="napkozi.html">Napközi</a></li>
+        <li><a href="panzio.html">Panzió</a></li>
+        <li><a href="kutyataxi.html">Kutya taxi</a></li>
+        <li><a href="vip.html">VIP program</a></li>
+        <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
+        <li><a href="kutyatura.html">Kutyatúra</a></li>
+        <li><a href="orzo-vedo.html">Őrző-védő képzés</a></li>
+      </ul>
+    </li>
+    <li><a href="index.html#rolunk">Rólunk</a></li>
+    <li><a href="index.html#kapcsolat">Kapcsolat</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="tel:+36705626926" class="nav-phone">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.92a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      0670/5626926
+    </a>
+    <a href="#foglalas" class="nav-cta">Foglalj helyet</a>
+  </div>
+  <button class="nav-burger" aria-label="Menü">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ── PAGE HERO ── -->
+<section class="page-hero">
+  <div class="overline">Minden szombat · Solymár</div>
+  <h1>Csoportos <span class="gold">tanfolyam</span></h1>
+  <p class="subtitle">
+    Kutyaiskola pozitív módszerrel, közösségi élménnyel. Szombat reggel 9:00-tól, max. 20 kutya/csoport.
+  </p>
+  <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+    <a href="#foglalas" class="btn btn-gold btn-lg">Bejelentkezem</a>
+    <a href="#program" class="btn btn-outline btn-lg">Mi vár rám?</a>
+  </div>
+
+  <div class="info-banner">
+    <div class="icon">📅</div>
+    <div class="info-banner-text">
+      <h4>Minden szombaton, egész évben</h4>
+      <p>9:00–10:00 · Solymár · Max. 20 kutya · 7 000 Ft / kutya / alkalom · Előre online fizetéssel</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── KÉPSÁV ── -->
+<div style="max-width: 1240px; margin: 0 auto; padding: 0 48px 0;">
+  <div class="img-banner reveal">
+    <img src="kepek/kutya jatszik3.png" alt="Csoportos kutyaiskola Solymáron" loading="lazy">
+  </div>
+</div>
+
+<!-- ── MIÉRT CSOPORTOS? ── -->
+<div class="section-full" style="background: var(--black);">
+  <div class="section">
+    <div class="section-header center reveal">
+      <div class="overline">A csoportos oktatás előnyei</div>
+      <h2 class="section-title">Több, mint <span class="gold">tanulás</span></h2>
+      <p class="section-sub">A csoportos alkalmak nemcsak kiképzésről szólnak – a szocializáció ugyanolyan fontos.</p>
+    </div>
+    <div class="grid-4" style="margin-top: 40px;">
+      <div class="card reveal reveal-delay-1">
+        <div class="card-icon">🐕‍🦺</div>
+        <h4 style="margin-bottom: 8px;">Szocializáció</h4>
+        <p style="font-size: 14px; color: var(--text-dim);">Más kutyák közelében tanul, ami elengedhetetlen a kiegyensúlyozott viselkedéshez.</p>
+      </div>
+      <div class="card reveal reveal-delay-2">
+        <div class="card-icon">🧠</div>
+        <h4 style="margin-bottom: 8px;">Koncentráció</h4>
+        <p style="font-size: 14px; color: var(--text-dim);">Ingerdús környezetben tanul engedelmeskedni – ez az igazi próba.</p>
+      </div>
+      <div class="card reveal reveal-delay-3">
+        <div class="card-icon">👥</div>
+        <h4 style="margin-bottom: 8px;">Közösség</h4>
+        <p style="font-size: 14px; color: var(--text-dim);">Hasonló helyzetben lévő gazdikkal találkozol, akiktől is sokat tanulhatsz.</p>
+      </div>
+      <div class="card reveal reveal-delay-4">
+        <div class="card-icon">💰</div>
+        <h4 style="margin-bottom: 8px;">Elérhető ár</h4>
+        <p style="font-size: 14px; color: var(--text-dim);">7 000 Ft/alkalom – az egyéni foglalkozásnál lényegesen kedvezőbb.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PROGRAM ── -->
+<div class="section-full section-dark" id="program">
+  <div class="section">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;">
+      <div>
+        <div class="section-header reveal">
+          <div class="overline">Mit tanul a kutyád?</div>
+          <h2 class="section-title">Az <span class="gold">alkalmak tartalma</span></h2>
+        </div>
+        <div class="program-grid">
+          <div class="program-card reveal reveal-delay-1">
+            <div class="program-icon">🎓</div>
+            <h4>Alapparancsok</h4>
+            <p>Ülj, Maradj, Gyere, Le, Hely – a biztonságos együttélés alapjai, fokozatosan nehezedő szinteken.</p>
+          </div>
+          <div class="program-card reveal reveal-delay-2">
+            <div class="program-icon">🦮</div>
+            <h4>Lazapórázon sétálás</h4>
+            <p>Az egyik leggyakoribb panasz. Megtanítjuk a kutyának, hogy húzás nélkül sétáljon melletted.</p>
+          </div>
+          <div class="program-card reveal reveal-delay-3">
+            <div class="program-icon">🤝</div>
+            <h4>Szociális viselkedés</h4>
+            <p>Más kutyák és emberek melletti higgadt viselkedés – csoportos helyzetekben való helytállás.</p>
+          </div>
+          <div class="program-card reveal reveal-delay-4">
+            <div class="program-icon">🎯</div>
+            <h4>Fókusz és figyelem</h4>
+            <p>A gazdi iránti figyelmet is tanítjuk – ez az alapja minden más parancsnak.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="section-header reveal">
+          <div class="overline">Helyszín és időpont</div>
+          <h2 class="section-title">Gyakorlati <span class="gold">tudnivalók</span></h2>
+        </div>
+        <div class="schedule-box reveal">
+          <div class="schedule-row">
+            <span class="schedule-label">Időpont</span>
+            <span class="schedule-value gold">Minden szombat 9:00</span>
+          </div>
+          <div class="schedule-row">
+            <span class="schedule-label">Időtartam</span>
+            <span class="schedule-value">~60 perc</span>
+          </div>
+          <div class="schedule-row">
+            <span class="schedule-label">Helyszín</span>
+            <span class="schedule-value">Solymár (pontos cím foglaláskor)</span>
+          </div>
+          <div class="schedule-row">
+            <span class="schedule-label">Max. létszám</span>
+            <span class="schedule-value">20 kutya / csoport</span>
+          </div>
+          <div class="schedule-row">
+            <span class="schedule-label">Ár</span>
+            <span class="schedule-value gold">7 000 Ft / kutya / alkalom</span>
+          </div>
+          <div class="schedule-row">
+            <span class="schedule-label">Fizetés</span>
+            <span class="schedule-value">Előre, online</span>
+          </div>
+          <div class="schedule-row">
+            <span class="schedule-label">Részletfizetés</span>
+            <span class="schedule-value">Nincs – alkalmanként fizetsz</span>
+          </div>
+        </div>
+
+        <div class="testimonial-inline reveal" style="margin-top: 32px;">
+          <p>"Az első szombaton már látszott a különbség. A kutyám, aki előtte mindig húzta a pórázt és mindenre rávadult, másfél óra alatt megtanulta a 'Maradj' parancsot. Szinte hihetetlen volt."</p>
+          <div class="author">— Kovács Péter, Budapest</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOGLALÁS ── -->
+<div class="section-full" id="foglalas" style="background: var(--black-2);">
+  <div class="section">
+    <div class="section-header center reveal">
+      <div class="overline">Bejelentkezés</div>
+      <h2 class="section-title">Foglalj helyet a <span class="gold">szombati alkalomra</span></h2>
+      <p class="section-sub">Az alkalom csak a fizetés után tekinthető foglaltnak – a helyek gyorsan telnek!</p>
+    </div>
+
+    <div style="background: var(--black-3); border: 1px solid var(--border); border-radius: 16px; padding: 48px 32px; text-align: center; max-width: 680px; margin: 0 auto;" class="reveal">
+      <div style="font-size: 48px; margin-bottom: 20px;">🐾</div>
+      <h3 style="font-size: 22px; margin-bottom: 12px;">Online foglalás és fizetés</h3>
+      <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 28px;">Válassz időpontot és fizess online egy lépésben. Az alkalom a fizetéssel válik biztossá.</p>
+      <div id="csoportos-foglal-container" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <a href="bejelentkezes.html?return=csoportos.html" class="btn btn-gold btn-lg">Bejelentkezés a foglaláshoz</a>
+        <a href="regisztracio.html?return=csoportos.html" class="btn btn-outline btn-lg">Regisztráció</a>
+      </div>
+      <p style="font-size: 12px; color: var(--text-faint); margin-top: 20px;">7 000 Ft / kutya / alkalom · Cal.com foglalás + Stripe fizetés</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── KINEK NEM VALÓ? ── -->
+<div class="section-full section-dark">
+  <div class="section">
+    <div class="section-header center reveal">
+      <div class="overline">Fontos tudnivaló</div>
+      <h2 class="section-title">Mikor válassz <span class="gold">egyéni oktatást</span> helyette?</h2>
+    </div>
+    <div class="grid-3" style="margin-top: 40px;">
+      <div class="card reveal reveal-delay-1">
+        <div class="card-icon">⚠️</div>
+        <h4 style="margin-bottom: 8px;">Súlyos viselkedésproblémák</h4>
+        <p style="font-size: 14px; color: var(--text-dim);">Ha a kutyád erősen agresszív más kutyák vagy emberek felé, az egyéni oktatás a biztonságosabb első lépés.</p>
+      </div>
+      <div class="card reveal reveal-delay-2">
+        <div class="card-icon">😰</div>
+        <h4 style="margin-bottom: 8px;">Extrém félelem / szorongás</h4>
+        <p style="font-size: 14px; color: var(--text-dim);">Ha a kutya csoportos helyzetben pánikol, előbb viselkedésterápiás felmérőt ajánlunk.</p>
+      </div>
+      <div class="card reveal reveal-delay-3">
+        <div class="card-icon">🏠</div>
+        <h4 style="margin-bottom: 8px;">Kizárólag otthoni problémák</h4>
+        <p style="font-size: 14px; color: var(--text-dim);">Ha a probléma az otthon (rágás, ugatás, WC-nevelés), a háznál oktatás hatékonyabb.</p>
+      </div>
+    </div>
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="egyeni-ora.html" class="btn btn-outline">Megnézem az egyéni oktatást →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>🐾 Wanderdogs</h3>
+        <p>Szakmai kutyakiképzés és gondozás Solymáron. A te kutyád megérdemli a legjobb kezdetet.</p>
+        <div class="footer-socials">
+          <a href="#" aria-label="Facebook">f</a>
+          <a href="#" aria-label="Instagram">ig</a>
+          <a href="#" aria-label="TikTok">tt</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Szolgáltatások</h4>
+        <ul>
+          <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
+          <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+          <li><a href="napkozi.html">Napközi</a></li>
+          <li><a href="panzio.html">Panzió</a></li>
+          <li><a href="vip.html">VIP program</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Egyéb</h4>
+        <ul>
+          <li><a href="kutyataxi.html">Kutya taxi</a></li>
+          <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
+          <li><a href="kutyatura.html">Kutyatúra</a></li>
+          <li><a href="orzo-vedo.html">Őrző-védő képzés</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Kapcsolat</h4>
+        <p>📍 Solymár és környéke</p>
+        <p>📞 <a href="tel:+36705626926">0670/5626926</a></p>
+        <p>✉️ <a href="mailto:info.wanderdogs@gmail.com">info.wanderdogs@gmail.com</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Wanderdogs. Minden jog fenntartva.</span>
+      <span>wanderdogsworld.hu</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+(function() {
+  const user = wdGetUser();
+  if (!user || !user.registered) return; // nem belépett → marad a bejelentkezés/regisztráció
+
+  const kutyakLista = wdKutyak();
+  let selectedKutya = kutyakLista.length ? kutyakLista[0].nev : (user.kutyaNev || '');
+
+  function calLink() {
+    const notes = selectedKutya ? encodeURIComponent('Kutya: ' + selectedKutya) : '';
+    const base = 'https://cal.com/timea-kucsera-6harfx/csoportos-kutyaiskola';
+    return notes ? base + '?notes=' + notes : base;
+  }
+
+  function renderFoglalasGomb() {
+    const container = document.getElementById('csoportos-foglal-container');
+    if (!container) return;
+    container.innerHTML = '<a href="' + calLink() + '" target="_blank" class="btn btn-gold btn-lg" rel="noopener">Foglalok szombati helyet</a>';
+  }
+
+  // Ha 2+ kutya van: kutya-választó radio
+  if (kutyakLista.length > 1) {
+    const container = document.getElementById('csoportos-foglal-container');
+    if (container) {
+      const selectorDiv = document.createElement('div');
+      selectorDiv.style.cssText = 'background:var(--black-4);border:1px solid var(--border-dim);border-radius:12px;padding:20px 24px;margin-bottom:20px;text-align:left;';
+      selectorDiv.innerHTML = '<p style="font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:12px;">Melyik kutyádat hozod?</p>';
+      kutyakLista.forEach(function(k, i) {
+        const row = document.createElement('label');
+        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;font-size:14px;color:var(--text);';
+        const inp = document.createElement('input');
+        inp.type = 'radio'; inp.name = 'csoportos-kutya'; inp.value = k.nev;
+        inp.style.cssText = 'width:16px;height:16px;accent-color:var(--gold);';
+        if (i === 0) inp.checked = true;
+        inp.addEventListener('change', function() {
+          selectedKutya = this.value;
+          renderFoglalasGomb();
+        });
+        row.appendChild(inp);
+        const span = document.createElement('span');
+        span.innerHTML = k.nev + (k.fajta ? ' <span style="color:var(--text-dim);font-size:12px;">(' + k.fajta + ')</span>' : '');
+        row.appendChild(span);
+        selectorDiv.appendChild(row);
+      });
+      container.parentNode.insertBefore(selectorDiv, container);
+    }
+  }
+
+  renderFoglalasGomb();
+})();
+</script>
+</body>
+</html>

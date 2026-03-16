@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bérlet aktiválva – Wanderdogs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .success-page {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 120px 24px 80px;
+      background: var(--black);
+    }
+    .success-card {
+      background: var(--black-3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 56px 48px;
+      max-width: 620px;
+      width: 100%;
+      text-align: center;
+    }
+    .success-icon { font-size: 64px; margin-bottom: 24px; display: block; }
+    .success-card h1 { font-size: 32px; font-weight: 900; margin-bottom: 12px; }
+    .success-card .subtitle { font-size: 16px; color: var(--text-dim); line-height: 1.65; margin-bottom: 36px; }
+    .berlet-box {
+      background: var(--black-4);
+      border: 1px solid var(--border-dim);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: left;
+      margin-bottom: 32px;
+    }
+    .berlet-box h4 { font-size: 12px; font-weight: 800; color: var(--gold);
+      text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+    .detail-row {
+      display: flex; justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border-dim);
+      font-size: 14px;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-row span:first-child { color: var(--text-dim); }
+    .detail-row span:last-child { font-weight: 700; }
+    .maradek-szam { color: var(--gold); font-size: 20px; font-weight: 900; }
+    .next-steps {
+      text-align: left;
+      background: rgba(255,215,0,0.05);
+      border: 1px solid rgba(255,215,0,0.15);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+    .next-steps h4 { font-size: 13px; font-weight: 800; color: var(--gold);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .next-steps ol { padding-left: 18px; color: var(--text-dim); font-size: 14px;
+      display: flex; flex-direction: column; gap: 8px; line-height: 1.5; }
+    .success-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .loading-state { color: var(--text-faint); font-size: 14px; }
+    .spinner {
+      display: inline-block; width: 20px; height: 20px;
+      border: 2px solid var(--border); border-top-color: var(--gold);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      margin-right: 8px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 600px) { .success-card { padding: 36px 24px; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="paw">🐾</span> Wanderdogs
+  </a>
+</nav>
+
+<div class="success-page">
+  <div class="success-card">
+    <span class="success-icon" id="page-icon">⏳</span>
+    <h1 id="page-title">Fizetés ellenőrzése...</h1>
+    <p class="subtitle" id="page-subtitle">
+      <span class="spinner"></span>
+      <span class="loading-state">Egy pillanat, rögzítjük a vásárlást...</span>
+    </p>
+
+    <!-- Bérlet részletek (berlet_confirm után) -->
+    <div class="berlet-box" id="berlet-box" style="display:none;">
+      <h4>Bérlet részletei</h4>
+      <div class="detail-row"><span>Típus</span><span id="d-tipus">–</span></div>
+      <div class="detail-row"><span>Összes alkalom</span><span id="d-osszes">–</span></div>
+      <div class="detail-row"><span>Felhasznált</span><span id="d-felhasznalt">–</span></div>
+      <div class="detail-row" style="border-top: 2px solid var(--gold); margin-top: 6px; padding-top: 10px;">
+        <span style="font-weight:800;">Maradék alkalom</span>
+        <span class="maradek-szam" id="d-maradek">–</span>
+      </div>
+      <div class="detail-row"><span>Érvényes</span><span id="d-lejar">–</span></div>
+    </div>
+
+    <!-- Egyszeri alkalom részletek -->
+    <div class="berlet-box" id="egyszeri-box" style="display:none;">
+      <h4>Fizetés részletei</h4>
+      <div class="detail-row"><span>Típus</span><span>Egyszeri napközi alkalom</span></div>
+      <div class="detail-row"><span>Összeg</span><span style="color:var(--gold);font-weight:900;">7 000 Ft</span></div>
+    </div>
+
+    <!-- Következő lépések (berlet) -->
+    <div class="next-steps" id="next-berlet" style="display:none;">
+      <h4>Következő lépések</h4>
+      <ol>
+        <li>Emailben kaptál visszaigazolást a bérletedről</li>
+        <li><strong>Kérlek add meg kutyád nevét</strong> egy visszaválasz emailben (fontos a nyilvántartáshoz!)</li>
+        <li id="foglalas-step">Timi hamarosan küldi a foglalási linket az első napra</li>
+      </ol>
+    </div>
+
+    <!-- Következő lépések (egyszeri) -->
+    <div class="next-steps" id="next-egyszeri" style="display:none;">
+      <h4>Következő lépések</h4>
+      <ol>
+        <li>Emailben kaptál visszaigazolást a fizetésről</li>
+        <li>Timi felveszi veled a kapcsolatot az időpont egyeztetéséhez</li>
+        <li>Hozd el kutyádat a megbeszélt napon!</li>
+      </ol>
+    </div>
+
+    <div class="success-actions" id="success-actions" style="display:none;">
+      <a href="napkozi.html" class="btn btn-gold">Vissza a napközi oldalra</a>
+      <a href="index.html" class="btn btn-outline">Főoldal</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+
+async function megerosit() {
+  const params    = new URLSearchParams(window.location.search);
+  const sessionId = params.get('session_id');
+  const tipus     = params.get('tipus') || localStorage.getItem('wd_pending_tipus') || '';
+
+  if (!sessionId) {
+    showError('Hiányzó session azonosító. Ha fizettél, ellenőrizd az emailed – a visszaigazolás ott megjelenik.');
+    return;
+  }
+
+  // Kutya adatok betöltése localStorage-ból (bérlet vásárláskor elmentve)
+  let savedPrefs = {};
+  try { savedPrefs = JSON.parse(localStorage.getItem('wd_napkozi_prefs') || '{}'); } catch {}
+
+  // User adatok (kutya neve fallback)
+  let wdUser = {};
+  try { wdUser = JSON.parse(localStorage.getItem('wd_user') || '{}'); } catch {}
+
+  // Pending booking (ha Cal.com foglalás után vásárol bérletet)
+  // Fallback: ha localStorage üres (pl. más eszköz), mégis vonjuk le az 1 alkalmat – a flow szerint bérlet csak foglalás után vásárolható
+  let pendingBooking = {};
+  try { pendingBooking = JSON.parse(localStorage.getItem('wd_pending_booking') || '{}'); } catch {}
+  const pendingTime = pendingBooking.startTime || (tipus !== 'egyszeri' ? new Date().toISOString() : '');
+
+  const action = tipus === 'egyszeri' ? 'napkozi_egyszeri_confirm' : 'napkozi_berlet_confirm';
+
+  try {
+    const resp   = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action,
+        session_id:           sessionId,
+        tipus,
+        kutya_neve:           savedPrefs.kutya_neve || wdUser.kutyaNev || '',
+        helyszin:             savedPrefs.helyszin      || '',
+        pending_booking_time: pendingTime,
+      }),
+    });
+    const result = await resp.json();
+
+    if (result.ok) {
+      localStorage.removeItem('wd_pending_booking'); // cleanup
+      localStorage.removeItem('wd_pending_tipus');   // cleanup
+      localStorage.removeItem('wd_berlet_cache');    // cache invalidálás új bérlet aktiválás után
+      if (tipus === 'egyszeri') {
+        showEgyszeriSuccess(result);
+      } else {
+        showBerletSuccess(result);
+      }
+    } else {
+      showError(result.error || 'A fizetés nem igazolható. Ha levonás történt, vedd fel velünk a kapcsolatot.');
+    }
+  } catch (err) {
+    showError('Hálózati hiba. Ha fizettél, ellenőrizd az emailed – a visszaigazolás ott mindenképpen megjelenik.');
+  }
+}
+
+function tipusBolPrefs(tipusStr) {
+  // 'tipus' URL param pl: '4alk_1k_10km' → {kutya:'1', taxi:'10km'}
+  const parts = (tipusStr || '').split('_');
+  const kutya = (parts[1] || '1k').replace('k', '');
+  const taxi  = parts[2] || 'notaxi';
+  return { kutya, taxi, helyszin: '' };
+}
+
+function showBerletSuccess(result) {
+  document.getElementById('page-icon').textContent   = '✅';
+  document.getElementById('page-title').textContent  = 'Bérlet vásárlása sikeres!';
+  document.getElementById('page-subtitle').innerHTML =
+    'Köszönjük! A visszaigazolást elküldtük emailben.';
+
+  const felhasznalt = (result.osszes && result.maradek !== undefined) ? (result.osszes - result.maradek) : 1;
+  document.getElementById('d-tipus').textContent       = result.berletTipus || '–';
+  document.getElementById('d-osszes').textContent      = (result.osszes || '–') + ' db';
+  document.getElementById('d-felhasznalt').textContent = felhasznalt + ' db';
+  document.getElementById('d-maradek').textContent     = (result.maradek !== undefined ? result.maradek : (result.osszes ? result.osszes - 1 : '–')) + ' db';
+  document.getElementById('d-lejar').textContent       = result.lejar ? result.lejar + '-ig' : '–';
+  document.getElementById('berlet-box').style.display  = 'block';
+
+  const pendingUsed = (result.osszes && result.maradek !== undefined && result.maradek < result.osszes);
+  const foglalasStep = document.getElementById('foglalas-step');
+  if (pendingUsed) {
+    foglalasStep.innerHTML = 'Első időpontod már rögzítve van!';
+  } else if (result.calcomLink) {
+    foglalasStep.innerHTML = 'Időpontot foglalj: <a href="' + result.calcomLink + '" target="_blank" style="color:var(--gold);">itt kattints</a>';
+  }
+  // "Add meg kutyád nevét" lépés elavult – elrejtjük
+  const nextOl = document.querySelector('#next-berlet ol');
+  if (nextOl && nextOl.children[1]) nextOl.children[1].style.display = 'none';
+
+  document.getElementById('next-berlet').style.display = 'block';
+  document.getElementById('success-actions').style.display = 'flex';
+
+  // Mentjük a kutya/taxi preferenciákat a bérlet típusából → napkozi.html előre kiválasztja
+  // kutya_neve megőrzése (ne töröljük ki a meglévő prefs-ből)
+  const params        = new URLSearchParams(window.location.search);
+  const existPrefs    = JSON.parse(localStorage.getItem('wd_napkozi_prefs') || '{}');
+  const savedUser     = JSON.parse(localStorage.getItem('wd_user') || '{}');
+  const prefs         = tipusBolPrefs(params.get('tipus') || '');
+  prefs.kutya_neve    = existPrefs.kutya_neve || savedUser.kutyaNev || '';
+  localStorage.setItem('wd_napkozi_prefs', JSON.stringify(prefs));
+}
+
+function showEgyszeriSuccess(result) {
+  document.getElementById('page-icon').textContent   = '✅';
+  document.getElementById('page-title').textContent  = 'Fizetés megerősítve!';
+  document.getElementById('page-subtitle').textContent =
+    'Köszönjük! A visszaigazolást elküldtük emailben. Timi hamarosan felveszi veled a kapcsolatot.';
+  document.getElementById('egyszeri-box').style.display = 'block';
+  document.getElementById('next-egyszeri').style.display = 'block';
+  document.getElementById('success-actions').style.display = 'flex';
+}
+
+function showError(msg) {
+  document.getElementById('page-icon').textContent    = '⚠️';
+  document.getElementById('page-title').textContent   = 'Valami nem stimmel';
+  document.getElementById('page-subtitle').textContent = msg;
+  document.getElementById('success-actions').style.display = 'flex';
+}
+
+megerosit();
+</script>
+
+</body>
+</html>
