@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bérlet aktiválva – Wanderdogs</title>
+  <title>Fizetés megerősítve – Wanderdogs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
@@ -103,8 +103,15 @@
     <!-- Egyszeri alkalom részletek -->
     <div class="berlet-box" id="egyszeri-box" style="display:none;">
       <h4>Fizetés részletei</h4>
-      <div class="detail-row"><span>Típus</span><span>Egyszeri napközi alkalom</span></div>
-      <div class="detail-row"><span>Összeg</span><span style="color:var(--gold);font-weight:900;">7 000 Ft</span></div>
+      <div class="detail-row"><span>Típus</span><span id="d-egyszeri-tipus">Egyszeri napközi alkalom</span></div>
+      <div class="detail-row"><span>Összeg</span><span id="d-egyszeri-ar" style="color:var(--gold);font-weight:900;">7 000 Ft</span></div>
+    </div>
+
+    <!-- Kiegészítő taxi részletek -->
+    <div class="berlet-box" id="taxi-kieg-box" style="display:none;">
+      <h4>Fizetés részletei</h4>
+      <div class="detail-row"><span>Típus</span><span id="d-taxi-tipus">Kiegészítő taxi</span></div>
+      <div class="detail-row"><span>Összeg</span><span id="d-taxi-ar" style="color:var(--gold);font-weight:900;">–</span></div>
     </div>
 
     <!-- Következő lépések (berlet) -->
@@ -127,6 +134,15 @@
       </ol>
     </div>
 
+    <!-- Következő lépések (kiegészítő taxi) -->
+    <div class="next-steps" id="next-taxi-kieg" style="display:none;">
+      <h4>Következő lépések</h4>
+      <ol>
+        <li>Emailben kaptál visszaigazolást a fizetésről</li>
+        <li>A taxi a napközis napon a megadott címről veszi fel kutyádat</li>
+      </ol>
+    </div>
+
     <div class="success-actions" id="success-actions" style="display:none;">
       <a href="napkozi.html" class="btn btn-gold">Vissza a napközi oldalra</a>
       <a href="index.html" class="btn btn-outline">Főoldal</a>
@@ -136,6 +152,28 @@
 
 <script>
 const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+
+// ── Típus kategória felismerés ──────────────────────────────
+function isEgyszeri(t) { return t.startsWith('1alk_') || t === 'egyszeri'; }
+function isTaxiKieg(t) { return t.startsWith('taxi_'); }
+function isBerlet(t)   { return t.startsWith('4alk_') || t.startsWith('8alk_'); }
+
+const EGYSZERI_INFO = {
+  '1alk_1k_notaxi': { ar: '7 000 Ft',  leiras: 'Egyszeri napközi – 1 kutya, taxi nélkül' },
+  '1alk_2k_notaxi': { ar: '13 500 Ft', leiras: 'Egyszeri napközi – 2 kutya, taxi nélkül' },
+  '1alk_1k_10km':   { ar: '10 300 Ft', leiras: 'Egyszeri napközi – 1 kutya, taxi ≤10km' },
+  '1alk_2k_10km':   { ar: '16 800 Ft', leiras: 'Egyszeri napközi – 2 kutya, taxi ≤10km' },
+  '1alk_1k_25km':   { ar: '12 500 Ft', leiras: 'Egyszeri napközi – 1 kutya, taxi >10km' },
+  '1alk_2k_25km':   { ar: '19 000 Ft', leiras: 'Egyszeri napközi – 2 kutya, taxi >10km' },
+  'egyszeri':       { ar: '7 000 Ft',  leiras: 'Egyszeri napközi alkalom' },
+};
+
+const TAXI_KIEG_INFO = {
+  'taxi_1ut_10km':       { ar: '1 650 Ft', leiras: 'Kiegészítő taxi – 1 út, ≤10km' },
+  'taxi_odavissza_10km': { ar: '3 300 Ft', leiras: 'Kiegészítő taxi – oda-vissza, ≤10km' },
+  'taxi_1ut_25km':       { ar: '2 750 Ft', leiras: 'Kiegészítő taxi – 1 út, >10km' },
+  'taxi_odavissza_25km': { ar: '5 500 Ft', leiras: 'Kiegészítő taxi – oda-vissza, >10km' },
+};
 
 async function megerosit() {
   const params    = new URLSearchParams(window.location.search);
@@ -159,9 +197,9 @@ async function megerosit() {
   // Fallback: ha localStorage üres (pl. más eszköz), mégis vonjuk le az 1 alkalmat – a flow szerint bérlet csak foglalás után vásárolható
   let pendingBooking = {};
   try { pendingBooking = JSON.parse(localStorage.getItem('wd_pending_booking') || '{}'); } catch {}
-  const pendingTime = pendingBooking.startTime || (tipus !== 'egyszeri' ? new Date().toISOString() : '');
+  const pendingTime = pendingBooking.startTime || (isBerlet(tipus) ? new Date().toISOString() : '');
 
-  const action = tipus === 'egyszeri' ? 'napkozi_egyszeri_confirm' : 'napkozi_berlet_confirm';
+  const action = isEgyszeri(tipus) || isTaxiKieg(tipus) ? 'napkozi_egyszeri_confirm' : 'napkozi_berlet_confirm';
 
   try {
     const resp   = await fetch(WEBAPP_URL, {
@@ -181,8 +219,10 @@ async function megerosit() {
       localStorage.removeItem('wd_pending_booking'); // cleanup
       localStorage.removeItem('wd_pending_tipus');   // cleanup
       localStorage.removeItem('wd_berlet_cache');    // cache invalidálás új bérlet aktiválás után
-      if (tipus === 'egyszeri') {
-        showEgyszeriSuccess(result);
+      if (isEgyszeri(tipus)) {
+        showEgyszeriSuccess(result, tipus);
+      } else if (isTaxiKieg(tipus)) {
+        showTaxiKiegSuccess(result, tipus);
       } else {
         showBerletSuccess(result);
       }
@@ -240,14 +280,35 @@ function showBerletSuccess(result) {
   localStorage.setItem('wd_napkozi_prefs', JSON.stringify(prefs));
 }
 
-function showEgyszeriSuccess(result) {
+function showEgyszeriSuccess(result, tipus) {
   document.getElementById('page-icon').textContent   = '✅';
   document.getElementById('page-title').textContent  = 'Fizetés megerősítve!';
   document.getElementById('page-subtitle').textContent =
     'Köszönjük! A visszaigazolást elküldtük emailben. Timi hamarosan felveszi veled a kapcsolatot.';
+
+  const info = EGYSZERI_INFO[tipus] || EGYSZERI_INFO['egyszeri'];
+  document.getElementById('d-egyszeri-tipus').textContent = info.leiras;
+  document.getElementById('d-egyszeri-ar').textContent    = info.ar;
+
   document.getElementById('egyszeri-box').style.display = 'block';
   document.getElementById('next-egyszeri').style.display = 'block';
   document.getElementById('success-actions').style.display = 'flex';
+}
+
+function showTaxiKiegSuccess(result, tipus) {
+  document.getElementById('page-icon').textContent   = '✅';
+  document.getElementById('page-title').textContent  = 'Taxi fizetés megerősítve!';
+  document.getElementById('page-subtitle').textContent =
+    'Köszönjük! A visszaigazolást elküldtük emailben.';
+
+  const info = TAXI_KIEG_INFO[tipus] || { ar: '–', leiras: 'Kiegészítő taxi' };
+  document.getElementById('d-taxi-tipus').textContent = info.leiras;
+  document.getElementById('d-taxi-ar').textContent    = info.ar;
+
+  document.getElementById('taxi-kieg-box').style.display = 'block';
+  document.getElementById('next-taxi-kieg').style.display = 'block';
+  document.getElementById('success-actions').style.display = 'flex';
+  localStorage.removeItem('wd_taxi_kieg_cim');
 }
 
 function showError(msg) {
