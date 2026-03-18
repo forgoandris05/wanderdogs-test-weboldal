@@ -1355,7 +1355,11 @@ function _applyNapkoziData(foglalasData, berletData, user) {
     const sel = document.getElementById('taxi-kieg-idopont');
     sel.innerHTML = '<option value="">– Válassz időpontot –</option>';
     if (taxiNelkIdop.length > 0) {
+      var maMidnight = new Date(); maMidnight.setHours(0,0,0,0);
       taxiNelkIdop.forEach(function(item) {
+        // Múltbéli dátumok kiszűrése
+        var itemDate = new Date(item.iso + 'T00:00:00');
+        if (itemDate < maMidnight) return;
         const opt = document.createElement('option');
         opt.value = item.iso;
         opt.textContent = item.datum;
