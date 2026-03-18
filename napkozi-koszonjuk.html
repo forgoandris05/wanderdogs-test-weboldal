@@ -196,7 +196,7 @@ async function megerosit() {
   // Fallback: ha localStorage üres (pl. más eszköz), mégis vonjuk le az 1 alkalmat – a flow szerint bérlet csak foglalás után vásárolható
   let pendingBooking = {};
   try { pendingBooking = JSON.parse(localStorage.getItem('wd_pending_booking') || '{}'); } catch {}
-  const pendingTime = pendingBooking.startTime || (isBerlet(tipus) ? new Date().toISOString() : '');
+  const pendingTime = pendingBooking.startTime || ((isBerlet(tipus) || isEgyszeri(tipus)) ? new Date().toISOString() : '');
 
   const action = isEgyszeri(tipus) || isTaxiKieg(tipus) ? 'napkozi_egyszeri_confirm' : 'napkozi_berlet_confirm';
 
