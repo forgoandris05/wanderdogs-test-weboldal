@@ -1354,10 +1354,17 @@ function _applyNapkoziData(foglalasData, berletData, user) {
       opt.textContent = item.datum;
       sel.appendChild(opt);
     });
-    // Kutya checkboxok generálása
+    // Kutya checkboxok generálása (fix: "Pici, Acai" → 2 külön checkbox)
     const kutyaDiv = document.getElementById('taxi-kieg-kutyak');
     kutyaDiv.innerHTML = '';
+    const egyediKutyak = [];
     kutyaNevekArr.forEach(function(nev) {
+      nev.split(',').forEach(function(n) {
+        var t = n.trim();
+        if (t && egyediKutyak.indexOf(t) === -1) egyediKutyak.push(t);
+      });
+    });
+    egyediKutyak.forEach(function(nev) {
       const label = document.createElement('label');
       label.style.cssText = 'display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);';
       const cb = document.createElement('input');
