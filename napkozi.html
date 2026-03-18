@@ -448,7 +448,7 @@
         <!-- Távolság -->
         <div style="font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Távolság</div>
         <div style="display:flex; gap:8px; margin-bottom:18px;">
-          <button type="button" class="btn btn-outline taxi-kieg-km active" data-kieg-km="10km" onclick="taxiKiegKm(this)" style="padding:8px 16px;font-size:14px;">10 km-en belül</button>
+          <button type="button" class="btn btn-outline taxi-kieg-km active" data-kieg-km="10km" onclick="taxiKiegKm(this)" style="padding:8px 16px;font-size:14px;background:var(--gold);color:var(--black);border-color:var(--gold);">10 km-en belül</button>
           <button type="button" class="btn btn-outline taxi-kieg-km" data-kieg-km="25km" onclick="taxiKiegKm(this)" style="padding:8px 16px;font-size:14px;">10 km felett</button>
         </div>
 
@@ -1187,8 +1187,16 @@ document.getElementById('kutya-neve-input').addEventListener('input', e => {
 let _taxiKiegKm = '10km';
 
 function taxiKiegKm(btn) {
-  document.querySelectorAll('.taxi-kieg-km').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.taxi-kieg-km').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = 'transparent';
+    b.style.color = 'var(--text)';
+    b.style.borderColor = 'var(--border-dim)';
+  });
   btn.classList.add('active');
+  btn.style.background = 'var(--gold)';
+  btn.style.color = 'var(--black)';
+  btn.style.borderColor = 'var(--gold)';
   _taxiKiegKm = btn.dataset.kiegKm;
   taxiKiegFrissit();
 }
