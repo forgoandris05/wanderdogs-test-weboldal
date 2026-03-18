@@ -201,6 +201,12 @@ async function megerosit() {
 
   const action = isEgyszeri(tipus) || isTaxiKieg(tipus) ? 'napkozi_egyszeri_confirm' : 'napkozi_berlet_confirm';
 
+  // Kiegészítő taxi: localStorage-ból olvassuk a taxi-specifikus adatokat
+  const isKieg = isTaxiKieg(tipus);
+  const taxiKiegCim    = localStorage.getItem('wd_taxi_kieg_cim') || '';
+  const taxiKiegIdop   = localStorage.getItem('wd_taxi_kieg_idopont') || '';
+  const taxiKiegKutyak = localStorage.getItem('wd_taxi_kieg_kutyak') || '';
+
   try {
     const resp   = await fetch(WEBAPP_URL, {
       method: 'POST',
@@ -208,9 +214,9 @@ async function megerosit() {
         action,
         session_id:           sessionId,
         tipus,
-        kutya_neve:           savedPrefs.kutya_neve || wdUser.kutyaNev || '',
-        helyszin:             savedPrefs.helyszin      || '',
-        pending_booking_time: pendingTime,
+        kutya_neve:           isKieg ? taxiKiegKutyak : (savedPrefs.kutya_neve || wdUser.kutyaNev || ''),
+        helyszin:             isKieg ? taxiKiegCim : (savedPrefs.helyszin || ''),
+        pending_booking_time: isKieg ? taxiKiegIdop : pendingTime,
       }),
     });
     const result = await resp.json();
@@ -219,6 +225,10 @@ async function megerosit() {
       localStorage.removeItem('wd_pending_booking'); // cleanup
       localStorage.removeItem('wd_pending_tipus');   // cleanup
       localStorage.removeItem('wd_berlet_cache');    // cache invalidálás új bérlet aktiválás után
+      // Kiegészítő taxi cleanup
+      localStorage.removeItem('wd_taxi_kieg_cim');
+      localStorage.removeItem('wd_taxi_kieg_idopont');
+      localStorage.removeItem('wd_taxi_kieg_kutyak');
       if (isEgyszeri(tipus)) {
         showEgyszeriSuccess(result, tipus);
       } else if (isTaxiKieg(tipus)) {
