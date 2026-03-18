@@ -412,11 +412,25 @@
       </div>
     </div>
 
-    <!-- ── KIEGÉSZÍTŐ TAXI (taxi nélküli bérleteseknek) ── -->
+    <!-- ── KIEGÉSZÍTŐ TAXI ── -->
     <div id="taxi-kieg-section" style="display:none; margin-bottom:36px;">
       <div style="background:rgba(255,215,0,0.04); border:1px solid rgba(255,215,0,0.2); border-radius:16px; padding:28px 24px;">
         <h4 style="font-size:16px; font-weight:800; color:var(--gold); margin-bottom:4px;">Kiegészítő taxi</h4>
-        <p style="font-size:13px; color:var(--text-dim); margin-bottom:20px;">Alkalmi taxi igény a bérleted mellé</p>
+        <p style="font-size:13px; color:var(--text-dim); margin-bottom:20px;">Alkalmi taxi igény egy foglalt napközi napodhoz</p>
+
+        <!-- Melyik napra? -->
+        <div style="font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Melyik napra kéred?</div>
+        <div style="margin-bottom:18px;">
+          <select id="taxi-kieg-idopont" style="width:100%;padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;cursor:pointer;">
+            <option value="">– Válassz időpontot –</option>
+          </select>
+        </div>
+
+        <!-- Melyik kutyákat vigyük? -->
+        <div style="font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Melyik kutyákat vigyük?</div>
+        <div id="taxi-kieg-kutyak" style="display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;">
+          <!-- JS tölti a checkboxokat -->
+        </div>
 
         <!-- Irány választás -->
         <div style="font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Melyik utat kéred?</div>
@@ -434,8 +448,8 @@
         <!-- Távolság -->
         <div style="font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Távolság</div>
         <div style="display:flex; gap:8px; margin-bottom:18px;">
-          <button type="button" class="btn btn-outline taxi-kieg-km active" data-kieg-km="10km" onclick="taxiKiegKm(this)" style="padding:8px 16px;font-size:14px;">≤ 10 km</button>
-          <button type="button" class="btn btn-outline taxi-kieg-km" data-kieg-km="25km" onclick="taxiKiegKm(this)" style="padding:8px 16px;font-size:14px;">&gt; 10 km</button>
+          <button type="button" class="btn btn-outline taxi-kieg-km active" data-kieg-km="10km" onclick="taxiKiegKm(this)" style="padding:8px 16px;font-size:14px;">10 km-en belül</button>
+          <button type="button" class="btn btn-outline taxi-kieg-km" data-kieg-km="25km" onclick="taxiKiegKm(this)" style="padding:8px 16px;font-size:14px;">10 km felett</button>
         </div>
 
         <!-- Cím -->
@@ -1037,6 +1051,7 @@ function onNapkoziBooked(detail) {
   document.getElementById('napkozi-konfigurator').style.display  = 'none';
   document.getElementById('napkozi-3kutya-box').style.display    = 'none';
   document.getElementById('wd-status-banner').style.display      = 'none';
+  showTaxiKiegSection(false);
   document.getElementById('napkozi-siker').style.display         = 'block';
 
   // Mindig friss berlet_foglalas hívás – nem a page-load kori _vanBerlet-re támaszkodunk
@@ -1152,8 +1167,6 @@ document.querySelectorAll('[data-taxi]').forEach(btn => {
       }
     }
     updateCalOverlay();
-    // Kiegészítő taxi: csak taxi nélkül opciónál (nem bérleteseknél – ők a bérlet check-ben kapják)
-    if (!_vanBerlet) showTaxiKiegSection(!newIsTaxi);
   });
 });
 document.getElementById('helyszin-input').addEventListener('input', function() {
@@ -1205,18 +1218,40 @@ function taxiKiegFrissit() {
 }
 
 function taxiKiegFizet() {
-  const cim = document.getElementById('taxi-kieg-cim').value.trim();
   const hiba = document.getElementById('taxi-kieg-hiba');
+  // Időpont validáció
+  const idopont = document.getElementById('taxi-kieg-idopont').value;
+  if (!idopont) {
+    hiba.textContent = 'Válassz időpontot!';
+    hiba.style.display = 'block';
+    document.getElementById('taxi-kieg-idopont').style.borderColor = '#e74c3c';
+    return false;
+  }
+  document.getElementById('taxi-kieg-idopont').style.borderColor = 'var(--border-dim)';
+  // Kutya validáció
+  const kutyaCbs = document.querySelectorAll('.taxi-kieg-kutya-cb:checked');
+  if (kutyaCbs.length === 0) {
+    hiba.textContent = 'Válaszd ki melyik kutyákat vigyük!';
+    hiba.style.display = 'block';
+    return false;
+  }
+  // Cím validáció
+  const cim = document.getElementById('taxi-kieg-cim').value.trim();
   if (!cim) {
     hiba.textContent = 'Add meg a taxi felvételi címet!';
     hiba.style.display = 'block';
     document.getElementById('taxi-kieg-cim').style.borderColor = '#e74c3c';
     return false;
   }
+  document.getElementById('taxi-kieg-cim').style.borderColor = 'var(--border-dim)';
   hiba.style.display = 'none';
+  // Adatok mentése
+  const kutyaNevek = [...kutyaCbs].map(function(cb) { return cb.value; });
   const btn = document.getElementById('taxi-kieg-btn');
   localStorage.setItem('wd_pending_tipus', btn.dataset.tipus || '');
   localStorage.setItem('wd_taxi_kieg_cim', cim);
+  localStorage.setItem('wd_taxi_kieg_idopont', idopont);
+  localStorage.setItem('wd_taxi_kieg_kutyak', kutyaNevek.join(', '));
   return true; // allow navigation to Stripe
 }
 
@@ -1298,8 +1333,38 @@ function _applyNapkoziData(foglalasData, berletData, user) {
     }
   }
 
-  // Kiegészítő taxi szekció – taxi nélküli bérleteseknek
-  showTaxiKiegSection(_vanBerlet && (!berletData.taxi || berletData.taxi === 'notaxi'));
+  // Kiegészítő taxi szekció – bárkinek akinek van taxi nélküli jövőbeli foglalt napja
+  const taxiNelkIdop = berletData.taxiNelkuliIdopontok || [];
+  const kutyaNevekArr = berletData.kutyaNevek || [];
+  if (taxiNelkIdop.length > 0 && kutyaNevekArr.length > 0) {
+    // Dropdown feltöltése
+    const sel = document.getElementById('taxi-kieg-idopont');
+    sel.innerHTML = '<option value="">– Válassz időpontot –</option>';
+    taxiNelkIdop.forEach(function(item) {
+      const opt = document.createElement('option');
+      opt.value = item.iso;
+      opt.textContent = item.datum;
+      sel.appendChild(opt);
+    });
+    // Kutya checkboxok generálása
+    const kutyaDiv = document.getElementById('taxi-kieg-kutyak');
+    kutyaDiv.innerHTML = '';
+    kutyaNevekArr.forEach(function(nev) {
+      const label = document.createElement('label');
+      label.style.cssText = 'display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.className = 'taxi-kieg-kutya-cb';
+      cb.value = nev;
+      cb.style.cssText = 'accent-color:var(--gold);width:16px;height:16px;';
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(nev));
+      kutyaDiv.appendChild(label);
+    });
+    showTaxiKiegSection(true);
+  } else {
+    showTaxiKiegSection(false);
+  }
 
   // Konfigurátor – CSAK ha nincs aktív bérlet
   if (!_vanBerlet) {
