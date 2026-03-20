@@ -656,6 +656,59 @@
   </div>
 </div>
 
+<!-- ── KIEGÉSZÍTŐ TAXI ── -->
+<div class="section-full" id="panzio-taxi-wrapper" style="display:none; background: var(--black);">
+  <div class="section" style="max-width:700px;">
+    <div id="panzio-taxi-section" style="background:rgba(255,215,0,0.04); border:1px solid rgba(255,215,0,0.2); border-radius:16px; padding:28px 24px;">
+      <h4 style="font-size:16px; font-weight:800; color:var(--gold); margin-bottom:4px;">🚐 Kiegészítő taxi</h4>
+      <p style="font-size:13px; color:var(--text-dim); margin-bottom:20px;">Rendeld meg a kutyataxit a panzió beköltözési és/vagy kiköltözési napjára</p>
+
+      <!-- Melyik foglaláshoz? -->
+      <div style="font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Melyik foglaláshoz?</div>
+      <div style="margin-bottom:18px;">
+        <select id="panzio-taxi-foglalas" style="width:100%;padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;cursor:pointer;" onchange="panzioTaxiFoglalasValaszt()">
+          <option value="">– Válassz foglalást –</option>
+        </select>
+      </div>
+
+      <!-- Melyik napra? -->
+      <div style="font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Melyik napra kéred?</div>
+      <div style="display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
+          <input type="checkbox" id="panzio-taxi-hozas" style="accent-color:var(--gold);width:16px;height:16px;" onchange="panzioTaxiFrissit()">
+          <span>Beköltözés napján <span style="color:var(--text-faint);font-size:12px;" id="panzio-taxi-hozas-datum">(kutya hozás)</span></span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
+          <input type="checkbox" id="panzio-taxi-elvitel" style="accent-color:var(--gold);width:16px;height:16px;" onchange="panzioTaxiFrissit()">
+          <span>Kiköltözés napján <span style="color:var(--text-faint);font-size:12px;" id="panzio-taxi-elvitel-datum">(kutya hazavivés)</span></span>
+        </label>
+      </div>
+
+      <!-- Távolság -->
+      <div style="font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Távolság</div>
+      <div style="display:flex; gap:8px; margin-bottom:18px;">
+        <button type="button" class="btn btn-outline panzio-taxi-km active" data-ptkm="10" onclick="panzioTaxiKm(this)" style="padding:8px 16px;font-size:14px;background:var(--gold);color:var(--black);border-color:var(--gold);">≤10 km – 3 300 Ft/út</button>
+        <button type="button" class="btn btn-outline panzio-taxi-km" data-ptkm="25" onclick="panzioTaxiKm(this)" style="padding:8px 16px;font-size:14px;">10-25 km – 5 500 Ft/út</button>
+      </div>
+
+      <!-- Cím -->
+      <div style="margin-bottom:20px;">
+        <label style="font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; display:block; margin-bottom:6px;">Taxi felvételi / szállítási cím</label>
+        <input type="text" id="panzio-taxi-cim" placeholder="pl. Budapest, Petőfi u. 12." style="width:100%;padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;">
+      </div>
+
+      <!-- Megrendelés gomb -->
+      <div id="panzio-taxi-btn-wrap" style="text-align:center;">
+        <p id="panzio-taxi-hiba" style="display:none;color:#e74c3c;font-size:13px;margin-bottom:8px;"></p>
+        <button type="button" id="panzio-taxi-btn" class="btn btn-gold" style="padding:14px 28px;font-size:15px;display:none;" onclick="panzioTaxiFizet()">
+          Taxi megrendelése – <strong id="panzio-taxi-ar">–</strong>
+        </button>
+        <p id="panzio-taxi-placeholder" style="color:var(--text-faint);font-size:13px;">Válaszd ki az irányt a gomb megjelenítéséhez</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ── FOOTER ── -->
 <footer>
   <div class="footer-inner">
@@ -1039,6 +1092,166 @@ szamol();
   const minStr = minBe.toISOString().split('T')[0];
   const beEl = document.getElementById('calc-be');
   if (beEl) beEl.min = minStr;
+})();
+
+// ============================================================
+// KIEGÉSZÍTŐ TAXI LOGIKA
+// ============================================================
+
+let _ptKm = 10; // 10 vagy 25
+let _ptFoglalasok = []; // backend-ről jövő foglalások
+const PANZIO_TAXI_PRICES = { 10: 3300, 25: 5500 };
+
+function panzioTaxiKm(btn) {
+  document.querySelectorAll('.panzio-taxi-km').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = 'transparent';
+    b.style.color = 'var(--text)';
+    b.style.borderColor = 'var(--border-dim)';
+  });
+  btn.classList.add('active');
+  btn.style.background = 'var(--gold)';
+  btn.style.color = 'var(--black)';
+  btn.style.borderColor = 'var(--gold)';
+  _ptKm = parseInt(btn.dataset.ptkm);
+  panzioTaxiFrissit();
+}
+
+function panzioTaxiFrissit() {
+  const hozas  = document.getElementById('panzio-taxi-hozas').checked;
+  const elvitel = document.getElementById('panzio-taxi-elvitel').checked;
+  const btn    = document.getElementById('panzio-taxi-btn');
+  const ar     = document.getElementById('panzio-taxi-ar');
+  const ph     = document.getElementById('panzio-taxi-placeholder');
+
+  if (!hozas && !elvitel) {
+    btn.style.display = 'none';
+    ph.style.display  = 'block';
+    return;
+  }
+
+  const iranyok = (hozas ? 1 : 0) + (elvitel ? 1 : 0);
+  const osszeg = iranyok * PANZIO_TAXI_PRICES[_ptKm];
+  ar.textContent = fmt(osszeg) + ' Ft';
+  btn.style.display = 'inline-block';
+  ph.style.display  = 'none';
+}
+
+function panzioTaxiFoglalasValaszt() {
+  const sel = document.getElementById('panzio-taxi-foglalas');
+  const idx = parseInt(sel.value);
+  const hozasDatum  = document.getElementById('panzio-taxi-hozas-datum');
+  const elvitelDatum = document.getElementById('panzio-taxi-elvitel-datum');
+
+  if (isNaN(idx) || !_ptFoglalasok[idx]) {
+    hozasDatum.textContent  = '(kutya hozás)';
+    elvitelDatum.textContent = '(kutya hazavivés)';
+    return;
+  }
+
+  const f = _ptFoglalasok[idx];
+  hozasDatum.textContent  = '(hozás – ' + f.erkezes + ')';
+  elvitelDatum.textContent = '(hazavivés – ' + f.tavozas + ')';
+}
+
+async function panzioTaxiFizet() {
+  const hiba = document.getElementById('panzio-taxi-hiba');
+  hiba.style.display = 'none';
+
+  // Foglalás validáció
+  const selIdx = parseInt(document.getElementById('panzio-taxi-foglalas').value);
+  if (isNaN(selIdx) || !_ptFoglalasok[selIdx]) {
+    hiba.textContent = 'Válassz foglalást!';
+    hiba.style.display = 'block';
+    return;
+  }
+
+  // Irány validáció
+  const hozas  = document.getElementById('panzio-taxi-hozas').checked;
+  const elvitel = document.getElementById('panzio-taxi-elvitel').checked;
+  if (!hozas && !elvitel) {
+    hiba.textContent = 'Válassz legalább egy irányt!';
+    hiba.style.display = 'block';
+    return;
+  }
+
+  // Cím validáció
+  const cim = document.getElementById('panzio-taxi-cim').value.trim();
+  if (!cim) {
+    hiba.textContent = 'Add meg a taxi felvételi / szállítási címet!';
+    hiba.style.display = 'block';
+    document.getElementById('panzio-taxi-cim').style.borderColor = '#e74c3c';
+    return;
+  }
+  document.getElementById('panzio-taxi-cim').style.borderColor = 'var(--border-dim)';
+
+  const f = _ptFoglalasok[selIdx];
+  const user = wdGetUser();
+
+  const btn = document.getElementById('panzio-taxi-btn');
+  btn.disabled = true;
+  btn.textContent = 'Csatlakozás Stripe-hoz...';
+
+  try {
+    const resp = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action:       'panzio_taxi_checkout',
+        nev:          user?.nev || f.nev || '',
+        email:        user?.email || '',
+        kutyaNev:     f.kutya || '',
+        erkezes:      f.erkezes,
+        tavozas:      f.tavozas,
+        taxi_hozas:   hozas,
+        taxi_elvitel:  elvitel,
+        taxi_km:      _ptKm,
+        taxi_cim:     cim,
+      }),
+    });
+    const result = await resp.json();
+
+    if (result.ok && result.checkout_url) {
+      window.location.href = result.checkout_url;
+    } else {
+      throw new Error(result.error || 'Ismeretlen hiba történt.');
+    }
+  } catch (err) {
+    btn.disabled = false;
+    const iranyDb = (hozas ? 1 : 0) + (elvitel ? 1 : 0);
+    btn.innerHTML = 'Taxi megrendelése – <strong id="panzio-taxi-ar">' + fmt(iranyDb * PANZIO_TAXI_PRICES[_ptKm]) + ' Ft</strong>';
+    hiba.textContent = 'Hiba: ' + err.message;
+    hiba.style.display = 'block';
+  }
+}
+
+// ── Taxi szekció betöltés (bejelentkezett usernek) ──────────
+(async function panzioTaxiInit() {
+  const user = wdGetUser();
+  if (!user || !user.registered || !user.email) return;
+
+  try {
+    const resp = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'panzio_taxi_check', email: user.email }),
+    });
+    const result = await resp.json();
+
+    if (!result.ok || !result.foglalasok || result.foglalasok.length === 0) return;
+
+    _ptFoglalasok = result.foglalasok;
+    const sel = document.getElementById('panzio-taxi-foglalas');
+    result.foglalasok.forEach((f, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = f.erkezes + ' → ' + f.tavozas + (f.kutya ? ' (' + f.kutya + ')' : '');
+      sel.appendChild(opt);
+    });
+
+    // Taxi szekció megjelenítése
+    document.getElementById('panzio-taxi-wrapper').style.display = 'block';
+  } catch (err) {
+    console.log('[WD panzio] taxi check hiba:', err);
+  }
 })();
 </script>
 </body>
