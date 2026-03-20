@@ -247,7 +247,7 @@ nav {
 
 /* ── PAGE HERO ── */
 .page-hero {
-  padding: 160px 48px 90px;
+  padding: 110px 48px 48px;
   background: var(--black-2);
   border-bottom: 1px solid var(--border-dim);
   text-align: center;
@@ -272,12 +272,12 @@ nav {
 
 /* ── SECTIONS ── */
 .section {
-  padding: 100px 80px;
+  padding: 64px 80px;
   max-width: 1440px;
   margin: 0 auto;
 }
 .section-full {
-  padding: 100px 48px;
+  padding: 64px 48px;
 }
 .section-dark {
   background: var(--black-3);
@@ -362,7 +362,7 @@ hr.gold-line {
 footer {
   background: var(--black-3);
   border-top: 1px solid var(--border-dim);
-  padding: 72px 48px 36px;
+  padding: 48px 48px 36px;
 }
 .footer-inner {
   max-width: 1440px; margin: 0 auto;
