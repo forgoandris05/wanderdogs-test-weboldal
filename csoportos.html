@@ -269,12 +269,43 @@
     <div style="background: var(--black-3); border: 1px solid var(--border); border-radius: 16px; padding: 48px 32px; text-align: center; max-width: 680px; margin: 0 auto;" class="reveal">
       <div style="font-size: 48px; margin-bottom: 20px;">🐾</div>
       <h3 style="font-size: 22px; margin-bottom: 12px;">Online foglalás és fizetés</h3>
-      <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 28px;">Válassz időpontot és fizess online egy lépésben. Az alkalom a fizetéssel válik biztossá.</p>
-      <div id="csoportos-foglal-container" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+      <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 28px;">Válassz szombatot, pipáld ki a kutyáidat és fizess online. Az alkalom a fizetéssel válik biztossá.</p>
+
+      <!-- Nem belépett: login/reg gombok -->
+      <div id="csoportos-auth-buttons" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
         <a href="bejelentkezes.html?return=csoportos.html" class="btn btn-gold btn-lg">Bejelentkezés a foglaláshoz</a>
         <a href="regisztracio.html?return=csoportos.html" class="btn btn-outline btn-lg">Regisztráció</a>
       </div>
-      <p style="font-size: 12px; color: var(--text-faint); margin-top: 20px;">7 000 Ft / kutya / alkalom · Cal.com foglalás + Stripe fizetés</p>
+
+      <!-- Belépett: foglalás form (JS tölti ki) -->
+      <div id="csoportos-booking-form" style="display: none; text-align: left;">
+        <!-- Szombat dropdown -->
+        <label style="display:block; font-size:13px; font-weight:700; color:var(--text-dim); margin-bottom:8px;">Válassz szombatot:</label>
+        <select id="csoportos-datum" style="width:100%; padding:12px 16px; background:var(--black-4); border:1px solid var(--border-dim); border-radius:10px; color:var(--text); font-size:15px; margin-bottom:20px; cursor:pointer;">
+          <option value="">Betöltés...</option>
+        </select>
+
+        <!-- Kutya checkboxok -->
+        <div id="csoportos-kutyak-wrapper" style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:700; color:var(--text-dim); margin-bottom:8px;">Melyik kutyáidat hozod? (max 3)</label>
+          <div id="csoportos-kutyak-list"></div>
+        </div>
+
+        <!-- Ár display -->
+        <div id="csoportos-ar" style="text-align:center; font-size:20px; font-weight:700; color:var(--gold); margin-bottom:20px;">
+          7 000 Ft
+        </div>
+
+        <!-- Hiba üzenet -->
+        <div id="csoportos-error" style="display:none; background:rgba(255,60,60,0.1); border:1px solid rgba(255,60,60,0.3); border-radius:10px; padding:12px; color:#ff6b6b; font-size:13px; text-align:center; margin-bottom:16px;"></div>
+
+        <!-- Foglalás gomb -->
+        <button id="csoportos-fizet-btn" class="btn btn-gold btn-lg" style="width:100%; font-size:16px;" onclick="csoportosCheckout()">
+          Foglalj és fizess – 7 000 Ft
+        </button>
+      </div>
+
+      <p style="font-size: 12px; color: var(--text-faint); margin-top: 20px;">7 000 Ft / kutya / alkalom · Online fizetés</p>
     </div>
   </div>
 </div>
@@ -357,55 +388,188 @@
 
 <script src="js/main.js"></script>
 <script>
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+const AR_PER_KUTYA = 7000;
+
 (function() {
   const user = wdGetUser();
-  if (!user || !user.registered) return; // nem belépett → marad a bejelentkezés/regisztráció
+  if (!user || !user.registered) return;
 
+  // Belépett → auth gombok el, form megjelenik
+  document.getElementById('csoportos-auth-buttons').style.display = 'none';
+  document.getElementById('csoportos-booking-form').style.display = 'block';
+
+  // Kutyák betöltése
   const kutyakLista = wdKutyak();
-  let selectedKutya = kutyakLista.length ? kutyakLista[0].nev : (user.kutyaNev || '');
+  const kutyakDiv = document.getElementById('csoportos-kutyak-list');
 
-  function calLink() {
-    const notes = selectedKutya ? encodeURIComponent('Kutya: ' + selectedKutya) : '';
-    const base = 'https://cal.com/timea-kucsera-6harfx/csoportos-kutyaiskola';
-    return notes ? base + '?notes=' + notes : base;
+  if (kutyakLista.length === 0) {
+    // Nincs regisztrált kutya → szöveges input
+    kutyakDiv.innerHTML =
+      '<input type="text" id="csoportos-kutya-input" placeholder="Kutya neve" ' +
+      'style="width:100%;padding:12px 16px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:10px;color:var(--text);font-size:15px;">';
+  } else if (kutyakLista.length === 1) {
+    // 1 kutya → auto-kiválasztva, checkbox (kipipálva, disabled)
+    kutyakDiv.innerHTML =
+      '<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:10px;font-size:14px;color:var(--text);">' +
+      '<input type="checkbox" checked disabled style="width:18px;height:18px;accent-color:var(--gold);">' +
+      '<span>' + kutyakLista[0].nev + (kutyakLista[0].fajta ? ' <span style="color:var(--text-dim);font-size:12px;">(' + kutyakLista[0].fajta + ')</span>' : '') + '</span>' +
+      '</label>';
+  } else {
+    // 2+ kutya → checkboxok (max 3)
+    kutyakLista.forEach(function(k) {
+      const label = document.createElement('label');
+      label.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:6px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:10px;cursor:pointer;font-size:14px;color:var(--text);';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox'; cb.className = 'csoportos-kutya-cb'; cb.value = k.nev;
+      cb.style.cssText = 'width:18px;height:18px;accent-color:var(--gold);';
+      cb.addEventListener('change', updateAr);
+      label.appendChild(cb);
+      const span = document.createElement('span');
+      span.innerHTML = k.nev + (k.fajta ? ' <span style="color:var(--text-dim);font-size:12px;">(' + k.fajta + ')</span>' : '');
+      label.appendChild(span);
+      kutyakDiv.appendChild(label);
+    });
   }
 
-  function renderFoglalasGomb() {
-    const container = document.getElementById('csoportos-foglal-container');
-    if (!container) return;
-    container.innerHTML = '<a href="' + calLink() + '" target="_blank" class="btn btn-gold btn-lg" rel="noopener">Foglalok szombati helyet</a>';
-  }
+  // Szombatok betöltése
+  loadSzombatok();
+})();
 
-  // Ha 2+ kutya van: kutya-választó radio
-  if (kutyakLista.length > 1) {
-    const container = document.getElementById('csoportos-foglal-container');
-    if (container) {
-      const selectorDiv = document.createElement('div');
-      selectorDiv.style.cssText = 'background:var(--black-4);border:1px solid var(--border-dim);border-radius:12px;padding:20px 24px;margin-bottom:20px;text-align:left;';
-      selectorDiv.innerHTML = '<p style="font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:12px;">Melyik kutyádat hozod?</p>';
-      kutyakLista.forEach(function(k, i) {
-        const row = document.createElement('label');
-        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;font-size:14px;color:var(--text);';
-        const inp = document.createElement('input');
-        inp.type = 'radio'; inp.name = 'csoportos-kutya'; inp.value = k.nev;
-        inp.style.cssText = 'width:16px;height:16px;accent-color:var(--gold);';
-        if (i === 0) inp.checked = true;
-        inp.addEventListener('change', function() {
-          selectedKutya = this.value;
-          renderFoglalasGomb();
-        });
-        row.appendChild(inp);
-        const span = document.createElement('span');
-        span.innerHTML = k.nev + (k.fajta ? ' <span style="color:var(--text-dim);font-size:12px;">(' + k.fajta + ')</span>' : '');
-        row.appendChild(span);
-        selectorDiv.appendChild(row);
-      });
-      container.parentNode.insertBefore(selectorDiv, container);
+function updateAr() {
+  const checked = document.querySelectorAll('.csoportos-kutya-cb:checked');
+  const db = Math.max(checked.length, 1);
+  const osszeg = db * AR_PER_KUTYA;
+  const formatted = osszeg.toLocaleString('hu-HU');
+  document.getElementById('csoportos-ar').textContent = formatted + ' Ft';
+  document.getElementById('csoportos-fizet-btn').textContent = 'Foglalj és fizess – ' + formatted + ' Ft';
+
+  // Max 3 kutya enforce
+  if (checked.length >= 3) {
+    document.querySelectorAll('.csoportos-kutya-cb:not(:checked)').forEach(function(cb) { cb.disabled = true; });
+  } else {
+    document.querySelectorAll('.csoportos-kutya-cb').forEach(function(cb) { cb.disabled = false; });
+  }
+}
+
+function loadSzombatok() {
+  fetch(WEBAPP_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'csoportos_check' }),
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(resp) {
+    if (!resp.ok) throw new Error(resp.error || 'Hiba');
+    const sel = document.getElementById('csoportos-datum');
+    sel.innerHTML = '';
+
+    const napNevek = ['vasárnap', 'hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat'];
+    const honapNevek = ['jan.', 'feb.', 'már.', 'ápr.', 'máj.', 'jún.', 'júl.', 'aug.', 'szept.', 'okt.', 'nov.', 'dec.'];
+
+    resp.szombatok.forEach(function(sz) {
+      const d = new Date(sz.datum + 'T00:00:00');
+      const label = d.getFullYear() + '. ' + honapNevek[d.getMonth()] + ' ' + d.getDate() + '. (szombat)';
+      const opt = document.createElement('option');
+      opt.value = sz.datum;
+      if (sz.szabad <= 0) {
+        opt.textContent = label + ' – BETELT';
+        opt.disabled = true;
+      } else {
+        opt.textContent = label + ' – ' + sz.szabad + '/' + 20 + ' szabad hely';
+      }
+      sel.appendChild(opt);
+    });
+
+    // Első nem disabled option kiválasztása
+    var found = false;
+    for (var i = 0; i < sel.options.length; i++) {
+      if (!sel.options[i].disabled) { sel.selectedIndex = i; found = true; break; }
+    }
+    if (!found) {
+      sel.innerHTML = '<option value="" disabled selected>Minden szombat betelt</option>';
+      document.getElementById('csoportos-fizet-btn').disabled = true;
+    }
+  })
+  .catch(function(err) {
+    document.getElementById('csoportos-datum').innerHTML = '<option value="">Hiba a betöltésnél</option>';
+  });
+}
+
+function csoportosCheckout() {
+  const user = wdGetUser();
+  if (!user) return;
+
+  const datum = document.getElementById('csoportos-datum').value;
+  if (!datum) { showCsoportosError('Válassz egy szombatot!'); return; }
+
+  // Kutyák összegyűjtése
+  var kutyakNevek = [];
+  var kutyaDb = 0;
+
+  const checkboxes = document.querySelectorAll('.csoportos-kutya-cb:checked');
+  const kutyaInput = document.getElementById('csoportos-kutya-input');
+
+  if (checkboxes.length > 0) {
+    checkboxes.forEach(function(cb) { kutyakNevek.push(cb.value); });
+    kutyaDb = kutyakNevek.length;
+  } else if (kutyaInput) {
+    var nev = kutyaInput.value.trim();
+    if (!nev) { showCsoportosError('Add meg a kutya nevét!'); return; }
+    kutyakNevek.push(nev);
+    kutyaDb = 1;
+  } else {
+    // 1 kutya auto-kiválasztva
+    var kutyakLista = wdKutyak();
+    if (kutyakLista.length) {
+      kutyakNevek.push(kutyakLista[0].nev);
+      kutyaDb = 1;
     }
   }
 
-  renderFoglalasGomb();
-})();
+  if (kutyaDb === 0) { showCsoportosError('Válassz legalább egy kutyát!'); return; }
+
+  // Gomb disable + loading
+  var btn = document.getElementById('csoportos-fizet-btn');
+  btn.disabled = true;
+  btn.textContent = 'Átirányítás a fizetéshez...';
+  hideCsoportosError();
+
+  fetch(WEBAPP_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'csoportos_checkout',
+      email: user.email,
+      nev: user.nev,
+      datum: datum,
+      kutyak: kutyakNevek.join(','),
+      kutya_db: kutyaDb,
+    }),
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(resp) {
+    if (resp.ok && resp.checkout_url) {
+      window.location.href = resp.checkout_url;
+    } else {
+      showCsoportosError(resp.error || 'Hiba történt a foglalás során.');
+      btn.disabled = false;
+      updateAr();
+    }
+  })
+  .catch(function(err) {
+    showCsoportosError('Hálózati hiba. Próbáld újra!');
+    btn.disabled = false;
+    updateAr();
+  });
+}
+
+function showCsoportosError(msg) {
+  var el = document.getElementById('csoportos-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideCsoportosError() {
+  document.getElementById('csoportos-error').style.display = 'none';
+}
 </script>
 </body>
 </html>
