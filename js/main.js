@@ -168,3 +168,61 @@ function wdKutyak() {
   if (u.kutyaNev) return [{ nev: u.kutyaNev, fajta: '', kor: '' }];
   return [];
 }
+
+// ── Oltási könyv frontend ellenőrzés ──────────────────────
+// Return: { valid: true/false, lejartKutyak: ["Pici (2026-01-15)"], hianyzik: ["Acai"] }
+function wdOltasCheck() {
+  const result = { valid: true, lejartKutyak: [], hianyzik: [] };
+  const user = wdGetUser();
+  if (!user || !user.registered) return result;
+  const kutyak = wdKutyak();
+  if (!kutyak.length) return result;
+
+  const ma = new Date();
+  ma.setHours(0, 0, 0, 0);
+  kutyak.forEach(function(k) {
+    if (!k.oltasLejar) {
+      result.valid = false;
+      result.hianyzik.push(k.nev);
+      return;
+    }
+    var lejar = new Date(k.oltasLejar);
+    if (isNaN(lejar.getTime()) || lejar < ma) {
+      result.valid = false;
+      result.lejartKutyak.push(k.nev + ' (' + (isNaN(lejar.getTime()) ? '?' : lejar.toLocaleDateString('hu-HU')) + ')');
+    }
+  });
+  return result;
+}
+
+// ── Oltási blokkoló UI megjelenítés ──────────────────────────
+// Meghívás: wdOltasBlokk('booking-wrapper-id') – elrejti a booking UI-t és mutatja a hibát
+function wdOltasBlokk(wrapperId) {
+  var user = wdGetUser();
+  if (!user || !user.registered) return false; // nem bejelentkezett, nem blokkolunk
+  var check = wdOltasCheck();
+  if (check.valid) return false; // minden rendben
+
+  var wrapper = wrapperId ? document.getElementById(wrapperId) : null;
+  if (wrapper) wrapper.style.display = 'none';
+
+  var msgs = [];
+  if (check.hianyzik.length) msgs.push('Hiányzó oltási könyv: ' + check.hianyzik.join(', '));
+  if (check.lejartKutyak.length) msgs.push('Lejárt oltás: ' + check.lejartKutyak.join(', '));
+
+  var alertDiv = document.createElement('div');
+  alertDiv.style.cssText = 'background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:24px;text-align:center;max-width:500px;margin:24px auto;';
+  alertDiv.innerHTML =
+    '<div style="font-size:24px;margin-bottom:8px;">&#9888;&#65039;</div>' +
+    '<h3 style="font-size:16px;font-weight:700;margin-bottom:8px;color:#fca5a5;">Nincs érvényes oltási könyved!</h3>' +
+    '<p style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;">' + msgs.join('<br>') + '</p>' +
+    '<a href="profil.html" class="btn btn-gold" style="display:inline-block;padding:10px 24px;font-size:14px;text-decoration:none;">Oltási könyv frissítése a Profilban</a>';
+
+  if (wrapper && wrapper.parentNode) {
+    wrapper.parentNode.insertBefore(alertDiv, wrapper);
+  } else {
+    var section = document.querySelector('.section-full') || document.querySelector('.section') || document.body;
+    section.insertBefore(alertDiv, section.firstChild);
+  }
+  return true; // blokkolva
+}
