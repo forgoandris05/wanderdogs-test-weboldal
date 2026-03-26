@@ -98,12 +98,13 @@
         <li><a href="napkozi.html">Napközi</a></li>
         <li><a href="panzio.html">Panzió</a></li>
         <li><a href="kutyataxi.html">Kutya taxi</a></li>
-        <li><span style="color:var(--text-faint);cursor:default;">Hamarosan...</span></li>
         <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
-        <li><a href="kutyatura.html">Kutyatúra</a></li>
+        <li><a href="kutyatura.html">Wander kutyás túra</a></li>
         <li><a href="orzo-vedo.html">Őrző-védő képzés</a></li>
       </ul>
     </li>
+    <li><a href="tanfolyamok.html">Tanfolyamok</a></li>
+    <li><a href="workshopok.html">Workshopok</a></li>
     <li><a href="index.html#rolunk">Rólunk</a></li>
     <li><a href="index.html#kapcsolat">Kapcsolat</a></li>
   </ul>
@@ -291,6 +292,21 @@
           <div id="csoportos-kutyak-list"></div>
         </div>
 
+        <!-- Fizetési mód -->
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:700; color:var(--text-dim); margin-bottom:8px;">Fizetési mód:</label>
+          <div style="display:flex; gap:10px;">
+            <label style="flex:1; display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--black-4); border:1px solid var(--gold); border-radius:10px; cursor:pointer; font-size:14px; color:var(--text);" id="fizmod-online-label">
+              <input type="radio" name="csoportos-fizmod" value="online" checked style="accent-color:var(--gold);width:18px;height:18px;" onchange="updateFizmod()">
+              Online fizetés
+            </label>
+            <label style="flex:1; display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--black-4); border:1px solid var(--border-dim); border-radius:10px; cursor:pointer; font-size:14px; color:var(--text);" id="fizmod-kp-label">
+              <input type="radio" name="csoportos-fizmod" value="kp" style="accent-color:var(--gold);width:18px;height:18px;" onchange="updateFizmod()">
+              Készpénz a helyszínen
+            </label>
+          </div>
+        </div>
+
         <!-- Ár display -->
         <div id="csoportos-ar" style="text-align:center; font-size:20px; font-weight:700; color:var(--gold); margin-bottom:20px;">
           7 000 Ft
@@ -305,7 +321,7 @@
         </button>
       </div>
 
-      <p style="font-size: 12px; color: var(--text-faint); margin-top: 20px;">7 000 Ft / kutya / alkalom · Online fizetés</p>
+      <p style="font-size: 12px; color: var(--text-faint); margin-top: 20px;">7 000 Ft / kutya / alkalom · Online fizetés vagy készpénz a helyszínen</p>
     </div>
   </div>
 </div>
@@ -340,6 +356,22 @@
   </div>
 </div>
 
+<!-- ── LEMONDÁSI FELTÉTELEK ── -->
+<div class="section-full" style="background: var(--black);">
+  <div class="section">
+    <div style="max-width: 640px; margin: 0 auto; text-align: center;" class="reveal">
+      <div class="overline">Fontos tudnivaló</div>
+      <h2 class="section-title">Lemondási <span class="gold">feltételek</span></h2>
+      <div style="display:inline-flex; align-items:flex-start; gap:16px; background:rgba(255,215,0,0.07); border:1px solid rgba(255,215,0,0.25); border-radius:12px; padding:20px 28px; margin-top:24px; text-align:left;">
+        <span style="font-size:24px; flex-shrink:0;">📋</span>
+        <p style="font-size:14px; color:var(--text-dim); line-height:1.7; margin:0;">
+          24 órán kívüli lemondás esetén a teljes összeg visszatéríthető. 24 órán belüli lemondás esetén a befizetett összeg nem téríthető vissza, de az időpont átütemezhető.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ── FOOTER ── -->
 <footer>
   <div class="footer-inner">
@@ -360,7 +392,6 @@
           <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
           <li><a href="napkozi.html">Napközi</a></li>
           <li><a href="panzio.html">Panzió</a></li>
-          <li><span style="color:var(--text-faint);cursor:default;">Hamarosan...</span></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -368,7 +399,7 @@
         <ul>
           <li><a href="kutyataxi.html">Kutya taxi</a></li>
           <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
-          <li><a href="kutyatura.html">Kutyatúra</a></li>
+          <li><a href="kutyatura.html">Wander kutyás túra</a></li>
           <li><a href="orzo-vedo.html">Őrző-védő képzés</a></li>
         </ul>
       </div>
@@ -439,13 +470,41 @@ const AR_PER_KUTYA = 7000;
   loadSzombatok();
 })();
 
+function getSelectedFizmod() {
+  var radios = document.getElementsByName('csoportos-fizmod');
+  for (var i = 0; i < radios.length; i++) {
+    if (radios[i].checked) return radios[i].value;
+  }
+  return 'online';
+}
+
+function updateFizmod() {
+  var mode = getSelectedFizmod();
+  var onlineLabel = document.getElementById('fizmod-online-label');
+  var kpLabel = document.getElementById('fizmod-kp-label');
+  if (mode === 'online') {
+    onlineLabel.style.borderColor = 'var(--gold)';
+    kpLabel.style.borderColor = 'var(--border-dim)';
+  } else {
+    onlineLabel.style.borderColor = 'var(--border-dim)';
+    kpLabel.style.borderColor = 'var(--gold)';
+  }
+  updateAr();
+}
+
 function updateAr() {
   const checked = document.querySelectorAll('.csoportos-kutya-cb:checked');
   const db = Math.max(checked.length, 1);
   const osszeg = db * AR_PER_KUTYA;
   const formatted = osszeg.toLocaleString('hu-HU');
   document.getElementById('csoportos-ar').textContent = formatted + ' Ft';
-  document.getElementById('csoportos-fizet-btn').textContent = 'Foglalj és fizess – ' + formatted + ' Ft';
+
+  var mode = getSelectedFizmod();
+  if (mode === 'kp') {
+    document.getElementById('csoportos-fizet-btn').textContent = 'Foglalok – készpénz a helyszínen';
+  } else {
+    document.getElementById('csoportos-fizet-btn').textContent = 'Foglalj és fizess – ' + formatted + ' Ft';
+  }
 
   // Max 3 kutya enforce
   if (checked.length >= 3) {
@@ -531,10 +590,12 @@ function csoportosCheckout() {
 
   if (kutyaDb === 0) { showCsoportosError('Válassz legalább egy kutyát!'); return; }
 
+  var fizmod = getSelectedFizmod();
+
   // Gomb disable + loading
   var btn = document.getElementById('csoportos-fizet-btn');
   btn.disabled = true;
-  btn.textContent = 'Átirányítás a fizetéshez...';
+  btn.textContent = fizmod === 'kp' ? 'Foglalás rögzítése...' : 'Átirányítás a fizetéshez...';
   hideCsoportosError();
 
   fetch(WEBAPP_URL, {
@@ -546,11 +607,15 @@ function csoportosCheckout() {
       datum: datum,
       kutyak: kutyakNevek.join(','),
       kutya_db: kutyaDb,
+      fizetes: fizmod,
     }),
   })
   .then(function(r) { return r.json(); })
   .then(function(resp) {
-    if (resp.ok && resp.checkout_url) {
+    if (fizmod === 'kp' && resp.ok) {
+      // KP foglalás sikeres — köszönő oldal
+      window.location.href = 'csoportos-koszonjuk.html?tipus=csoportos_kp&datum=' + encodeURIComponent(datum);
+    } else if (resp.ok && resp.checkout_url) {
       window.location.href = resp.checkout_url;
     } else {
       showCsoportosError(resp.error || 'Hiba történt a foglalás során.');
