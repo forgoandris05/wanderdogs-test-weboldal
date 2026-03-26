@@ -303,6 +303,8 @@ nav {
   border-radius: 14px;
   padding: 32px;
   transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  display: flex;
+  flex-direction: column;
 }
 .card:hover {
   border-color: var(--gold);
