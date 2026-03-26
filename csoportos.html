@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Csoportos Tanfolyam – Wanderdogs</title>
-  <meta name="description" content="Minden szombat 9:00, Solymár. Kutyaiskola pozitív módszerrel, 7.000 Ft/alkalom. Max. 20 kutya.">
+  <meta name="description" content="Minden szombat 9:00, Solymár. Kutyaiskola pozitív saját módszerrel, 7.000 Ft/alkalom. Max. 20 kutya.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
@@ -124,7 +124,7 @@
   <div class="overline">Minden szombat · Solymár</div>
   <h1>Csoportos <span class="gold">tanfolyam</span></h1>
   <p class="subtitle">
-    Kutyaiskola pozitív módszerrel, közösségi élménnyel. Szombat reggel 9:00-tól, max. 20 kutya/csoport.
+    Kutyaiskola pozitív saját módszerrel, közösségi élménnyel. Szombat reggel 9:00-tól, max. 20 kutya/csoport.
   </p>
   <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
     <a href="#foglalas" class="btn btn-gold btn-lg">Bejelentkezem</a>
@@ -153,7 +153,7 @@
     <div class="section-header center reveal">
       <div class="overline">A csoportos oktatás előnyei</div>
       <h2 class="section-title">Több, mint <span class="gold">tanulás</span></h2>
-      <p class="section-sub">A csoportos alkalmak nemcsak kiképzésről szólnak – a szocializáció ugyanolyan fontos.</p>
+      <p class="section-sub">A csoportos alkalmak nemcsak oktatásról szólnak – a szocializáció ugyanolyan fontos.</p>
     </div>
     <div class="grid-4" style="margin-top: 40px;">
       <div class="card reveal reveal-delay-1">
@@ -192,7 +192,7 @@
         <div class="program-grid">
           <div class="program-card reveal reveal-delay-1">
             <div class="program-icon">🎓</div>
-            <h4>Alapparancsok</h4>
+            <h4>Alapok</h4>
             <p>Ülj, Maradj, Gyere, Le, Hely – a biztonságos együttélés alapjai, fokozatosan nehezedő szinteken.</p>
           </div>
           <div class="program-card reveal reveal-delay-2">
@@ -208,7 +208,7 @@
           <div class="program-card reveal reveal-delay-4">
             <div class="program-icon">🎯</div>
             <h4>Fókusz és figyelem</h4>
-            <p>A gazdi iránti figyelmet is tanítjuk – ez az alapja minden más parancsnak.</p>
+            <p>A gazdi iránti figyelmet is tanítjuk – ez az alapja minden más vezényszónak.</p>
           </div>
         </div>
       </div>
@@ -249,7 +249,7 @@
         </div>
 
         <div class="testimonial-inline reveal" style="margin-top: 32px;">
-          <p>"Az első szombaton már látszott a különbség. A kutyám, aki előtte mindig húzta a pórázt és mindenre rávadult, másfél óra alatt megtanulta a 'Maradj' parancsot. Szinte hihetetlen volt."</p>
+          <p>"Az első szombaton már látszott a különbség. A kutyám, aki előtte mindig húzta a pórázt és mindenre rávadult, másfél óra alatt megtanulta a 'Maradj' vezényszót. Szinte hihetetlen volt."</p>
           <div class="author">— Kovács Péter, Budapest</div>
         </div>
       </div>
@@ -321,7 +321,7 @@
       <div class="card reveal reveal-delay-1">
         <div class="card-icon">⚠️</div>
         <h4 style="margin-bottom: 8px;">Súlyos viselkedésproblémák</h4>
-        <p style="font-size: 14px; color: var(--text-dim);">Ha a kutyád erősen agresszív más kutyák vagy emberek felé, az egyéni oktatás a biztonságosabb első lépés.</p>
+        <p style="font-size: 14px; color: var(--text-dim);">Ha a kutyád agresszív más kutyák vagy emberek felé, az egyéni oktatás a biztonságosabb első lépés.</p>
       </div>
       <div class="card reveal reveal-delay-2">
         <div class="card-icon">😰</div>
@@ -331,7 +331,7 @@
       <div class="card reveal reveal-delay-3">
         <div class="card-icon">🏠</div>
         <h4 style="margin-bottom: 8px;">Kizárólag otthoni problémák</h4>
-        <p style="font-size: 14px; color: var(--text-dim);">Ha a probléma az otthon (rágás, ugatás, WC-nevelés), a háznál oktatás hatékonyabb.</p>
+        <p style="font-size: 14px; color: var(--text-dim);">Ha a probléma az otthon (rágás, ugatás, szobatisztaságra nevelés), a háznál oktatás hatékonyabb.</p>
       </div>
     </div>
     <div style="text-align: center; margin-top: 40px;">
@@ -346,7 +346,7 @@
     <div class="footer-top">
       <div class="footer-brand">
         <h3>🐾 Wanderdogs</h3>
-        <p>Szakmai kutyakiképzés és gondozás Solymáron. A te kutyád megérdemli a legjobb kezdetet.</p>
+        <p>Szakmai kutyaoktatás és gondozás Solymáron. A te kutyád megérdemli a legjobb kezdetet.</p>
         <div class="footer-socials">
           <a href="#" aria-label="Facebook">f</a>
           <a href="#" aria-label="Instagram">ig</a>
@@ -478,7 +478,7 @@ function loadSzombatok() {
         opt.textContent = label + ' – BETELT';
         opt.disabled = true;
       } else {
-        opt.textContent = label + ' – ' + sz.szabad + '/' + 20 + ' szabad hely';
+        opt.textContent = label;
       }
       sel.appendChild(opt);
     });
