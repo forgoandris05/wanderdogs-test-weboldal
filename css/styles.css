@@ -492,7 +492,7 @@ footer {
 /* ── IMAGE BANNER ── */
 .img-banner {
   width: 100%;
-  aspect-ratio: 16/6;
+  aspect-ratio: 16/9;
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--border-dim);

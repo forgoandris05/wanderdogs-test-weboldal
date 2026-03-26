@@ -185,7 +185,7 @@
   <div class="overline">Személyre szabva</div>
   <h1>Egyéni <span class="gold">oktatás</span></h1>
   <p class="subtitle">
-    Kizárólag a te kutyádra fókuszálva, pozitív saját módszerrel. Pályán, otthonodban vagy más általad választott helyszínen.
+    Kizárólag a te kutyádra fókuszálva, pozitív saját módszerrel. Pályán, otthonodban vagy más megbeszélt helyszínen.
   </p>
   <a href="#foglalas" class="btn btn-gold btn-lg">Időpontot foglalok</a>
 </section>
@@ -203,7 +203,7 @@
     <div class="section-header reveal">
       <div class="overline">Helyszínek és árak</div>
       <h2 class="section-title">Válaszd a <span class="gold">számodra</span> megfelelő opciót</h2>
-      <p class="section-sub">Minden foglalkozás kb. 60 perces, személyes konzultációval és konkrét házi feladattal zárul.</p>
+      <p class="section-sub">Minden foglalkozás kb. 45-60 perc, személyes konzultációval és konkrét házi feladattal zárul.</p>
     </div>
 
     <div class="options-grid">
@@ -258,7 +258,7 @@
 <!-- ── HOW IT WORKS ── -->
 <div class="section-full section-dark">
   <div class="section" style="padding-top:40px; padding-bottom:40px;">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: stretch;">
       <div>
         <div class="section-header reveal" style="margin-bottom:24px;">
           <div class="overline">A folyamat</div>
@@ -298,7 +298,7 @@
       <div>
         <div class="section-header reveal" style="margin-bottom:24px;">
           <div class="overline">Mire számíthatsz</div>
-          <h2 class="section-title" style="font-size: clamp(22px, 3vw, 32px);">Miért <span class="gold">működik</span> a mi módszerünk?</h2>
+          <h2 class="section-title">Miért <span class="gold">működik</span> a mi módszerünk?</h2>
         </div>
         <div style="display: flex; flex-direction: column; gap: 12px;">
           <div class="card reveal reveal-delay-1" style="padding:20px;">
@@ -436,7 +436,7 @@
 <div class="section-full" style="background: var(--black);">
   <div class="section" style="text-align: center; max-width: 640px;">
     <div class="reveal">
-      <div class="overline">Ne várd tovább</div>
+      <div class="overline">Ne várj tovább</div>
       <h2 class="section-title">Az első lépés <span class="gold">te vagy</span></h2>
       <a href="#foglalas" class="btn btn-gold btn-lg">Foglalok időpontot most</a>
     </div>
@@ -515,30 +515,36 @@
         '<a href="' + calLink('https://cal.com/timea-kucsera-6harfx/egyeni-oktatas-haznal') + '" target="_blank" class="btn btn-gold" style="display:block;text-align:center;">📅 Foglalok</a>';
     }
 
-    // Ha 2+ kutya: radio selector mutatása
+    // Ha 2+ kutya: radio selector mutatása mindkét kártyánál
     if (kutyakLista.length > 1) {
-      const selectorDiv = document.createElement('div');
-      selectorDiv.style.cssText = 'background:var(--black-3);border:1px solid var(--border-dim);border-radius:12px;padding:20px 24px;margin-bottom:24px;';
-      selectorDiv.innerHTML = '<p style="font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:12px;">Melyik kutyádat hozod? (magánórán 1 kutya)</p>';
-      kutyakLista.forEach((k, i) => {
-        const row = document.createElement('label');
-        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;font-size:14px;color:var(--text);';
-        const inp = document.createElement('input');
-        inp.type = 'radio'; inp.name = 'egyeni-kutya'; inp.value = k.nev;
-        inp.style.cssText = 'width:16px;height:16px;accent-color:var(--gold);';
-        if (i === 0) inp.checked = true;
-        inp.addEventListener('change', function() {
-          selectedKutya = this.value;
-          renderFoglalasGombok();
+      function createSelector(radioName, targetId) {
+        const selectorDiv = document.createElement('div');
+        selectorDiv.style.cssText = 'background:var(--black-3);border:1px solid var(--border-dim);border-radius:12px;padding:20px 24px;margin-bottom:24px;';
+        selectorDiv.innerHTML = '<p style="font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:12px;">Melyik kutyádat hozod? (magánórán 1 kutya)</p>';
+        kutyakLista.forEach((k, i) => {
+          const row = document.createElement('label');
+          row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;font-size:14px;color:var(--text);';
+          const inp = document.createElement('input');
+          inp.type = 'radio'; inp.name = radioName; inp.value = k.nev;
+          inp.style.cssText = 'width:16px;height:16px;accent-color:var(--gold);';
+          if (i === 0) inp.checked = true;
+          inp.addEventListener('change', function() {
+            selectedKutya = this.value;
+            // Szinkronizálás: a másik selector is kövesse
+            document.querySelectorAll('input[type="radio"][value="' + this.value + '"]').forEach(r => { r.checked = true; });
+            renderFoglalasGombok();
+          });
+          row.appendChild(inp);
+          const span = document.createElement('span');
+          span.innerHTML = k.nev + (k.fajta ? ' <span style="color:var(--text-dim);font-size:12px;">(' + k.fajta + ')</span>' : '');
+          row.appendChild(span);
+          selectorDiv.appendChild(row);
         });
-        row.appendChild(inp);
-        const span = document.createElement('span');
-        span.innerHTML = k.nev + (k.fajta ? ' <span style="color:var(--text-dim);font-size:12px;">(' + k.fajta + ')</span>' : '');
-        row.appendChild(span);
-        selectorDiv.appendChild(row);
-      });
-      const target = document.getElementById('foglalasPalyan');
-      if (target) target.parentNode.insertBefore(selectorDiv, target);
+        const target = document.getElementById(targetId);
+        if (target) target.parentNode.insertBefore(selectorDiv, target);
+      }
+      createSelector('egyeni-kutya-palyan', 'foglalasPalyan');
+      createSelector('egyeni-kutya-haznal', 'foglalasHaznal');
     }
 
     renderFoglalasGombok();
