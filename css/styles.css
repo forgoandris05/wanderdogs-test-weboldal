@@ -491,16 +491,16 @@ footer {
 
 /* ── IMAGE BANNER ── */
 .img-banner {
-  width: 100%;
-  aspect-ratio: 16/9;
+  max-width: 560px;
+  margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--border-dim);
   background: var(--black-3);
 }
 .img-banner img {
-  width: 100%; height: 100%;
-  object-fit: cover;
+  width: 100%;
+  height: auto;
   display: block;
 }
 
