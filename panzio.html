@@ -1090,16 +1090,20 @@ szamol();
 (async function panzioHogyanCheck() {
   const user = wdGetUser();
   if (!user || !user.registered || !user.email) return;
+  // Szinkron elrejtés – nincs villanás
+  document.getElementById('hogyan').style.display = 'none';
+  var btnHogyan = document.getElementById('btn-hogyan');
+  if (btnHogyan) btnHogyan.style.display = 'none';
+  // API check – ha mégis új ügyfél, visszamutatjuk
   try {
     const resp = await fetch(WEBAPP_URL, {
       method: 'POST',
       body: JSON.stringify({ action: 'foglalas_check', email: user.email, service: 'Panzió' })
     });
     const data = await resp.json();
-    if (data.visszatero) {
-      document.getElementById('hogyan').style.display = 'none';
-      var btnHogyan = document.getElementById('btn-hogyan');
-      if (btnHogyan) btnHogyan.style.display = 'none';
+    if (data.ujUgyfel) {
+      document.getElementById('hogyan').style.display = '';
+      if (btnHogyan) btnHogyan.style.display = '';
     }
   } catch (err) {
     console.log('[WD panzio] hogyan check hiba:', err);
