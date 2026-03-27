@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rólunk – Wanderdogs | Kutyaoktatás Solymár</title>
+  <meta name="description" content="Több mint 10 éve foglalkozunk kutyákkal. Saját módszer, egyéni megközelítés, valódi eredmények. Ismerd meg a Wander Dogs csapatot és módszert!">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* ── PAGE-SPECIFIC ── */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .about-text h2 { font-size: clamp(28px, 3.5vw, 42px); margin-bottom: 20px; }
+    .about-text p { color: var(--text-dim); margin-bottom: 20px; font-size: 15.5px; }
+    .about-checks { list-style: none; margin: 24px 0 36px; }
+    .about-checks li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-dim);
+      display: flex; align-items: center; gap: 12px;
+      font-size: 14px; font-weight: 500;
+    }
+    .about-checks li::before {
+      content: '\2726';
+      color: var(--gold); font-size: 12px; flex-shrink: 0;
+    }
+
+    /* ── STATS ── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border-dim);
+      border: 1px solid var(--border-dim);
+      border-radius: 16px; overflow: hidden;
+    }
+    .stat-item {
+      background: var(--black-3);
+      padding: 44px 28px;
+      text-align: center;
+    }
+    .stat-num { font-size: 44px; font-weight: 900; color: var(--gold); line-height: 1; }
+    .stat-label { font-size: 13px; color: var(--text-dim); margin-top: 8px; font-weight: 500; }
+
+    /* ── METHOD CARDS ── */
+    .method-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    .method-card {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 14px;
+      padding: 32px;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .method-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-5px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,215,0,0.1);
+    }
+    .method-icon {
+      width: 52px; height: 52px;
+      background: var(--gold-faint);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      margin-bottom: 18px;
+    }
+    .method-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+    .method-card p { font-size: 13.5px; color: var(--text-dim); line-height: 1.65; }
+
+    /* ── WHY US ── */
+    .why-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border: 1px solid var(--border-dim);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .why-item {
+      padding: 36px 28px;
+      border-right: 1px solid var(--border-dim);
+      transition: background 0.2s;
+    }
+    .why-item:last-child { border-right: none; }
+    .why-item:hover { background: var(--gold-faint); }
+    .why-icon { font-size: 28px; margin-bottom: 14px; }
+    .why-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .why-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 24px;
+      padding: 72px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 100% at 50% 50%, rgba(255,215,0,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-banner h2 { font-size: clamp(26px, 4vw, 44px); margin-bottom: 16px; position: relative; z-index: 1; }
+    .cta-banner p { font-size: 17px; color: var(--text-dim); margin-bottom: 36px; position: relative; z-index: 1; }
+    .cta-banner .btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-photo { display: none; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .method-grid { grid-template-columns: repeat(2, 1fr); }
+      .why-grid { grid-template-columns: repeat(2, 1fr); }
+      .why-item { border-right: none; border-bottom: 1px solid var(--border-dim); }
+      .why-item:nth-child(odd) { border-right: 1px solid var(--border-dim); }
+      .why-item:nth-last-child(-n+2) { border-bottom: none; }
+    }
+    @media (max-width: 768px) {
+      .method-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .why-grid { grid-template-columns: 1fr; border-radius: 12px; }
+      .why-item { border-right: none !important; border-bottom: 1px solid var(--border-dim); }
+      .why-item:last-child { border-bottom: none; }
+      .cta-banner { padding: 48px 24px; }
+      .cta-banner .btns { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVIGATION ══ -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">WANDERDOGS</a>
+
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Főoldal</a></li>
+    <li class="nav-dropdown">
+      <a href="#">Szolgáltatások</a>
+      <ul class="dropdown-menu">
+        <li><a href="egyeni-ora.html">🎯 Egyéni oktatás</a></li>
+        <li><a href="csoportos.html">🐶 Csoportos kutyaiskola</a></li>
+        <li><a href="napkozi.html">🏫 Napközi</a></li>
+        <li><a href="panzio.html">🏨 Panzió</a></li>
+        <li><a href="kutyataxi.html">🚐 Kutya taxi</a></li>
+        <li><a href="kutyatura.html">🥾 Wander kutyás túra</a></li>
+        <li><a href="viselkedesterapia.html">🧠 Viselkedésterápia</a></li>
+        <li><a href="orzo-vedo.html">🛡️ Őrző-védő képzés</a></li>
+      </ul>
+    </li>
+    <li><a href="tanfolyamok.html">Tanfolyamok</a></li>
+    <li><a href="workshopok.html">Workshopok</a></li>
+    <li><a href="kurzusok.html">Kurzusok</a></li>
+    <li class="nav-dropdown">
+      <a href="#" class="active">Rólunk</a>
+      <ul class="dropdown-menu">
+        <li><a href="rolunk.html">👩‍🏫 Timi és a csapat</a></li>
+        <li><a href="rolunk.html#modszer">🌿 A módszerünk</a></li>
+        <li><a href="rolunk.html#gyik">❓ GYIK</a></li>
+      </ul>
+    </li>
+    <li><a href="kapcsolat.html">Kapcsolat</a></li>
+    <li><a href="egyeni-ora.html" class="nav-cta">Foglalj időpontot</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <span class="nav-phone">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+      0670/5626926
+    </span>
+    <button class="nav-burger" id="burger" aria-label="Menü">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="page-hero">
+  <span class="overline">Rólunk</span>
+  <h1>Szemlélet. Rendszer. <em class="gold">Eredmények.</em></h1>
+  <p class="subtitle">Több száz kutyával szerzett tapasztalat, saját módszer, valódi fejlődés.<br>Ez a Wander Dogs.</p>
+  <a href="#modszer" class="btn btn-gold btn-lg">Ismerd meg a módszert →</a>
+</section>
+
+<hr class="gold-line">
+
+<!-- ══ BEMUTATKOZÁS ══ -->
+<div class="section-full section-dark">
+  <div style="max-width:1440px; margin:0 auto; padding:100px 48px;">
+    <div class="about-grid">
+      <div class="about-photo reveal">
+        <img src="kepek/timikutya portre.png" alt="Timi és a kutyák Solymáron" loading="lazy">
+      </div>
+      <div class="about-text reveal">
+        <span class="overline">Ki áll a Wander Dogs mögött?</span>
+        <h2>Több mint <em class="gold">10 éve</em> segítek kutyáknak és gazdiknak</h2>
+        <p>Több mint tíz éve foglalkozom kutyákkal, viselkedésproblémákkal és gazdik segítésével. Több száz kutyával dolgoztam már, a kölyöktől a problémás esetekig.</p>
+        <p><strong style="color:var(--text)">Nem sablonokban gondolkodom. Minden kutya és gazdi egyedi – ezért a megoldás is az.</strong></p>
+        <ul class="about-checks">
+          <li>Több száz kutyával szerzett tapasztalat</li>
+          <li>Saját módszert építettem (Wander Dogs)</li>
+          <li>Folyamatosan képzem magam</li>
+          <li>Nemzetközi irányokat is követek</li>
+          <li>Egyéni megoldások minden kutyára</li>
+        </ul>
+        <a href="egyeni-ora.html" class="btn btn-gold">Jelentkezz most és segítünk →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ STATS ══ -->
+<div class="section-full" style="background: var(--black);">
+  <div class="section">
+    <div class="stats-grid reveal">
+      <div class="stat-item">
+        <div class="stat-num">10+</div>
+        <div class="stat-label">Év tapasztalat</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">1000+</div>
+        <div class="stat-label">Kutya, akikkel dolgoztunk</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">1</div>
+        <div class="stat-label">Saját módszer</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Egyéni megoldás</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="gold-line">
+
+<!-- ══ A WANDER DOGS MÓDSZER ══ -->
+<section class="section-full section-dark" id="modszer">
+  <div class="section">
+    <div class="section-header center reveal">
+      <span class="overline">A módszerünk</span>
+      <h2 class="section-title">A Wander Dogs <em class="gold">módszer</em></h2>
+      <p class="section-sub">Kapcsolat alapú, empatikus, mégis következetes rendszer. Nem csak viselkedést javítunk – kapcsolatot építünk.</p>
+    </div>
+
+    <div class="method-grid">
+      <div class="method-card reveal">
+        <div class="method-icon">🌿</div>
+        <h3>Pozitív alapelvek</h3>
+        <p>A pozitív megerősítés az alap, de nem hagyjuk figyelmen kívül a valóságot. Ami működik, azt erősítjük.</p>
+      </div>
+      <div class="method-card reveal reveal-delay-1">
+        <div class="method-icon">⚖️</div>
+        <h3>Balansz szemlélet</h3>
+        <p>Kapcsolat és szabályok egyensúlya. Nem engedékenység, nem keménység – hanem következetesség.</p>
+      </div>
+      <div class="method-card reveal reveal-delay-2">
+        <div class="method-icon">🎯</div>
+        <h3>Egyéni adaptáció</h3>
+        <p>Nincs egyetlen "jó út". Minden kutya és gazdi más, ezért a megoldás is személyre szabott.</p>
+      </div>
+      <div class="method-card reveal reveal-delay-3">
+        <div class="method-icon">💛</div>
+        <h3>Empátia + struktúra</h3>
+        <p>Megértjük a kutyát és a gazdit is. Keretet adunk, de nem erőltetünk – ha valami nem működik, megoldást keresünk.</p>
+      </div>
+    </div>
+
+    <div class="reveal" style="text-align:center; margin-top:48px;">
+      <p style="font-size:17px; color:var(--text-dim); max-width:560px; margin:0 auto; line-height:1.75;">
+        A módszer alapja, hogy nincs egyetlen "jó út". <strong style="color:var(--text)">Ha valami nem működik, nem erőltetjük – megoldást keresünk.</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr class="gold-line">
+
+<!-- ══ MIÉRT A WANDER DOGS? ══ -->
+<div class="section-full" style="background: var(--black);">
+  <div class="section">
+    <div class="section-header center reveal">
+      <span class="overline">Miért minket válassz?</span>
+      <h2 class="section-title">Miért a <em class="gold">Wander Dogs?</em></h2>
+      <p class="section-sub">Mert nálunk nem csak "kutyázás" történik. Megértjük, tanítjuk és fejlesztjük a kutyádat.</p>
+    </div>
+
+    <div class="why-grid reveal">
+      <div class="why-item">
+        <div class="why-icon">🚫</div>
+        <div class="why-title">Nem sablon megoldások</div>
+        <div class="why-desc">A legtöbb helyen csak lefárasztják a kutyát. Mi valódi, egyénre szabott megközelítést alkalmazunk.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">🎯</div>
+        <div class="why-title">Egyedi megközelítés</div>
+        <div class="why-desc">Minden kutyára és gazdira más stratégia működik. Nálunk ezt komolyan vesszük.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">🤝</div>
+        <div class="why-title">Kapcsolat + szabályok</div>
+        <div class="why-desc">Az egyensúly a titok. Nem csak parancsokat tanítunk – a kapcsolatotokat is fejlesztjük.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">✅</div>
+        <div class="why-title">Valódi eredmények</div>
+        <div class="why-desc">Nem ígérünk csodát, de a mindennapokban látható változást igen. Több száz gazdi tapasztalta.</div>
+      </div>
+    </div>
+
+    <div class="reveal" style="text-align:center; margin-top:48px;">
+      <p style="font-size:18px; font-weight:700; color:var(--text);">
+        Itt nem csak a kutya változik – <em class="gold">a kapcsolatotok is.</em>
+      </p>
+    </div>
+  </div>
+</div>
+
+<hr class="gold-line">
+
+<!-- ══ CTA BANNER ══ -->
+<div class="section-full section-dark">
+  <div class="section">
+    <div class="cta-banner reveal">
+      <h2>Ne várd meg, amíg a probléma <em class="gold">rosszabb lesz.</em></h2>
+      <p>Nálunk nem sablonban dolgozunk. Több mint 10 év tapasztalattal segítünk, hogy a kutyád kiegyensúlyozott és kezelhető legyen.</p>
+      <div class="btns">
+        <a href="egyeni-ora.html" class="btn btn-gold btn-lg">Egyéni oktatás →</a>
+        <a href="csoportos.html" class="btn btn-outline btn-lg">Csoportos oktatás →</a>
+        <a href="napkozi.html" class="btn btn-outline btn-lg">Napközi →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="gold-line">
+
+<!-- ══ GYIK ══ -->
+<section class="section" id="gyik">
+  <div class="section-header center reveal">
+    <span class="overline">Gyakori kérdések</span>
+    <h2 class="section-title">Amit gyakran <em class="gold">kérdeznek</em></h2>
+  </div>
+
+  <div class="faq-list reveal" style="max-width:720px; margin:0 auto;">
+    <div class="faq-item">
+      <div class="faq-q">Milyen korú kutyával lehet jönni?</div>
+      <div class="faq-a">
+        <p style="font-size:14px; color:var(--text-dim); line-height:1.7;">Bármilyen korú kutyát szívesen fogadunk – a kölyöktől az idős kutyáig. Mindenkinek más megközelítés kell, és mi ehhez alkalmazkodunk.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Van-e olyan kutya, akivel nem tudtok dolgozni?</div>
+      <div class="faq-a">
+        <p style="font-size:14px; color:var(--text-dim); line-height:1.7;">Szinte minden esettel foglalkozunk. Az első konzultáción felmérjük a helyzetet, és ha úgy látjuk, más segítségre van szükség, őszintén elmondjuk.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Mennyire más a Wander Dogs módszer, mint a hagyományos kutyaiskola?</div>
+      <div class="faq-a">
+        <p style="font-size:14px; color:var(--text-dim); line-height:1.7;">Nem sablonban dolgozunk. Minden kutyát egyénre szabottan kezelünk, kapcsolatalapú, pozitív megerősítéses módszerrel. A cél nem a "lefárasztás", hanem a valódi fejlődés.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Hogyan tudok időpontot foglalni?</div>
+      <div class="faq-a">
+        <p style="font-size:14px; color:var(--text-dim); line-height:1.7;">Online, közvetlenül a weboldalon. Válaszd ki a szolgáltatást, válassz szabad időpontot, és fizess előre – kényelmes és átlátható.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Hol tartjátok az órákat?</div>
+      <div class="faq-a">
+        <p style="font-size:14px; color:var(--text-dim); line-height:1.7;">Solymáron, saját pályán. De egyéni oktatásnál akár helyszínre is kijövünk – otthonodba vagy más környezetbe.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>🐾 Wanderdogs</h3>
+        <p>Szakmai kutyaoktatás, gondozási tippek és online kurzusok – hogy te és kutyád igazán megértsétek egymást. A harmonikus kapcsolat tanulható.</p>
+        <div class="footer-socials">
+          <a href="#" title="Facebook">f</a>
+          <a href="#" title="Instagram">ig</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Szolgáltatások</h4>
+        <ul>
+          <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
+          <li><a href="csoportos.html">Csoportos kutyaiskola</a></li>
+          <li><a href="napkozi.html">Napközi</a></li>
+          <li><a href="panzio.html">Panzió</a></li>
+          <li><a href="kutyataxi.html">Kutya taxi</a></li>
+          <li><a href="kutyatura.html">Wander kutyás túra</a></li>
+          <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
+          <li><a href="orzo-vedo.html">Őrző-védő</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Információ</h4>
+        <ul>
+          <li><a href="rolunk.html">Rólunk</a></li>
+          <li><a href="kurzusok.html">Online kurzusok</a></li>
+          <li><a href="rolunk.html#gyik">GYIK</a></li>
+          <li><a href="kapcsolat.html">Kapcsolat</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Elérhetőség</h4>
+        <p>📍 Rozália sor, Solymár 2085</p>
+        <p>📞 0670/5626926</p>
+        <p>✉️ info.wanderdogs@gmail.com</p>
+        <p style="margin-top:12px; font-size:12px; color:var(--text-faint);">
+          H–P: 8:00–17:00<br>
+          Szombat: 9:00–18:00
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 Wanderdogs. Minden jog fenntartva.</span>
+      <span>wanderdogsworld.hu</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
