@@ -19,7 +19,7 @@
       <a href="#">Szolgáltatások</a>
       <ul class="dropdown-menu">
         <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
-        <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+        <li><a href="csoportos.html">Csoportos oktatás</a></li>
         <li><a href="napkozi.html">Napközi</a></li>
         <li><a href="panzio.html">Panzió</a></li>
         <li><a href="kutyataxi.html">Kutya taxi</a></li>
@@ -91,12 +91,43 @@
   </div>
 </div>
 
-<!-- ── KÉPSÁV ── -->
-<div style="max-width: 1240px; margin: 0 auto; padding: 0 48px;">
-  <div class="img-banner reveal">
-    <img src="kepek/fekete kutya.png" alt="Viselkedésterápia Wanderdogs" loading="lazy">
+<!-- ── KÉPCSÍK (MARQUEE) ── -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-set">
+      <img src="viselkedesterapia kepek/Képernyőkép 2026-03-27 222321.png" alt="Viselkedésterápia foglalkozás">
+      <img src="viselkedesterapia kepek/655580635_1566403995486087_255409458746089947_n.jpg" alt="Kutya viselkedésterápia">
+      <img src="viselkedesterapia kepek/656935651_1566399625486524_7021533441904094843_n.jpg" alt="Viselkedésterápia Wanderdogs">
+      <img src="viselkedesterapia kepek/Képernyőkép 2026-03-27 224421.png" alt="Viselkedésterápia eredmény">
+    </div>
+    <div class="marquee-set">
+      <img src="viselkedesterapia kepek/Képernyőkép 2026-03-27 222321.png" alt="">
+      <img src="viselkedesterapia kepek/655580635_1566403995486087_255409458746089947_n.jpg" alt="">
+      <img src="viselkedesterapia kepek/656935651_1566399625486524_7021533441904094843_n.jpg" alt="">
+      <img src="viselkedesterapia kepek/Képernyőkép 2026-03-27 224421.png" alt="">
+    </div>
   </div>
 </div>
+<script>
+(function(){
+  var track = document.querySelector('.marquee-track');
+  var set1 = track.querySelector('.marquee-set');
+  function startMarquee() {
+    var w = set1.offsetWidth;
+    track.style.animation = 'none';
+    var style = document.createElement('style');
+    style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';
+    document.head.appendChild(style);
+    track.style.animation = 'mq 25s linear infinite';
+  }
+  var imgs = set1.querySelectorAll('img');
+  var loaded = 0;
+  imgs.forEach(function(img){
+    if(img.complete) { loaded++; } else { img.onload = function(){ loaded++; if(loaded>=imgs.length) startMarquee(); }; }
+  });
+  if(loaded >= imgs.length) startMarquee();
+})();
+</script>
 
 <div class="section-full section-dark" id="foglalas">
   <div class="section">
@@ -135,7 +166,7 @@
         <h4>Szolgáltatások</h4>
         <ul>
           <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
-          <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+          <li><a href="csoportos.html">Csoportos oktatás</a></li>
           <li><a href="napkozi.html">Napközi</a></li>
           <li><a href="panzio.html">Panzió</a></li>
         </ul>

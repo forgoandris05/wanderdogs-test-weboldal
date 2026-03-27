@@ -43,6 +43,7 @@
       text-align: center;
     }
     .stat-num { font-size: 44px; font-weight: 900; color: var(--gold); line-height: 1; }
+    .stat-num.stat-text { font-size: 26px; line-height: 1.2; }
     .stat-label { font-size: 13px; color: var(--text-dim); margin-top: 8px; font-weight: 500; }
 
     /* ── METHOD CARDS ── */
@@ -113,6 +114,34 @@
     .cta-banner p { font-size: 17px; color: var(--text-dim); margin-bottom: 36px; position: relative; z-index: 1; }
     .cta-banner .btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
 
+    /* ── FAQ ── */
+    .faq-list { max-width: 720px; }
+    .faq-item {
+      border-bottom: 1px solid var(--border-dim);
+      padding: 20px 0;
+    }
+    .faq-q {
+      font-size: 15px; font-weight: 700;
+      cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 16px;
+    }
+    .faq-q::after {
+      content: '+';
+      font-size: 22px; font-weight: 300;
+      color: var(--gold);
+      flex-shrink: 0;
+      transition: transform 0.25s;
+    }
+    .faq-item.open .faq-q::after { transform: rotate(45deg); }
+    .faq-a {
+      font-size: 14px; color: var(--text-dim);
+      line-height: 1.7;
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s;
+    }
+    .faq-item.open .faq-a { max-height: 300px; padding-top: 12px; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 1024px) {
       .about-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -147,7 +176,7 @@
       <a href="#">Szolgáltatások</a>
       <ul class="dropdown-menu">
         <li><a href="egyeni-ora.html">🎯 Egyéni oktatás</a></li>
-        <li><a href="csoportos.html">🐶 Csoportos kutyaiskola</a></li>
+        <li><a href="csoportos.html">🐶 Csoportos oktatás</a></li>
         <li><a href="napkozi.html">🏫 Napközi</a></li>
         <li><a href="panzio.html">🏨 Panzió</a></li>
         <li><a href="kutyataxi.html">🚐 Kutya taxi</a></li>
@@ -159,14 +188,7 @@
     <li><a href="tanfolyamok.html">Tanfolyamok</a></li>
     <li><a href="workshopok.html">Workshopok</a></li>
     <li><a href="kurzusok.html">Kurzusok</a></li>
-    <li class="nav-dropdown">
-      <a href="#" class="active">Rólunk</a>
-      <ul class="dropdown-menu">
-        <li><a href="rolunk.html">👩‍🏫 Timi és a csapat</a></li>
-        <li><a href="rolunk.html#modszer">🌿 A módszerünk</a></li>
-        <li><a href="rolunk.html#gyik">❓ GYIK</a></li>
-      </ul>
-    </li>
+    <li><a href="rolunk.html" class="active">Rólunk</a></li>
     <li><a href="kapcsolat.html">Kapcsolat</a></li>
     <li><a href="egyeni-ora.html" class="nav-cta">Foglalj időpontot</a></li>
   </ul>
@@ -186,7 +208,7 @@
 <section class="page-hero">
   <span class="overline">Rólunk</span>
   <h1>Szemlélet. Rendszer. <em class="gold">Eredmények.</em></h1>
-  <p class="subtitle">Több száz kutyával szerzett tapasztalat, saját módszer, valódi fejlődés.<br>Ez a Wander Dogs.</p>
+  <p class="subtitle">Több mint 1000 kutyával szerzett tapasztalat, saját módszer, valódi fejlődés.<br>Ez a Wander Dogs.</p>
   <a href="#modszer" class="btn btn-gold btn-lg">Ismerd meg a módszert →</a>
 </section>
 
@@ -230,12 +252,10 @@
         <div class="stat-label">Kutya, akikkel dolgoztunk</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">1</div>
-        <div class="stat-label">Saját módszer</div>
+        <div class="stat-num stat-text">Saját<br>módszer</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">∞</div>
-        <div class="stat-label">Egyéni megoldás</div>
+        <div class="stat-num stat-text">Egyéni<br>megoldás</div>
       </div>
     </div>
   </div>
@@ -275,11 +295,6 @@
       </div>
     </div>
 
-    <div class="reveal" style="text-align:center; margin-top:48px;">
-      <p style="font-size:17px; color:var(--text-dim); max-width:560px; margin:0 auto; line-height:1.75;">
-        A módszer alapja, hogy nincs egyetlen "jó út". <strong style="color:var(--text)">Ha valami nem működik, nem erőltetjük – megoldást keresünk.</strong>
-      </p>
-    </div>
   </div>
 </section>
 
@@ -313,7 +328,7 @@
       <div class="why-item">
         <div class="why-icon">✅</div>
         <div class="why-title">Valódi eredmények</div>
-        <div class="why-desc">Nem ígérünk csodát, de a mindennapokban látható változást igen. Több száz gazdi tapasztalta.</div>
+        <div class="why-desc">Nem ígérünk csodát, de a mindennapokban látható változást igen. Több mint 1000 gazdi tapasztalta.</div>
       </div>
     </div>
 
@@ -351,36 +366,26 @@
     <h2 class="section-title">Amit gyakran <em class="gold">kérdeznek</em></h2>
   </div>
 
-  <div class="faq-list reveal" style="max-width:720px; margin:0 auto;">
-    <div class="faq-item">
+  <div class="faq-list" style="max-width:720px; margin:0 auto;">
+    <div class="faq-item reveal">
       <div class="faq-q">Milyen korú kutyával lehet jönni?</div>
-      <div class="faq-a">
-        <p style="font-size:14px; color:var(--text-dim); line-height:1.7;">Bármilyen korú kutyát szívesen fogadunk – a kölyöktől az idős kutyáig. Mindenkinek más megközelítés kell, és mi ehhez alkalmazkodunk.</p>
-      </div>
+      <div class="faq-a">Bármilyen korú kutyát szívesen fogadunk – a kölyöktől az idős kutyáig. Mindenkinek más megközelítés kell, és mi ehhez alkalmazkodunk.</div>
     </div>
-    <div class="faq-item">
+    <div class="faq-item reveal reveal-delay-1">
       <div class="faq-q">Van-e olyan kutya, akivel nem tudtok dolgozni?</div>
-      <div class="faq-a">
-        <p style="font-size:14px; color:var(--text-dim); line-height:1.7;">Szinte minden esettel foglalkozunk. Az első konzultáción felmérjük a helyzetet, és ha úgy látjuk, más segítségre van szükség, őszintén elmondjuk.</p>
-      </div>
+      <div class="faq-a">Szinte minden esettel foglalkozunk. Az első konzultáción felmérjük a helyzetet, és ha úgy látjuk, más segítségre van szükség, őszintén elmondjuk.</div>
     </div>
-    <div class="faq-item">
+    <div class="faq-item reveal reveal-delay-2">
       <div class="faq-q">Mennyire más a Wander Dogs módszer, mint a hagyományos kutyaiskola?</div>
-      <div class="faq-a">
-        <p style="font-size:14px; color:var(--text-dim); line-height:1.7;">Nem sablonban dolgozunk. Minden kutyát egyénre szabottan kezelünk, kapcsolatalapú, pozitív megerősítéses módszerrel. A cél nem a "lefárasztás", hanem a valódi fejlődés.</p>
-      </div>
+      <div class="faq-a">Nem sablonban dolgozunk. Minden kutyát egyénre szabottan kezelünk, kapcsolatalapú, pozitív megerősítéses módszerrel. A cél nem a "lefárasztás", hanem a valódi fejlődés.</div>
     </div>
-    <div class="faq-item">
+    <div class="faq-item reveal reveal-delay-3">
       <div class="faq-q">Hogyan tudok időpontot foglalni?</div>
-      <div class="faq-a">
-        <p style="font-size:14px; color:var(--text-dim); line-height:1.7;">Online, közvetlenül a weboldalon. Válaszd ki a szolgáltatást, válassz szabad időpontot, és fizess előre – kényelmes és átlátható.</p>
-      </div>
+      <div class="faq-a">Online, közvetlenül a weboldalon. Válaszd ki a szolgáltatást, válassz szabad időpontot.</div>
     </div>
-    <div class="faq-item">
+    <div class="faq-item reveal reveal-delay-4">
       <div class="faq-q">Hol tartjátok az órákat?</div>
-      <div class="faq-a">
-        <p style="font-size:14px; color:var(--text-dim); line-height:1.7;">Solymáron, saját pályán. De egyéni oktatásnál akár helyszínre is kijövünk – otthonodba vagy más környezetbe.</p>
-      </div>
+      <div class="faq-a">Solymáron, saját pályán. De egyéni oktatásnál akár helyszínre is kijövünk – otthonodba vagy más környezetbe.</div>
     </div>
   </div>
 </section>
@@ -402,7 +407,7 @@
         <h4>Szolgáltatások</h4>
         <ul>
           <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
-          <li><a href="csoportos.html">Csoportos kutyaiskola</a></li>
+          <li><a href="csoportos.html">Csoportos oktatás</a></li>
           <li><a href="napkozi.html">Napközi</a></li>
           <li><a href="panzio.html">Panzió</a></li>
           <li><a href="kutyataxi.html">Kutya taxi</a></li>
@@ -442,5 +447,16 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script>
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+</script>
 </body>
 </html>
