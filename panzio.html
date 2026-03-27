@@ -324,7 +324,7 @@
       <a href="#">Szolgáltatások</a>
       <ul class="dropdown-menu">
         <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
-        <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+        <li><a href="csoportos.html">Csoportos oktatás</a></li>
         <li><a href="napkozi.html">Napközi</a></li>
         <li><a href="panzio.html">Panzió</a></li>
         <li><a href="kutyataxi.html">Kutya taxi</a></li>
@@ -395,12 +395,65 @@
   </div>
 </div>
 
-<!-- ── KÉPSÁV ── -->
-<div style="max-width: 1240px; margin: 0 auto; padding: 0 48px;">
-  <div class="img-banner reveal">
-    <img src="kepek/labrador.png" alt="Kutyapanzió Wanderdogs Solymár" loading="lazy">
+<!-- ── KÉPCSÍK (MARQUEE) ── -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-set">
+      <img src="panzió képek/Képernyőkép 2026-03-27 221450.png" alt="Kutyapanzió Wanderdogs">
+      <img src="panzió képek/496242334_1292162729576883_7330717724407701463_n.jpg" alt="Kutya a panzióban">
+      <img src="panzió képek/492829894_1276564664470023_5693193269404160432_n.jpg" alt="Panzió élet">
+      <img src="panzió képek/657045236_26289439457378908_433857967096194160_n.jpg" alt="Kutyapanzió pillanat">
+      <img src="panzió képek/658815195_26289440027378851_6801028152471554569_n.jpg" alt="Kutya gondozás">
+      <img src="panzió képek/658066827_26289416594047861_5319932726682759420_n.jpg" alt="Kutyapanzió Solymár">
+      <img src="panzió képek/656978982_1570786365047850_7920764776430350654_n.jpg" alt="Panzió foglalkozás">
+      <img src="panzió képek/657332455_1570775155048971_5649594977119883794_n.jpg" alt="Kutya játék">
+      <img src="panzió képek/656720699_1570770948382725_2673228926400422327_n.jpg" alt="Panzió kert">
+      <img src="panzió képek/660121874_1570768195049667_7716221091187134525_n.jpg" alt="Kutyapanzió élet">
+      <img src="panzió képek/654726501_1566415568818263_793206643072689014_n.jpg" alt="Kutya pihenés">
+      <img src="panzió képek/655673187_1566409718818848_5073209580972395669_n.jpg" alt="Panzió gondoskodás">
+      <img src="panzió képek/655580635_1566403995486087_255409458746089947_n.jpg" alt="Kutya a kertben">
+      <img src="panzió képek/656935651_1566399625486524_7021533441904094843_n.jpg" alt="Panzió játék">
+      <img src="panzió képek/Képernyőkép 2026-03-27 224421.png" alt="Kutyapanzió Wanderdogs">
+    </div>
+    <div class="marquee-set">
+      <img src="panzió képek/Képernyőkép 2026-03-27 221450.png" alt="">
+      <img src="panzió képek/496242334_1292162729576883_7330717724407701463_n.jpg" alt="">
+      <img src="panzió képek/492829894_1276564664470023_5693193269404160432_n.jpg" alt="">
+      <img src="panzió képek/657045236_26289439457378908_433857967096194160_n.jpg" alt="">
+      <img src="panzió képek/658815195_26289440027378851_6801028152471554569_n.jpg" alt="">
+      <img src="panzió képek/658066827_26289416594047861_5319932726682759420_n.jpg" alt="">
+      <img src="panzió képek/656978982_1570786365047850_7920764776430350654_n.jpg" alt="">
+      <img src="panzió képek/657332455_1570775155048971_5649594977119883794_n.jpg" alt="">
+      <img src="panzió képek/656720699_1570770948382725_2673228926400422327_n.jpg" alt="">
+      <img src="panzió képek/660121874_1570768195049667_7716221091187134525_n.jpg" alt="">
+      <img src="panzió képek/654726501_1566415568818263_793206643072689014_n.jpg" alt="">
+      <img src="panzió képek/655673187_1566409718818848_5073209580972395669_n.jpg" alt="">
+      <img src="panzió képek/655580635_1566403995486087_255409458746089947_n.jpg" alt="">
+      <img src="panzió képek/656935651_1566399625486524_7021533441904094843_n.jpg" alt="">
+      <img src="panzió képek/Képernyőkép 2026-03-27 224421.png" alt="">
+    </div>
   </div>
 </div>
+<script>
+(function(){
+  var track = document.querySelector('.marquee-track');
+  var set1 = track.querySelector('.marquee-set');
+  function startMarquee() {
+    var w = set1.offsetWidth;
+    track.style.animation = 'none';
+    var style = document.createElement('style');
+    style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';
+    document.head.appendChild(style);
+    track.style.animation = 'mq 45s linear infinite';
+  }
+  var imgs = set1.querySelectorAll('img');
+  var loaded = 0;
+  imgs.forEach(function(img){
+    if(img.complete) { loaded++; } else { img.onload = function(){ loaded++; if(loaded>=imgs.length) startMarquee(); }; }
+  });
+  if(loaded >= imgs.length) startMarquee();
+})();
+</script>
 
 <!-- ── ÁRAK ── -->
 <div class="section-full section-dark" style="padding: 32px 48px;">
@@ -718,7 +771,7 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
         <h4>Szolgáltatások</h4>
         <ul>
           <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
-          <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+          <li><a href="csoportos.html">Csoportos oktatás</a></li>
           <li><a href="napkozi.html">Napközi</a></li>
           <li><a href="panzio.html">Panzió</a></li>
         </ul>

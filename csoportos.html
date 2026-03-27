@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Csoportos Tanfolyam – Wanderdogs</title>
+  <title>Csoportos Oktatás – Wanderdogs</title>
   <meta name="description" content="Minden szombat 9:00, Solymár. Kutyaiskola pozitív saját módszerrel, 7.000 Ft/alkalom. Max. 20 kutya.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -94,7 +94,7 @@
       <a href="#">Szolgáltatások</a>
       <ul class="dropdown-menu">
         <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
-        <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+        <li><a href="csoportos.html">Csoportos oktatás</a></li>
         <li><a href="napkozi.html">Napközi</a></li>
         <li><a href="panzio.html">Panzió</a></li>
         <li><a href="kutyataxi.html">Kutya taxi</a></li>
@@ -141,13 +141,6 @@
   </div>
 </section>
 
-<!-- ── KÉPSÁV ── -->
-<div style="max-width: 1240px; margin: 0 auto; padding: 0 48px 0;">
-  <div class="img-banner reveal">
-    <img src="kepek/kutya jatszik3.png" alt="Csoportos kutyaiskola Solymáron" loading="lazy">
-  </div>
-</div>
-
 <!-- ── MIÉRT CSOPORTOS? ── -->
 <div class="section-full" style="background: var(--black);">
   <div class="section">
@@ -180,6 +173,46 @@
     </div>
   </div>
 </div>
+
+<!-- ── KÉPCSÍK (MARQUEE) ── -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-set">
+      <img src="csoportos oktatás képek/481094277_1219717703488053_7422598582642125617_n.jpg" alt="Csoportos oktatás">
+      <img src="csoportos oktatás képek/P1019936.jpg" alt="Csoportos foglalkozás">
+      <img src="csoportos oktatás képek/P1019955.jpg" alt="Kutyák a csoportban">
+      <img src="csoportos oktatás képek/P1019916.jpg" alt="Csoportos oktatás pillanat">
+      <img src="csoportos oktatás képek/P1019913.jpg" alt="Csoportos oktatás Wanderdogs">
+    </div>
+    <div class="marquee-set">
+      <img src="csoportos oktatás képek/481094277_1219717703488053_7422598582642125617_n.jpg" alt="">
+      <img src="csoportos oktatás képek/P1019936.jpg" alt="">
+      <img src="csoportos oktatás képek/P1019955.jpg" alt="">
+      <img src="csoportos oktatás képek/P1019916.jpg" alt="">
+      <img src="csoportos oktatás képek/P1019913.jpg" alt="">
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var track = document.querySelector('.marquee-track');
+  var set1 = track.querySelector('.marquee-set');
+  function startMarquee() {
+    var w = set1.offsetWidth;
+    track.style.animation = 'none';
+    var style = document.createElement('style');
+    style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';
+    document.head.appendChild(style);
+    track.style.animation = 'mq 30s linear infinite';
+  }
+  var imgs = set1.querySelectorAll('img');
+  var loaded = 0;
+  imgs.forEach(function(img){
+    if(img.complete) { loaded++; } else { img.onload = function(){ loaded++; if(loaded>=imgs.length) startMarquee(); }; }
+  });
+  if(loaded >= imgs.length) startMarquee();
+})();
+</script>
 
 <!-- ── PROGRAM ── -->
 <div class="section-full section-dark" id="program">
@@ -369,7 +402,7 @@
         <h4>Szolgáltatások</h4>
         <ul>
           <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
-          <li><a href="csoportos.html">Csoportos tanfolyam</a></li>
+          <li><a href="csoportos.html">Csoportos oktatás</a></li>
           <li><a href="napkozi.html">Napközi</a></li>
           <li><a href="panzio.html">Panzió</a></li>
         </ul>
