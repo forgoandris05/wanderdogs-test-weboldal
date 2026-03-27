@@ -441,33 +441,54 @@
 <!-- ── KÉPCSÍK (MARQUEE) ── -->
 <style>
   .marquee-wrap { overflow:hidden; padding:32px 0; background:var(--black-2); }
-  .marquee-track {
-    display:flex; gap:16px; width:max-content;
-    animation: marquee-scroll 35s linear infinite;
+  .marquee-track { display:flex; width:max-content; }
+  .marquee-set { display:flex; gap:16px; padding-right:16px; }
+  .marquee-set img {
+    height:260px; width:auto; border-radius:12px; object-fit:cover; display:block;
   }
-  .marquee-track img {
-    height:200px; width:auto; border-radius:12px; object-fit:cover; display:block;
-  }
-  @keyframes marquee-scroll { to { transform:translateX(-50%); } }
 </style>
 <div class="marquee-wrap">
   <div class="marquee-track">
-    <img src="kepek/IMG_6695.JPG" alt="Kutya-gazdi kapcsolat" loading="lazy">
-    <img src="kepek/IMG_6697.JPG" alt="Kiskutya oktatás" loading="lazy">
-    <img src="kepek/IMG_6690.JPG" alt="Mancs a kézben" loading="lazy">
-    <img src="kepek/IMG_6694.JPG" alt="Labrador jutalomfalat" loading="lazy">
-    <img src="kepek/IMG_2765.JPG" alt="Kutya a réten" loading="lazy">
-    <img src="kepek/IMG_2760.JPG" alt="Fekete kutya" loading="lazy">
-    <img src="kepek/Képernyőkép 2026-03-27 151427.png" alt="Timi és kutya" loading="lazy">
-    <img src="kepek/IMG_6695.JPG" alt="" loading="lazy">
-    <img src="kepek/IMG_6697.JPG" alt="" loading="lazy">
-    <img src="kepek/IMG_6690.JPG" alt="" loading="lazy">
-    <img src="kepek/IMG_6694.JPG" alt="" loading="lazy">
-    <img src="kepek/IMG_2765.JPG" alt="" loading="lazy">
-    <img src="kepek/IMG_2760.JPG" alt="" loading="lazy">
-    <img src="kepek/Képernyőkép 2026-03-27 151427.png" alt="" loading="lazy">
+    <div class="marquee-set">
+      <img src="kepek/IMG_6695.JPG" alt="Kutya-gazdi kapcsolat">
+      <img src="kepek/IMG_6697.JPG" alt="Kiskutya oktatás">
+      <img src="kepek/IMG_6690.JPG" alt="Mancs a kézben">
+      <img src="kepek/IMG_6694.JPG" alt="Labrador jutalomfalat">
+      <img src="kepek/IMG_2765.JPG" alt="Kutya a réten">
+      <img src="kepek/IMG_2760.JPG" alt="Fekete kutya">
+      <img src="kepek/Képernyőkép 2026-03-27 151427.png" alt="Timi és kutya">
+    </div>
+    <div class="marquee-set">
+      <img src="kepek/IMG_6695.JPG" alt="">
+      <img src="kepek/IMG_6697.JPG" alt="">
+      <img src="kepek/IMG_6690.JPG" alt="">
+      <img src="kepek/IMG_6694.JPG" alt="">
+      <img src="kepek/IMG_2765.JPG" alt="">
+      <img src="kepek/IMG_2760.JPG" alt="">
+      <img src="kepek/Képernyőkép 2026-03-27 151427.png" alt="">
+    </div>
   </div>
 </div>
+<script>
+(function(){
+  var track = document.querySelector('.marquee-track');
+  var set1 = track.querySelector('.marquee-set');
+  function startMarquee() {
+    var w = set1.offsetWidth;
+    track.style.animation = 'none';
+    var style = document.createElement('style');
+    style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';
+    document.head.appendChild(style);
+    track.style.animation = 'mq 35s linear infinite';
+  }
+  var imgs = set1.querySelectorAll('img');
+  var loaded = 0;
+  imgs.forEach(function(img){
+    if(img.complete) { loaded++; } else { img.onload = function(){ loaded++; if(loaded>=imgs.length) startMarquee(); }; }
+  });
+  if(loaded >= imgs.length) startMarquee();
+})();
+</script>
 
 <!-- ── CTA BANNER ── -->
 <div class="section-full" style="background: var(--black);">
