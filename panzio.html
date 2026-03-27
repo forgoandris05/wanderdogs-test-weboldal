@@ -453,6 +453,10 @@
   </div>
 </div>
 
+<script>
+try{var u=JSON.parse(localStorage.getItem('wd_user')||'null');
+if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!important}</style>');}}catch(e){}
+</script>
 <!-- ── HOGYAN MŰKÖDIK ── -->
 <div class="section-full section-dark" id="hogyan" style="padding: 32px 48px; background: var(--black);">
   <div class="section">
@@ -1086,15 +1090,10 @@ szamol();
   frissitGomb();
 })();
 
-// ── "Hogyan működik" szekció elrejtése visszatérő vendégnek ──
+// ── "Hogyan működik" szekció – visszamutatás ha mégis új ügyfél ──
 (async function panzioHogyanCheck() {
   const user = wdGetUser();
   if (!user || !user.registered || !user.email) return;
-  // Szinkron elrejtés – nincs villanás
-  document.getElementById('hogyan').style.display = 'none';
-  var btnHogyan = document.getElementById('btn-hogyan');
-  if (btnHogyan) btnHogyan.style.display = 'none';
-  // API check – ha mégis új ügyfél, visszamutatjuk
   try {
     const resp = await fetch(WEBAPP_URL, {
       method: 'POST',
@@ -1103,7 +1102,8 @@ szamol();
     const data = await resp.json();
     if (data.ujUgyfel) {
       document.getElementById('hogyan').style.display = '';
-      if (btnHogyan) btnHogyan.style.display = '';
+      var btnH = document.getElementById('btn-hogyan');
+      if (btnH) btnH.style.display = '';
     }
   } catch (err) {
     console.log('[WD panzio] hogyan check hiba:', err);
