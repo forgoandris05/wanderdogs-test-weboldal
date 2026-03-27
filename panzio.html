@@ -359,7 +359,7 @@
   </p>
   <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
     <a href="#kalkulalok" class="btn btn-gold btn-lg">Foglalok</a>
-    <a href="#hogyan" class="btn btn-outline btn-lg">Hogyan működik?</a>
+    <a href="#hogyan" id="btn-hogyan" class="btn btn-outline btn-lg">Hogyan működik?</a>
   </div>
 </section>
 
@@ -374,7 +374,7 @@
       <div class="card reveal reveal-delay-1">
         <div class="card-icon">🏡</div>
         <h4 style="margin-bottom: 8px;">Igény szerinti elhelyezés</h4>
-        <p style="font-size: 14px; color: var(--text-dim);">Szoba vagy kennel – a kutya igényeihez igazítva.</p>
+        <p style="font-size: 14px; color: var(--text-dim);">Igény szerint szoba kennellel is.</p>
       </div>
       <div class="card reveal reveal-delay-2">
         <div class="card-icon">👀</div>
@@ -403,7 +403,7 @@
 </div>
 
 <!-- ── ÁRAK ── -->
-<div class="section-full section-dark">
+<div class="section-full section-dark" style="padding: 32px 48px;">
   <div class="section">
     <div class="section-header reveal">
       <div class="overline">Árképzés</div>
@@ -454,7 +454,7 @@
 </div>
 
 <!-- ── HOGYAN MŰKÖDIK ── -->
-<div class="section-full section-dark" id="hogyan" style="background: var(--black);">
+<div class="section-full section-dark" id="hogyan" style="padding: 32px 48px; background: var(--black);">
   <div class="section">
     <div class="section-header center reveal">
       <div class="overline">A foglalás menete</div>
@@ -510,7 +510,7 @@
 </div>
 
 <!-- ── CALCULATOR + FOGLALÁS ── -->
-<div class="section-full" id="kalkulalok" style="background: var(--black-2);">
+<div class="section-full" id="kalkulalok" style="padding-top: 32px; background: var(--black-2);">
   <div class="section">
     <div class="section-header reveal">
       <div class="overline">Online foglalás</div>
@@ -1084,6 +1084,26 @@ szamol();
   });
 
   frissitGomb();
+})();
+
+// ── "Hogyan működik" szekció elrejtése visszatérő vendégnek ──
+(async function panzioHogyanCheck() {
+  const user = wdGetUser();
+  if (!user || !user.registered || !user.email) return;
+  try {
+    const resp = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'foglalas_check', email: user.email, service: 'Panzió' })
+    });
+    const data = await resp.json();
+    if (data.visszatero) {
+      document.getElementById('hogyan').style.display = 'none';
+      var btnHogyan = document.getElementById('btn-hogyan');
+      if (btnHogyan) btnHogyan.style.display = 'none';
+    }
+  } catch (err) {
+    console.log('[WD panzio] hogyan check hiba:', err);
+  }
 })();
 
 // Minimum 2 nappal előre foglalható
