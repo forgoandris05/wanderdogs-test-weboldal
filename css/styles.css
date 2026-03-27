@@ -491,7 +491,7 @@ footer {
 
 /* ── IMAGE BANNER ── */
 .img-banner {
-  max-width: 560px;
+  max-width: 400px;
   margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
