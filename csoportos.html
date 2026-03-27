@@ -570,6 +570,9 @@ function csoportosCheckout() {
   if (checkboxes.length > 0) {
     checkboxes.forEach(function(cb) { kutyakNevek.push(cb.value); });
     kutyaDb = kutyakNevek.length;
+  } else if (document.querySelectorAll('.csoportos-kutya-cb').length > 0) {
+    // Van checkbox de nincs kijelölve
+    showCsoportosError('Válaszd ki, melyik kutyádat hozod!'); return;
   } else if (kutyaInput) {
     var nev = kutyaInput.value.trim();
     if (!nev) { showCsoportosError('Add meg a kutya nevét!'); return; }
