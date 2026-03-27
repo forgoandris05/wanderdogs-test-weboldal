@@ -518,8 +518,8 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
   <div class="section">
     <div class="section-header reveal">
       <div class="overline">Online foglalás</div>
-      <h2 class="section-title">Számold ki és <span class="gold">foglalj azonnal</span></h2>
-      <p class="section-sub">Töltsd ki az adatokat – az összeg azonnal frissül, majd fizess biztonságosan online.</p>
+      <h2 class="section-title">Számold ki és <span class="gold">foglalj egyszerűen</span></h2>
+      <p class="section-sub">Töltsd ki az adatokat.</p>
     </div>
 
     <div class="calc-wrapper">
@@ -584,21 +584,10 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
           <input type="hidden" id="f-nev">
           <input type="hidden" id="f-kutya">
           <input type="hidden" id="f-email">
-          <!-- Telefonszám: csak akkor látszik ha hiányzik a localStorage-ból -->
-          <div id="panzio-telefon-wrapper" style="display:none; margin-bottom:16px;">
-            <label for="f-telefon" style="font-size:13px;color:var(--text-dim);margin-bottom:6px;display:block;">
-              Telefonszámod (egyszeri megadás):
-            </label>
-            <input type="tel" id="f-telefon" placeholder="+36 XX XXX XXXX"
-                   style="width:100%;max-width:320px;padding:11px 16px;background:var(--black-3);
-                          border:1px solid var(--border);border-radius:10px;
-                          color:var(--white);font-size:14px;font-family:inherit;">
-          </div>
-
           <h3>⚠️ Lemondási feltételek</h3>
           <div class="no-refund-box">
             <p>
-              A foglalás az online fizetéssel válik véglegessé. <strong>24 órán kívüli lemondás esetén a teljes összeg visszatéríthető.</strong> 24 órán belüli lemondás esetén a befizetett összeg nem téríthető vissza.
+              A foglalás az online fizetéssel válik véglegessé. 24 órán belüli lemondás esetén a befizetett összeg nem téríthető vissza.
             </p>
           </div>
           <label class="accept-checkbox">
@@ -643,7 +632,7 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
             <div class="calc-row total"><span>Fizetendő összeg</span><span id="r-vegosszeg">–</span></div>
           </div>
           <p style="font-size: 11px; color: var(--text-faint); margin-top: 14px; line-height: 1.6;" id="calc-info">
-            Teljes összeg, bankkártyával előre.<br>24 órán kívüli lemondás: visszatéríthető.
+            Teljes összeg, bankkártyával előre.
           </p>
         </div>
 
@@ -718,7 +707,7 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
     <div class="footer-top">
       <div class="footer-brand">
         <h3>🐾 Wanderdogs</h3>
-        <p>Szakmai kutyaoktatás és gondozás Solymáron. A te kutyád megérdemli a legjobb kezdetet.</p>
+        <p>Szakmai kutyaoktatás, gondozási tippek és online kurzusok – hogy te és kutyád igazán megértsétek egymást. A harmonikus kapcsolat tanulható.</p>
         <div class="footer-socials">
           <a href="#" aria-label="Facebook">f</a>
           <a href="#" aria-label="Instagram">ig</a>
@@ -799,7 +788,7 @@ document.querySelectorAll('.dog-btn').forEach(btn => {
 });
 
 // ── Fizetés gomb aktiválása ───────────────────────────────────
-['f-nev','f-kutya','f-email','f-telefon','elfogadom'].forEach(id => {
+['f-nev','f-kutya','f-email','elfogadom'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('input', frissitGomb);
   if (el) el.addEventListener('change', frissitGomb);
@@ -891,12 +880,11 @@ function frissitGomb() {
   const nev     = document.getElementById('f-nev').value.trim();
   const kutya   = document.getElementById('f-kutya').value.trim();
   const email   = document.getElementById('f-email').value.trim();
-  const telefon = document.getElementById('f-telefon').value.trim();
   const elfog   = document.getElementById('elfogadom').checked;
   // Ha checkbox lista van, az ott kiválasztott kutyákat is elfogadjuk
   const kutyaOk = kutya || document.querySelectorAll('#kutya-valaszto input:checked').length > 0;
 
-  const minden = panzioCalc && nev && kutyaOk && email && telefon && elfog;
+  const minden = panzioCalc && nev && kutyaOk && email && elfog;
   document.getElementById('pay-btn').disabled = !minden;
 }
 
@@ -918,31 +906,21 @@ async function fizetesIndit() {
   const kutyaNev= document.getElementById('f-kutya').value.trim() ||
     [...document.querySelectorAll('#kutya-valaszto input:checked')].map(cb => cb.value).join(', ');
   const email   = document.getElementById('f-email').value.trim();
-  const telefon = document.getElementById('f-telefon').value.trim();
+  const telefon = (wdGetUser() || {}).telefon || '';
 
   if (!nev || !kutyaNev || !email) {
     alert('Kérlek jelentkezz be és add meg a kutyád adatait a Profil oldalon!');
     return;
   }
   if (!telefon) {
-    alert('Kérlek add meg a telefonszámodat!');
-    const telefonEl = document.getElementById('f-telefon');
-    if (telefonEl) telefonEl.focus();
+    alert('Kérlek add meg a telefonszámodat a Profil oldalon!');
+    window.location.href = 'profil.html';
     return;
   }
   if (!document.getElementById('elfogadom').checked) {
     alert('Kérlek fogadd el a lemondási feltételeket!');
     return;
   }
-
-  // Telefon mentése localStorage-ba (következő látogatásnál auto-fill)
-  try {
-    const u = wdGetUser() || {};
-    if (!u.telefon && telefon) {
-      u.telefon = telefon;
-      localStorage.setItem('wd_user', JSON.stringify(u));
-    }
-  } catch(e) {}
 
   // Előző hiba elrejtése
   document.getElementById('panzio-tele-hiba').style.display = 'none';
@@ -1012,17 +990,8 @@ szamol();
   // Hidden mezők auto-fill a localStorage-ból
   const nevEl     = document.getElementById('f-nev');
   const emailEl   = document.getElementById('f-email');
-  const telefonEl = document.getElementById('f-telefon');
   if (nevEl)   nevEl.value   = user.nev   || '';
   if (emailEl) emailEl.value = user.email || '';
-
-  // Telefon: ha van → hidden mezőbe, ha nincs → telefon wrapper megjelenik
-  if (user.telefon) {
-    if (telefonEl) telefonEl.value = user.telefon;
-  } else {
-    const telefonWrapper = document.getElementById('panzio-telefon-wrapper');
-    if (telefonWrapper) telefonWrapper.style.display = 'block';
-  }
 
   const kutyak = wdKutyak();
 
@@ -1110,13 +1079,31 @@ szamol();
   }
 })();
 
-// Minimum 2 nappal előre foglalható
+// Minimum 2 nappal előre foglalható + kiköltözés min dátum
 (function() {
   const minBe = new Date();
   minBe.setDate(minBe.getDate() + 2);
   const minStr = minBe.toISOString().split('T')[0];
   const beEl = document.getElementById('calc-be');
+  const kiEl = document.getElementById('calc-ki');
   if (beEl) beEl.min = minStr;
+  // Kiköltözés: legalább beköltözés + 1 nap
+  if (kiEl) {
+    const minKi = new Date(minBe);
+    minKi.setDate(minKi.getDate() + 1);
+    kiEl.min = minKi.toISOString().split('T')[0];
+  }
+  // Beköltözés változáskor frissíteni a kiköltözés min-t
+  if (beEl && kiEl) {
+    beEl.addEventListener('change', function() {
+      if (beEl.value) {
+        const nextDay = new Date(beEl.value);
+        nextDay.setDate(nextDay.getDate() + 1);
+        kiEl.min = nextDay.toISOString().split('T')[0];
+        if (kiEl.value && kiEl.value < kiEl.min) kiEl.value = '';
+      }
+    });
+  }
 })();
 
 // ============================================================
