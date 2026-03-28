@@ -183,13 +183,11 @@
       <img src="csoportos oktatás képek/P1019955.jpg" alt="Kutyák a csoportban">
       <img src="csoportos oktatás képek/P1019916.jpg" alt="Csoportos oktatás pillanat">
       <img src="csoportos oktatás képek/P1019913.jpg" alt="Csoportos oktatás Wanderdogs">
-    </div>
-    <div class="marquee-set">
-      <img src="csoportos oktatás képek/481094277_1219717703488053_7422598582642125617_n.jpg" alt="">
-      <img src="csoportos oktatás képek/P1019936.jpg" alt="">
-      <img src="csoportos oktatás képek/P1019955.jpg" alt="">
-      <img src="csoportos oktatás képek/P1019916.jpg" alt="">
-      <img src="csoportos oktatás képek/P1019913.jpg" alt="">
+      <img src="csoportos oktatás képek/IMG_2756.JPG" alt="Csoportos pálya">
+      <img src="csoportos oktatás képek/IMG_2759.JPG" alt="Csoport foglalkozás">
+      <img src="csoportos oktatás képek/IMG_2905.JPG" alt="Csoportos oktatás kint">
+      <img src="csoportos oktatás képek/IMG_1384.jpg" alt="Csoportos tréning">
+      <img src="csoportos oktatás képek/IMG_1904.jpg" alt="Csoportos Wanderdogs">
     </div>
   </div>
 </div>
@@ -199,11 +197,15 @@
   var set1 = track.querySelector('.marquee-set');
   function startMarquee() {
     var w = set1.offsetWidth;
+    var needed = Math.ceil(window.innerWidth / w) + 1;
+    while(track.children.length < needed) {
+      track.appendChild(set1.cloneNode(true));
+    }
     track.style.animation = 'none';
     var style = document.createElement('style');
     style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';
     document.head.appendChild(style);
-    track.style.animation = 'mq 30s linear infinite';
+    track.style.animation = 'mq 35s linear infinite';
   }
   var imgs = set1.querySelectorAll('img');
   var loaded = 0;

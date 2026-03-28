@@ -98,13 +98,11 @@
       <img src="viselkedesterapia kepek/Képernyőkép 2026-03-27 222321.png" alt="Viselkedésterápia foglalkozás">
       <img src="viselkedesterapia kepek/655580635_1566403995486087_255409458746089947_n.jpg" alt="Kutya viselkedésterápia">
       <img src="viselkedesterapia kepek/656935651_1566399625486524_7021533441904094843_n.jpg" alt="Viselkedésterápia Wanderdogs">
-      <img src="viselkedesterapia kepek/Képernyőkép 2026-03-27 224421.png" alt="Viselkedésterápia eredmény">
-    </div>
-    <div class="marquee-set">
-      <img src="viselkedesterapia kepek/Képernyőkép 2026-03-27 222321.png" alt="">
-      <img src="viselkedesterapia kepek/655580635_1566403995486087_255409458746089947_n.jpg" alt="">
-      <img src="viselkedesterapia kepek/656935651_1566399625486524_7021533441904094843_n.jpg" alt="">
-      <img src="viselkedesterapia kepek/Képernyőkép 2026-03-27 224421.png" alt="">
+      <img src="viselkedesterapia kepek/IMG_2754 (1).JPG" alt="Viselkedésterápia pillanat">
+      <img src="viselkedesterapia kepek/IMG_2928.JPG" alt="Kutya fejlődés">
+      <img src="viselkedesterapia kepek/IMG_1016.jpg" alt="Viselkedésterápia eredmény">
+      <img src="viselkedesterapia kepek/IMG_4723.jpg" alt="Terápiás foglalkozás">
+      <img src="viselkedesterapia kepek/Képernyőkép 2026-03-27 224421.png" alt="Viselkedésterápia Wanderdogs">
     </div>
   </div>
 </div>
@@ -114,11 +112,15 @@
   var set1 = track.querySelector('.marquee-set');
   function startMarquee() {
     var w = set1.offsetWidth;
+    var needed = Math.ceil(window.innerWidth / w) + 1;
+    while(track.children.length < needed) {
+      track.appendChild(set1.cloneNode(true));
+    }
     track.style.animation = 'none';
     var style = document.createElement('style');
     style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';
     document.head.appendChild(style);
-    track.style.animation = 'mq 25s linear infinite';
+    track.style.animation = 'mq 30s linear infinite';
   }
   var imgs = set1.querySelectorAll('img');
   var loaded = 0;

@@ -256,33 +256,16 @@
 </div>
 
 <!-- ── KÉPCSÍK (MARQUEE) ── -->
-<style>
-  .marquee-wrap { overflow:hidden; padding:32px 0; background:var(--black-2); }
-  .marquee-track { display:flex; width:max-content; }
-  .marquee-set { display:flex; gap:16px; padding-right:16px; }
-  .marquee-set img {
-    height:260px; width:auto; border-radius:12px; object-fit:cover; display:block;
-  }
-</style>
 <div class="marquee-wrap">
   <div class="marquee-track">
     <div class="marquee-set">
-      <img src="kepek/IMG_6695.JPG" alt="Kutya-gazdi kapcsolat">
-      <img src="kepek/IMG_6697.JPG" alt="Kiskutya oktatás">
-      <img src="kepek/IMG_6690.JPG" alt="Mancs a kézben">
-      <img src="kepek/IMG_6694.JPG" alt="Labrador jutalomfalat">
-      <img src="kepek/IMG_2765.JPG" alt="Kutya a réten">
-      <img src="kepek/IMG_2760.JPG" alt="Fekete kutya">
-      <img src="kepek/Képernyőkép 2026-03-27 151427.png" alt="Timi és kutya">
-    </div>
-    <div class="marquee-set">
-      <img src="kepek/IMG_6695.JPG" alt="">
-      <img src="kepek/IMG_6697.JPG" alt="">
-      <img src="kepek/IMG_6690.JPG" alt="">
-      <img src="kepek/IMG_6694.JPG" alt="">
-      <img src="kepek/IMG_2765.JPG" alt="">
-      <img src="kepek/IMG_2760.JPG" alt="">
-      <img src="kepek/Képernyőkép 2026-03-27 151427.png" alt="">
+      <img src="egyeni ora kepek/IMG_6695.JPG" alt="Kutya-gazdi kapcsolat">
+      <img src="egyeni ora kepek/IMG_6697.JPG" alt="Kiskutya oktatás">
+      <img src="egyeni ora kepek/IMG_6690.JPG" alt="Mancs a kézben">
+      <img src="egyeni ora kepek/IMG_6694.JPG" alt="Labrador jutalomfalat">
+      <img src="egyeni ora kepek/IMG_2765.JPG" alt="Kutya a réten">
+      <img src="egyeni ora kepek/IMG_2760.JPG" alt="Fekete kutya">
+      <img src="egyeni ora kepek/Képernyőkép 2026-03-27 151427.png" alt="Timi és kutya">
     </div>
   </div>
 </div>
@@ -292,6 +275,10 @@
   var set1 = track.querySelector('.marquee-set');
   function startMarquee() {
     var w = set1.offsetWidth;
+    var needed = Math.ceil(window.innerWidth / w) + 1;
+    while(track.children.length < needed) {
+      track.appendChild(set1.cloneNode(true));
+    }
     track.style.animation = 'none';
     var style = document.createElement('style');
     style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';

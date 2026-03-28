@@ -687,42 +687,66 @@
 <hr class="gold-line">
 
 <!-- ══ GALÉRIA ══ -->
-<section class="section">
+<section class="section" style="padding-bottom:0;">
   <div class="section-header center reveal">
     <span class="overline">Nálunk a kutyáknál</span>
     <h2 class="section-title">Képek az <em class="gold">életből</em></h2>
     <p class="section-sub">Solymári pillanatok – kutyák, gazdik, mozgás és öröm.</p>
   </div>
-  <div class="gallery-grid">
-    <div class="gallery-item reveal reveal-delay-1">
-      <img src="kepek/kutya jatszik fut.png" alt="Kutya fut a pályán" loading="lazy">
-    </div>
-    <div class="gallery-item reveal reveal-delay-2">
-      <img src="kepek/kutya alagutban.png" alt="Kutya az alagútban" loading="lazy">
-    </div>
-    <div class="gallery-item reveal reveal-delay-3">
-      <img src="kepek/kutya jatszik2.png" alt="Kutya játszik" loading="lazy">
-    </div>
-    <div class="gallery-item reveal reveal-delay-4">
-      <img src="kepek/kutya jatszik3.png" alt="Kutya játszik" loading="lazy">
-    </div>
-    <div class="gallery-item reveal reveal-delay-5">
-      <img src="kepek/kutya jatszik4.png" alt="Kutya játszik" loading="lazy">
-    </div>
-    <div class="gallery-item reveal reveal-delay-6">
-      <img src="kepek/labrador.png" alt="Labrador" loading="lazy">
-    </div>
-    <div class="gallery-item reveal reveal-delay-1">
-      <img src="kepek/fekete kutya.png" alt="Fekete kutya" loading="lazy">
-    </div>
-    <div class="gallery-item reveal reveal-delay-2">
-      <img src="kepek/timikutya portre.png" alt="Timi és kutya portré" loading="lazy">
-    </div>
-    <div class="gallery-item reveal reveal-delay-3">
-      <img src="kepek/Képernyőkép 2026-03-27 151427.png" alt="Wanderdogs pillanat" loading="lazy">
+</section>
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-set">
+      <img src="kepek/kutya jatszik fut.png" alt="Kutya fut a pályán">
+      <img src="kepek/kutya alagutban.png" alt="Kutya az alagútban">
+      <img src="kepek/kutya jatszik2.png" alt="Kutya játszik">
+      <img src="kepek/kutya jatszik3.png" alt="Kutya játszik">
+      <img src="kepek/kutya jatszik4.png" alt="Kutya játszik">
+      <img src="kepek/labrador.png" alt="Labrador">
+      <img src="kepek/fekete kutya.png" alt="Fekete kutya">
+      <img src="kepek/timikutya portre.png" alt="Timi és kutya portré">
+      <img src="kepek/timi a kutyaval.png" alt="Timi és a kutya">
+      <img src="kepek/IMG_6695.JPG" alt="Kutya-gazdi kapcsolat">
+      <img src="kepek/IMG_6697.JPG" alt="Kiskutya oktatás">
+      <img src="kepek/IMG_6690.JPG" alt="Mancs a kézben">
+      <img src="kepek/IMG_6694.JPG" alt="Labrador jutalomfalat">
+      <img src="kepek/IMG_2765.JPG" alt="Kutya a réten">
+      <img src="kepek/IMG_2760.JPG" alt="Fekete kutya portré">
+      <img src="kepek/IMG_2754 (2).JPG" alt="Wanderdogs pillanat">
+      <img src="kepek/IMG_2766.JPG" alt="Kutya a pályán">
+      <img src="kepek/IMG_2768.JPG" alt="Kutya foglalkozás">
+      <img src="kepek/IMG_2770.JPG" alt="Tréning pillanat">
+      <img src="kepek/IMG_2772.JPG" alt="Kutya és gazdi">
+      <img src="kepek/IMG_2905.JPG" alt="Wanderdogs élet">
+      <img src="kepek/IMG_2909.JPG" alt="Kutyák a pályán">
+      <img src="kepek/Képernyőkép 2026-03-27 151427.png" alt="Wanderdogs pillanat">
     </div>
   </div>
-</section>
+</div>
+<script>
+(function(){
+  var track = document.querySelector('.marquee-track');
+  var set1 = track.querySelector('.marquee-set');
+  function startMarquee() {
+    var w = set1.offsetWidth;
+    var needed = Math.ceil(window.innerWidth / w) + 1;
+    while(track.children.length < needed) {
+      track.appendChild(set1.cloneNode(true));
+    }
+    track.style.animation = 'none';
+    var style = document.createElement('style');
+    style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';
+    document.head.appendChild(style);
+    track.style.animation = 'mq 50s linear infinite';
+  }
+  var imgs = set1.querySelectorAll('img');
+  var loaded = 0;
+  imgs.forEach(function(img){
+    if(img.complete) { loaded++; } else { img.onload = function(){ loaded++; if(loaded>=imgs.length) startMarquee(); }; }
+  });
+  if(loaded >= imgs.length) startMarquee();
+})();
+</script>
 
 <!-- ══ LEMONDÁSI FELTÉTELEK ══ -->
 <div class="section-full" style="background: var(--black);">
