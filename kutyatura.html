@@ -98,20 +98,6 @@
       <img src="wander kutyas tura kepek/539233691_1380444034082085_4387367795231933530_n.jpg" alt="Kutyás kirándulás">
       <img src="wander kutyas tura kepek/500451207_1299506235509199_3817701792868937786_n.jpg" alt="Túra élmény">
     </div>
-    <div class="marquee-set">
-      <img src="wander kutyas tura kepek/644497028_1548165060643314_5117897622069392126_n (1).jpg" alt="">
-      <img src="wander kutyas tura kepek/644448702_1548164167310070_7608850166670747763_n.jpg" alt="">
-      <img src="wander kutyas tura kepek/644544424_1548163700643450_156993679981274714_n.jpg" alt="">
-      <img src="wander kutyas tura kepek/644507358_1548163447310142_6936945813008827741_n.jpg" alt="">
-      <img src="wander kutyas tura kepek/622830637_1515484343911386_3371082066468659130_n.jpg" alt="">
-      <img src="wander kutyas tura kepek/613530270_1501975391928948_3465898426433246058_n.jpg" alt="">
-      <img src="wander kutyas tura kepek/612400434_1501977618595392_5563795255068878844_n.jpg" alt="">
-      <img src="wander kutyas tura kepek/612174288_1501977361928751_2610342045527954123_n.jpg" alt="">
-      <img src="wander kutyas tura kepek/596285688_1475659414560546_2323572240745318476_n.jpg" alt="">
-      <img src="wander kutyas tura kepek/575111196_1445014897624998_7724306328487751597_n.jpg" alt="">
-      <img src="wander kutyas tura kepek/539233691_1380444034082085_4387367795231933530_n.jpg" alt="">
-      <img src="wander kutyas tura kepek/500451207_1299506235509199_3817701792868937786_n.jpg" alt="">
-    </div>
   </div>
 </div>
 <script>
@@ -120,6 +106,10 @@
   var set1 = track.querySelector('.marquee-set');
   function startMarquee() {
     var w = set1.offsetWidth;
+    var needed = Math.ceil(window.innerWidth / w) + 1;
+    while(track.children.length < needed) {
+      track.appendChild(set1.cloneNode(true));
+    }
     track.style.animation = 'none';
     var style = document.createElement('style');
     style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';

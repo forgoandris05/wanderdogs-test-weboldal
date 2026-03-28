@@ -338,22 +338,6 @@
       <img src="napközi képek/656935651_1566399625486524_7021533441904094843_n.jpg" alt="Kutya pihenés">
       <img src="napközi képek/Képernyőkép 2026-03-27 224421.png" alt="Kutyanapközi Solymár">
     </div>
-    <div class="marquee-set">
-      <img src="napközi képek/496242334_1292162729576883_7330717724407701463_n.jpg" alt="">
-      <img src="napközi képek/492829894_1276564664470023_5693193269404160432_n.jpg" alt="">
-      <img src="napközi képek/657045236_26289439457378908_433857967096194160_n.jpg" alt="">
-      <img src="napközi képek/658815195_26289440027378851_6801028152471554569_n.jpg" alt="">
-      <img src="napközi képek/658066827_26289416594047861_5319932726682759420_n.jpg" alt="">
-      <img src="napközi képek/656978982_1570786365047850_7920764776430350654_n.jpg" alt="">
-      <img src="napközi képek/657332455_1570775155048971_5649594977119883794_n.jpg" alt="">
-      <img src="napközi képek/656720699_1570770948382725_2673228926400422327_n.jpg" alt="">
-      <img src="napközi képek/660121874_1570768195049667_7716221091187134525_n.jpg" alt="">
-      <img src="napközi képek/654726501_1566415568818263_793206643072689014_n.jpg" alt="">
-      <img src="napközi képek/655673187_1566409718818848_5073209580972395669_n.jpg" alt="">
-      <img src="napközi képek/655580635_1566403995486087_255409458746089947_n.jpg" alt="">
-      <img src="napközi képek/656935651_1566399625486524_7021533441904094843_n.jpg" alt="">
-      <img src="napközi képek/Képernyőkép 2026-03-27 224421.png" alt="">
-    </div>
   </div>
 </div>
 <script>
@@ -362,6 +346,10 @@
   var set1 = track.querySelector('.marquee-set');
   function startMarquee() {
     var w = set1.offsetWidth;
+    var needed = Math.ceil(window.innerWidth / w) + 1;
+    while(track.children.length < needed) {
+      track.appendChild(set1.cloneNode(true));
+    }
     track.style.animation = 'none';
     var style = document.createElement('style');
     style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';
