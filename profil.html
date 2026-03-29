@@ -329,6 +329,7 @@
       <div style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px;">
         <a href="index.html" class="btn btn-gold" style="width:100%;max-width:320px;justify-content:center;">Vissza a főoldalra</a>
         <button class="btn-kilepes" onclick="wdKilepes()">Kilépés a fiókból</button>
+        <a href="#" onclick="fiokTorles(event)" style="font-size:13px;color:#ef4444;margin-top:12px;text-decoration:none;opacity:0.7;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">Fiók törlése</a>
       </div>
 
 <!-- Oltás frissítés modal -->
@@ -653,6 +654,30 @@ function showMsg(szoveg, tipus) {
 function setButtons(disabled) {
   document.getElementById('btn-hozzaad').disabled = disabled;
   document.querySelectorAll('.btn-torol').forEach(b => b.disabled = disabled);
+}
+
+// ── Fiók törlése ─────────────────────────────────────────────
+async function fiokTorles(e) {
+  e.preventDefault();
+  if (!confirm('Biztosan törölni szeretnéd a fiókodat?\n\nEz a művelet nem visszavonható. Minden adatod (kutyák, oltási könyvek, bérletek) véglegesen törlődik.')) return;
+  const user = wdGetUser();
+  if (!user) return;
+  try {
+    const resp = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'fiok_torles', email: user.email, auth_token: user.auth_token || '' })
+    });
+    const result = await resp.json();
+    if (result.ok) {
+      localStorage.removeItem('wd_user');
+      alert('A fiókod sikeresen törölve lett.');
+      window.location.href = 'index.html';
+    } else {
+      alert(result.error || 'Hiba történt a törlés során.');
+    }
+  } catch(err) {
+    alert('Hálózati hiba. Próbáld újra.');
+  }
 }
 </script>
 </body>
