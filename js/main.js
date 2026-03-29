@@ -141,7 +141,7 @@ function wdNavAuth() {
   if (user && user.registered) {
     const nev = (user.nev || '').split(' ').pop() || 'Szia!'; // keresztnév (utolsó szó)
     el.innerHTML =
-      '<a href="profil.html" class="nav-auth-name">Szia, ' + nev + '! →</a>' +
+      '<a href="profil.html" class="nav-auth-name">Szia, ' + nev + '!</a>' +
       '<button class="nav-auth-kilepes" onclick="wdKilepes()">Kilépés</button>';
   } else {
     el.innerHTML =
