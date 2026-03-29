@@ -55,14 +55,15 @@
     .schedule-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: baseline;
+      gap: 16px;
       padding: 14px 0;
       border-bottom: 1px solid var(--border-dim);
       font-size: 15px;
     }
     .schedule-row:last-child { border-bottom: none; }
-    .schedule-label { color: var(--text-dim); }
-    .schedule-value { font-weight: 700; }
+    .schedule-label { color: var(--text-dim); flex-shrink: 0; }
+    .schedule-value { font-weight: 700; text-align: right; }
     .schedule-value.gold { color: var(--gold); }
 
     .testimonial-inline {
@@ -106,7 +107,7 @@
     <li><a href="tanfolyamok.html">Tanfolyamok</a></li>
     <li><a href="workshopok.html">Workshopok</a></li>
     <li><a href="rolunk.html">Rólunk</a></li>
-    <li><a href="index.html#kapcsolat">Kapcsolat</a></li>
+    <li><a href="#" onclick="wdHamarosan(event)">Kurzusok</a></li>
     <li class="nav-cta-mobile"><a href="#foglalas" class="nav-cta">Foglalj helyet</a></li>
   </ul>
   <div class="nav-right">
@@ -183,7 +184,6 @@
       <img src="csoportos oktatás képek/P1019936.jpg" alt="Csoportos foglalkozás">
       <img src="csoportos oktatás képek/P1019955.jpg" alt="Kutyák a csoportban">
       <img src="csoportos oktatás képek/P1019916.jpg" alt="Csoportos oktatás pillanat">
-      <img src="csoportos oktatás képek/P1019913.jpg" alt="Csoportos oktatás Wanderdogs">
       <img src="csoportos oktatás képek/IMG_2756.JPG" alt="Csoportos pálya">
       <img src="csoportos oktatás képek/IMG_2759.JPG" alt="Csoport foglalkozás">
       <img src="csoportos oktatás képek/IMG_2905.JPG" alt="Csoportos oktatás kint">
@@ -206,7 +206,7 @@
     var style = document.createElement('style');
     style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';
     document.head.appendChild(style);
-    track.style.animation = 'mq 35s linear infinite';
+    track.style.animation = 'mq 45s linear infinite';
   }
   var imgs = set1.querySelectorAll('img');
   var loaded = 0;

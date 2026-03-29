@@ -47,11 +47,16 @@
       line-height: 1.1;
       margin-bottom: 24px;
       color: var(--text);
-      min-height: 3.3em;
+      height: 3.3em;
+      overflow: hidden;
     }
     .hero h1 em {
       font-style: normal;
       color: var(--gold);
+      display: inline-block;
+      min-width: 0;
+      max-width: 100%;
+      white-space: nowrap;
     }
     .hero p {
       font-size: 17px;
@@ -407,9 +412,8 @@
     </li>
     <li><a href="tanfolyamok.html">Tanfolyamok</a></li>
     <li><a href="workshopok.html">Workshopok</a></li>
-    <li><a href="kurzusok.html">Kurzusok</a></li>
+    <li><a href="#" onclick="wdHamarosan(event)">Kurzusok</a></li>
     <li><a href="rolunk.html">Rólunk</a></li>
-    <li><a href="kapcsolat.html">Kapcsolat</a></li>
     <li class="nav-cta-mobile"><a href="egyeni-ora.html" class="nav-cta">Foglalj időpontot</a></li>
   </ul>
 
@@ -435,7 +439,7 @@
       <p>Szakmai kutyaoktatás, gondozási tippek és online kurzusok – hogy te és kutyád igazán megértsétek egymást.</p>
       <div class="hero-btns">
         <a href="#szolgaltatasok" class="btn btn-gold btn-lg">Képzést kezdek →</a>
-        <a href="kurzusok.html" class="btn btn-outline btn-lg">Megnézem a kurzusokat</a>
+        <a href="#" onclick="wdHamarosan(event)" class="btn btn-outline btn-lg">Megnézem a kurzusokat</a>
       </div>
       <div class="hero-props">
         <div class="hero-prop">Saját módszer</div>
@@ -705,7 +709,6 @@
       <img src="kepek/kutya jatszik3.png" alt="Kutya játszik">
       <img src="kepek/kutya jatszik4.png" alt="Kutya játszik">
       <img src="kepek/labrador.png" alt="Labrador">
-      <img src="kepek/fekete kutya.png" alt="Fekete kutya">
       <img src="kepek/timikutya portre.png" alt="Timi és kutya portré">
       <img src="kepek/timi a kutyaval.png" alt="Timi és a kutya">
       <img src="kepek/IMG_6695.JPG" alt="Kutya-gazdi kapcsolat">
@@ -739,7 +742,7 @@
     var style = document.createElement('style');
     style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';
     document.head.appendChild(style);
-    track.style.animation = 'mq 50s linear infinite';
+    track.style.animation = 'mq 45s linear infinite';
   }
   var imgs = set1.querySelectorAll('img');
   var loaded = 0;
@@ -774,8 +777,9 @@
         <h3>🐾 Wanderdogs</h3>
         <p>Szakmai kutyaoktatás, gondozási tippek és online kurzusok – hogy te és kutyád igazán megértsétek egymást. A harmonikus kapcsolat tanulható.</p>
         <div class="footer-socials">
-          <a href="#" title="Facebook">f</a>
-          <a href="#" title="Instagram">ig</a>
+          <a href="#" aria-label="Facebook">f</a>
+          <a href="#" aria-label="Instagram">ig</a>
+          <a href="#" aria-label="TikTok">tt</a>
         </div>
       </div>
 
@@ -797,9 +801,8 @@
         <h4>Információ</h4>
         <ul>
           <li><a href="rolunk.html">Rólunk</a></li>
-          <li><a href="kurzusok.html">Online kurzusok</a></li>
+          <li><a href="#" onclick="wdHamarosan(event)">Online kurzusok</a></li>
           <li><a href="rolunk.html#gyik">GYIK</a></li>
-          <li><a href="kapcsolat.html">Kapcsolat</a></li>
         </ul>
       </div>
 
