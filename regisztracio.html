@@ -305,7 +305,7 @@
               <div class="form-row">
                 <div class="form-group">
                   <label>Oltás lejárata *</label>
-                  <input type="date" class="oltas-lejar" required>
+                  <input type="date" class="oltas-lejar" max="9999-12-31" required>
                 </div>
                 <div class="form-group">
                   <label>Oltási könyv fotó *</label>
@@ -429,7 +429,7 @@
       '<div class="oltas-section">' +
         '<div class="oltas-section-label">Oltási könyv</div>' +
         '<div class="form-row">' +
-          '<div class="form-group"><label>Oltás lejárata *</label><input type="date" class="oltas-lejar" required></div>' +
+          '<div class="form-group"><label>Oltás lejárata *</label><input type="date" class="oltas-lejar" max="9999-12-31" required></div>' +
           '<div class="form-group"><label>Oltási könyv fotó *</label>' +
             '<input type="file" accept="image/*" class="oltas-kep" required style="font-size:12px;">' +
             '<small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>' +
