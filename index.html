@@ -47,8 +47,8 @@
       line-height: 1.1;
       margin-bottom: 24px;
       color: var(--text);
-      height: 4.4em;
-      overflow: hidden;
+      min-height: 4.4em;
+      overflow-wrap: break-word;
     }
     .hero h1 em {
       font-style: normal;
@@ -825,7 +825,7 @@
 <script>
 /* ── HERO CYCLING WORD ── */
 (function() {
-  const words = ['boldogabb', 'kiegyensúlyozottabb', 'okosabb'];
+  const words = ['boldogabb', 'harmonikusabb', 'okosabb'];
   let idx = 0;
   const el = document.getElementById('heroWord');
   if (!el) return;
