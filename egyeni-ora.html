@@ -139,6 +139,11 @@
     @media (max-width: 900px) {
       .options-grid { grid-template-columns: 1fr; }
     }
+    @media (max-width: 768px) {
+      .egyeni-hero-flex { flex-direction: column !important; gap: 24px !important; padding: 0 20px !important; }
+      .egyeni-hero-flex > div:last-child { width: 100% !important; max-width: 320px; margin: 0 auto; }
+      .egyeni-hero-flex > div:first-child { text-align: center; }
+    }
   </style>
 </head>
 <body>
@@ -183,7 +188,7 @@
 
 <!-- ── PAGE HERO ── -->
 <section class="page-hero" style="padding-top:90px; padding-bottom:32px;">
-  <div style="max-width:1240px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:40px; padding:0 48px;">
+  <div class="egyeni-hero-flex" style="max-width:1240px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:40px; padding:0 48px;">
     <div style="text-align:left;">
       <div class="overline">Személyre szabva</div>
       <h1>Egyéni <span class="gold">oktatás</span></h1>

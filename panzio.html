@@ -309,6 +309,13 @@
     @media (max-width: 480px) {
       .flow { grid-template-columns: 1fr; }
     }
+    @media (max-width: 768px) {
+      .panzio-arak-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+      .panzio-arak-section { padding: 24px 20px !important; }
+      .price-table td, .price-table th { padding: 10px 12px; font-size: 13px; }
+      #hogyan { padding: 24px 20px !important; }
+      .panzio-hogyan-grid { grid-template-columns: 1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -444,14 +451,14 @@
 </script>
 
 <!-- ── ÁRAK ── -->
-<div class="section-full section-dark" style="padding: 32px 48px;">
+<div class="section-full section-dark panzio-arak-section" style="padding: 32px 48px;">
   <div class="section">
     <div class="section-header reveal">
       <div class="overline">Árképzés</div>
       <h2 class="section-title">Átlátható <span class="gold">árstruktúra</span></h2>
       <p class="section-sub">Az ár a kutyák száma és a tartózkodás hossza alapján változik. Hosszabb tartózkodásra kedvezmény jár.</p>
     </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px;">
+    <div class="panzio-arak-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px;">
       <div>
         <h4 style="font-size: 13px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px;">Alap napidíjak</h4>
         <table class="price-table reveal">
@@ -506,7 +513,7 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
       <h2 class="section-title">Hogyan <span class="gold">működik?</span></h2>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px;">
+    <div class="panzio-hogyan-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px;">
       <div class="card reveal reveal-delay-1" style="border-color: rgba(255,215,0,0.3);">
         <div style="font-size: 32px; margin-bottom: 16px;">🆕</div>
         <h3 style="font-size: 18px; margin-bottom: 12px; color: var(--gold);">Első alkalommal</h3>

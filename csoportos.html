@@ -79,6 +79,8 @@
     @media (max-width: 768px) {
       .program-grid { grid-template-columns: 1fr; }
       .info-banner { flex-direction: column; text-align: center; }
+      .csoportos-program-layout { grid-template-columns: 1fr !important; gap: 32px !important; }
+      .csoportos-foglalas-box { padding: 32px 20px !important; }
     }
   </style>
 </head>
@@ -220,7 +222,7 @@
 <!-- ── PROGRAM ── -->
 <div class="section-full section-dark" id="program">
   <div class="section">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;">
+    <div class="csoportos-program-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;">
       <div>
         <div class="section-header reveal">
           <div class="overline">Mit tanul a kutyád?</div>
@@ -299,7 +301,7 @@
       <p class="section-sub">Az alkalom csak a fizetés után tekinthető foglaltnak – a helyek gyorsan telnek!</p>
     </div>
 
-    <div style="background: var(--black-3); border: 1px solid var(--border); border-radius: 16px; padding: 48px 32px; text-align: center; max-width: 680px; margin: 0 auto;" class="reveal">
+    <div class="csoportos-foglalas-box reveal" style="background: var(--black-3); border: 1px solid var(--border); border-radius: 16px; padding: 48px 32px; text-align: center; max-width: 680px; margin: 0 auto;">
       <div style="font-size: 48px; margin-bottom: 20px;">🐾</div>
       <h3 style="font-size: 22px; margin-bottom: 12px;">Online foglalás és fizetés</h3>
       <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 28px;">Válassz szombatot, pipáld ki a kutyáidat és fizess online. Az alkalom a fizetéssel válik biztossá.</p>
