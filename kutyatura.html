@@ -31,7 +31,7 @@
     <li><a href="tanfolyamok.html">Tanfolyamok</a></li>
     <li><a href="workshopok.html">Workshopok</a></li>
     <li><a href="rolunk.html">Rólunk</a></li>
-    <li><a href="index.html#kapcsolat">Kapcsolat</a></li>
+    <li><a href="#" onclick="wdHamarosan(event)">Kurzusok</a></li>
     <li class="nav-cta-mobile"><a href="#bejelentkezes" class="nav-cta">Bejelentkezem</a></li>
   </ul>
   <div class="nav-right">
@@ -115,7 +115,7 @@
     var style = document.createElement('style');
     style.textContent = '@keyframes mq{to{transform:translateX(-'+w+'px)}}';
     document.head.appendChild(style);
-    track.style.animation = 'mq 40s linear infinite';
+    track.style.animation = 'mq 45s linear infinite';
   }
   var imgs = set1.querySelectorAll('img');
   var loaded = 0;
