@@ -18,12 +18,23 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.style.overflow = isOpen ? 'hidden' : '';
     });
 
-    // Close on link click (mobile)
+    // Close on link click (mobile) — de nem dropdown toggle-nel
     navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
+      link.addEventListener('click', function() {
+        if (link.closest('.nav-dropdown') && link === link.closest('.nav-dropdown').querySelector(':scope > a')) return;
         navLinks.classList.remove('open');
         burger.classList.remove('open');
         document.body.style.overflow = '';
+      });
+    });
+
+    // Szolgáltatások dropdown toggle mobilon
+    document.querySelectorAll('.nav-dropdown > a').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+          e.preventDefault();
+          link.parentElement.classList.toggle('open');
+        }
       });
     });
   }
@@ -152,6 +163,22 @@ function wdNavAuth() {
   // Burger gomb elé szúrjuk be
   const burger = navRight.querySelector('.nav-burger');
   navRight.insertBefore(el, burger || null);
+
+  // Mobilon: Kilépés gomb a burger menübe
+  const navLinks = document.querySelector('.nav-links');
+  if (navLinks) {
+    const kilepesLi = document.createElement('li');
+    kilepesLi.className = 'nav-mobile-kilepes';
+    if (user && user.registered) {
+      kilepesLi.innerHTML = '<a href="#" onclick="wdKilepes();return false;">Kilépés</a>';
+    } else {
+      kilepesLi.innerHTML =
+        '<a href="bejelentkezes.html?return=' + encodeURIComponent(currentPage) + '">Belépés</a>' +
+        ' &nbsp;·&nbsp; ' +
+        '<a href="regisztracio.html?return=' + encodeURIComponent(currentPage) + '" style="color:var(--gold);font-weight:700;">Regisztráció</a>';
+    }
+    navLinks.appendChild(kilepesLi);
+  }
 }
 
 // ── "Hamarosan" toast ────────────────────────────────────

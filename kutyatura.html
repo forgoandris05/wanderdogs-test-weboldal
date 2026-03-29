@@ -8,6 +8,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    @media (max-width: 768px) {
+      .tura-cards-grid { grid-template-columns: 1fr 1fr !important; }
+      .tura-ar-grid { grid-template-columns: 1fr !important; }
+      .tura-foglalas-box { padding: 32px 20px !important; }
+    }
+    @media (max-width: 480px) {
+      .tura-cards-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
 </head>
 <body>
 
@@ -57,7 +67,7 @@
       <div class="overline">Miért a wander kutyás túra?</div>
       <h2 class="section-title">A természet <span class="gold">gyógyít</span></h2>
     </div>
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px;">
+    <div class="tura-cards-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px;">
       <div class="card reveal reveal-delay-1">
         <div class="card-icon">🌿</div>
         <h4 style="margin-bottom: 8px;">Valódi mozgás</h4>
@@ -137,7 +147,7 @@
     <!-- Részvételi díj -->
     <div style="max-width: 600px; margin: 32px auto 0; background: var(--black-3); border: 1px solid var(--border-dim); border-radius: 14px; padding: 28px 32px;" class="reveal">
       <h3 style="margin-bottom: 16px; font-size: 18px;">Részvételi díj</h3>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div class="tura-ar-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
         <div>
           <p style="font-size: 13px; color: var(--gold); font-weight: 600; margin-bottom: 8px;">Online fizetés</p>
           <p style="font-size: 14px; color: var(--text-dim);">1 kutya: <strong style="color: var(--text);">5 000 Ft</strong></p>
@@ -153,7 +163,7 @@
     </div>
 
     <!-- Foglalás form -->
-    <div id="tura-foglalas" style="background: var(--black-3); border: 1px solid var(--border); border-radius: 16px; padding: 48px 32px; text-align: center; max-width: 680px; margin: 32px auto 0;" class="reveal">
+    <div id="tura-foglalas" class="tura-foglalas-box reveal" style="background: var(--black-3); border: 1px solid var(--border); border-radius: 16px; padding: 48px 32px; text-align: center; max-width: 680px; margin: 32px auto 0;">
       <div style="font-size: 48px; margin-bottom: 20px;">🥾</div>
       <h3 style="font-size: 22px; margin-bottom: 12px;">Online foglalás és fizetés</h3>
 
