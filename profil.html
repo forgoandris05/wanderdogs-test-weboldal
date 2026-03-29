@@ -37,7 +37,11 @@
     }
     .profil-info-row:last-child { border-bottom: none; }
     .profil-info-label { color: var(--text-dim); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
-    .profil-info-val { color: var(--text); }
+    .profil-info-val { color: var(--text); word-break: break-all; }
+    @media (max-width: 768px) {
+      .profil-info-row { flex-wrap: wrap; gap: 4px; }
+      .profil-card { padding: 24px 20px; }
+    }
 
     .kutya-sor {
       display: flex;

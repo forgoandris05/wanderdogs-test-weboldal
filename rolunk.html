@@ -156,11 +156,19 @@
     @media (max-width: 768px) {
       .method-grid { grid-template-columns: 1fr; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-item { padding: 28px 16px; }
+      .stat-num { font-size: 36px; }
+      .stat-num.stat-text { font-size: 20px; }
       .why-grid { grid-template-columns: 1fr; border-radius: 12px; }
       .why-item { border-right: none !important; border-bottom: 1px solid var(--border-dim); }
       .why-item:last-child { border-bottom: none; }
       .cta-banner { padding: 48px 24px; }
       .cta-banner .btns { flex-direction: column; align-items: center; }
+      .about-grid { text-align: center; }
+      .about-checks { text-align: left; }
+    }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
