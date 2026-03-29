@@ -274,7 +274,7 @@ nav {
 }
 .page-hero .subtitle {
   font-size: 18px; color: var(--text-dim);
-  max-width: 580px; margin: 18px auto 32px;
+  max-width: 720px; margin: 18px auto 32px;
   position: relative; z-index: 1;
 }
 
