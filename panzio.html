@@ -1187,6 +1187,9 @@ szamol();
       if (btnH) btnH.style.display = '';
       var felmeroEl = document.getElementById('panzio-felmero-szekció');
       if (felmeroEl) felmeroEl.style.display = 'block';
+      // Kalkulátor + foglalás elrejtése új vendégeknél
+      var kalcEl = document.getElementById('kalkulalok');
+      if (kalcEl) kalcEl.style.display = 'none';
     }
   } catch (err) {
     console.log('[WD panzio] hogyan check hiba:', err);
