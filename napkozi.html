@@ -1393,10 +1393,12 @@ function taxiKiegFizet() {
   const kutyaNevek = [...kutyaCbs].map(function(cb) { return cb.value; });
   const btn = document.getElementById('taxi-kieg-btn');
   const tipus = btn.dataset.tipus || '';
+  const oda    = document.getElementById('taxi-kieg-oda').checked;
+  const vissza = document.getElementById('taxi-kieg-vissza').checked;
   localStorage.setItem('wd_taxi_kieg_cim', cim);
   localStorage.setItem('wd_taxi_kieg_idopont', idopont);
   localStorage.setItem('wd_taxi_kieg_kutyak', kutyaNevek.join(', '));
-  napkoziCheckout(tipus, { helyszin: cim });
+  napkoziCheckout(tipus, { helyszin: cim, taxiOda: String(oda), taxiVissza: String(vissza) });
   return false; // prevent default navigation
 }
 
