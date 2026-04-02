@@ -555,6 +555,7 @@
     const jelszoHash = await hashJelszo(jelszo);
 
     let regOk = false;
+    let result = null;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -572,7 +573,7 @@
         })
       });
       clearTimeout(timeoutId);
-      const result = await resp.json();
+      result = await resp.json();
       if (!result.ok) {
         showRegError(result.error || 'Hiba történt a regisztráció során. Kérjük próbáld újra.');
         btn.disabled = false;
@@ -601,7 +602,7 @@
         oltasLejar: oltasAdatok[idx] ? oltasAdatok[idx].lejar : '',
         oltasKepUrl: ''
       })),
-      auth_token: result.auth_token || '',
+      auth_token: (result && result.auth_token) || '',
       registered: true,
     }));
 
