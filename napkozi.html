@@ -1286,6 +1286,11 @@ document.querySelectorAll('[data-taxi]').forEach(btn => {
     const newIsTaxi = _taxi !== 'notaxi';
     const hRow = document.getElementById('helyszin-row');
     if (hRow) hRow.style.display = newIsTaxi ? 'flex' : 'none';
+    if (!newIsTaxi) {
+      _helyszin = '';
+      var hInput = document.getElementById('helyszin-input');
+      if (hInput) hInput.value = '';
+    }
     arFrissit();
     prefsSave();
     // Cal.com naptár CSAK ha taxi ↔ notaxi váltás (10km↔25km-nél nem kell)
