@@ -557,7 +557,7 @@
     let regOk = false;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 45000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
       const resp = await fetch(WEBAPP_URL, {
         method: 'POST',
         signal: controller.signal,
