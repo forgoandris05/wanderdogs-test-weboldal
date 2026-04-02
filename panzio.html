@@ -1000,7 +1000,9 @@ function frissitGomb() {
   // Ha checkbox lista van, az ott kiválasztott kutyákat is elfogadjuk
   const kutyaOk = kutya || document.querySelectorAll('#kutya-valaszto input:checked').length > 0;
 
-  const minden = panzioCalc && nev && kutyaOk && email && elfog;
+  const beOra   = document.getElementById('calc-be-ora').value;
+  const kiOra   = document.getElementById('calc-ki-ora').value;
+  const minden = panzioCalc && nev && kutyaOk && email && elfog && beOra && kiOra;
   document.getElementById('pay-btn').disabled = !minden;
 }
 
