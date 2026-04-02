@@ -590,7 +590,7 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
 </div>
 
 <!-- ── CALCULATOR + FOGLALÁS ── -->
-<div class="section-full" id="kalkulalok" style="padding-top: 32px; background: var(--black-2);">
+<div class="section-full" id="kalkulalok" style="padding-top: 32px; background: var(--black-2); display:none;">
   <div class="section">
     <div class="section-header reveal">
       <div class="overline">Online foglalás</div>
@@ -1174,7 +1174,11 @@ szamol();
 // ── "Hogyan működik" szekció – visszamutatás ha mégis új ügyfél ──
 (async function panzioHogyanCheck() {
   const user = wdGetUser();
-  if (!user || !user.registered || !user.email) return;
+  if (!user || !user.registered || !user.email) {
+    var kalcEl = document.getElementById('kalkulalok');
+    if (kalcEl) kalcEl.style.display = '';
+    return;
+  }
   try {
     const resp = await fetch(WEBAPP_URL, {
       method: 'POST',
@@ -1187,12 +1191,16 @@ szamol();
       if (btnH) btnH.style.display = '';
       var felmeroEl = document.getElementById('panzio-felmero-szekció');
       if (felmeroEl) felmeroEl.style.display = 'block';
-      // Kalkulátor + foglalás elrejtése új vendégeknél
+    } else {
+      // Visszatérő vendég → kalkulátor megjelenítése
       var kalcEl = document.getElementById('kalkulalok');
-      if (kalcEl) kalcEl.style.display = 'none';
+      if (kalcEl) kalcEl.style.display = '';
     }
   } catch (err) {
     console.log('[WD panzio] hogyan check hiba:', err);
+    // Hiba esetén mutassuk a kalkulátort (ne maradjon rejtve)
+    var kalcEl = document.getElementById('kalkulalok');
+    if (kalcEl) kalcEl.style.display = '';
   }
 })();
 
