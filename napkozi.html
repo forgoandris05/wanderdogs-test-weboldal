@@ -384,27 +384,6 @@
       <h2 class="section-title">Válassz <span class="gold">csomagot</span> <a href="#arlista" style="font-size:14px;font-weight:600;color:var(--gold);border:1px solid var(--gold);border-radius:100px;padding:6px 16px;vertical-align:middle;margin-left:12px;text-decoration:none;transition:background 0.2s;">Árlista ↓</a></h2>
       <p class="section-sub">Válaszd ki mire van szükséged.</p>
 
-      <!-- Egyszeri alkalom árak -->
-      <div class="arak-grid-3 reveal" style="margin-top:24px;margin-bottom:32px;">
-        <div class="arak-card">
-          <div class="arak-label">Taxi nélkül</div>
-          <div class="arak-ar">7 000 Ft</div>
-          <div class="arak-erv">1 kutya / alkalom</div>
-          <div style="font-size:12px;color:var(--text-faint);margin-top:4px;">2 kutya: 13 500 Ft</div>
-        </div>
-        <div class="arak-card">
-          <div class="arak-label">10 km belüli taxival</div>
-          <div class="arak-ar">10 300 Ft</div>
-          <div class="arak-erv">1 kutya / alkalom</div>
-          <div style="font-size:12px;color:var(--text-faint);margin-top:4px;">2 kutya: 16 800 Ft</div>
-        </div>
-        <div class="arak-card">
-          <div class="arak-label">10-25 km taxival</div>
-          <div class="arak-ar">12 500 Ft</div>
-          <div class="arak-erv">1 kutya / alkalom</div>
-          <div style="font-size:12px;color:var(--text-faint);margin-top:4px;">2 kutya: 19 000 Ft</div>
-        </div>
-      </div>
     </div>
 
     <!-- Dinamikus állapot sáv (JS tölti ki) -->
@@ -540,9 +519,9 @@
         <!-- Fizetés gomb -->
         <div id="taxi-kieg-btn-wrap" style="text-align:center;">
           <p id="taxi-kieg-hiba" style="display:none;color:#e74c3c;font-size:13px;margin-bottom:8px;"></p>
-          <a id="taxi-kieg-btn" href="#" class="btn btn-gold" style="padding:14px 28px;font-size:15px;display:none;" onclick="return taxiKiegFizet()">
+          <button id="taxi-kieg-btn" class="btn btn-gold napkozi-pay-btn" style="padding:14px 28px;font-size:15px;display:none;cursor:pointer;border:none;" onclick="taxiKiegFizet()">
             Taxi megrendelése – <strong id="taxi-kieg-ar">–</strong>
-          </a>
+          </button>
           <p id="taxi-kieg-placeholder" style="color:var(--text-faint);font-size:13px;">Válaszd ki az irányt a gomb megjelenítéséhez</p>
         </div>
       </div>
@@ -594,7 +573,7 @@
           <li>6 625 Ft / nap (7 000 helyett)</li>
           <li>Csak 1 kutya</li>
         </ul>
-        <a href="https://buy.stripe.com/test_00w7sM5Vnd2yaOhgSW9AA06" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('4alk_1k_notaxi')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
       <div class="pkg-card reveal reveal-delay-2" data-group="notaxi">
@@ -608,7 +587,7 @@
           <li>10 625 Ft / nap / 2 kutya</li>
           <li>Mindkét kutyára érvényes</li>
         </ul>
-        <a href="https://buy.stripe.com/test_bJefZi5Vn8Mi3lP1Y29AA07" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('4alk_2k_notaxi')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
       <div class="pkg-card reveal reveal-delay-3" data-group="notaxi">
@@ -622,7 +601,7 @@
           <li>5 500 Ft / nap (7 000 helyett)</li>
           <li>Legkedvezőbb egykutyás ár</li>
         </ul>
-        <a href="https://buy.stripe.com/test_14AfZi1F7bYu4pTcCG9AA08" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('8alk_1k_notaxi')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
       <div class="pkg-card reveal reveal-delay-4" data-group="notaxi">
@@ -636,7 +615,7 @@
           <li>8 812 Ft / nap / 2 kutya</li>
           <li>Legjobb 2 kutyás ár</li>
         </ul>
-        <a href="https://buy.stripe.com/test_9B6eVe0B33rYaOhauy9AA09" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('8alk_2k_notaxi')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
       <!-- TAXI ≤10 KM -->
@@ -651,7 +630,7 @@
           <li>10 km-en belüli távolság</li>
           <li>5 hétig felhasználható</li>
         </ul>
-        <a href="https://buy.stripe.com/test_28EdRa4Rj0fMcWp1Y29AA0a" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('4alk_1k_10km')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
       <div class="pkg-card reveal reveal-delay-2" data-group="taxi-10">
@@ -665,7 +644,7 @@
           <li>10 km-en belüli távolság</li>
           <li>Mindkét kutyára érvényes</li>
         </ul>
-        <a href="https://buy.stripe.com/test_6oU3cwdnPgeK2hL0TY9AA0b" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('4alk_2k_10km')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
       <div class="pkg-card reveal reveal-delay-3" data-group="taxi-10">
@@ -679,7 +658,7 @@
           <li>10 km-en belüli távolság</li>
           <li>Legjobb ár taxival</li>
         </ul>
-        <a href="https://buy.stripe.com/test_9B6aEY83ve6C7C5eKO9AA0c" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('8alk_1k_10km')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
       <div class="pkg-card reveal reveal-delay-4" data-group="taxi-10">
@@ -693,7 +672,7 @@
           <li>10 km-en belüli távolság</li>
           <li>Legjobb 2 kutyás taxival</li>
         </ul>
-        <a href="https://buy.stripe.com/test_cNieVe2Jb7Ie09DcCG9AA0d" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('8alk_2k_10km')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
       <!-- TAXI >10 KM -->
@@ -708,7 +687,7 @@
           <li>10 km-nél távolabbi helyszín</li>
           <li>5 hétig felhasználható</li>
         </ul>
-        <a href="https://buy.stripe.com/test_7sYbJ283v7Ie8G90TY9AA0e" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('4alk_1k_25km')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
       <div class="pkg-card reveal reveal-delay-2" data-group="taxi-25">
@@ -722,7 +701,7 @@
           <li>10 km-nél távolabbi helyszín</li>
           <li>Mindkét kutyára érvényes</li>
         </ul>
-        <a href="https://buy.stripe.com/test_cNicN6fvX4w2bSldGK9AA0f" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('4alk_2k_25km')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
       <div class="pkg-card reveal reveal-delay-3" data-group="taxi-25">
@@ -736,7 +715,7 @@
           <li>10 km-nél távolabbi helyszín</li>
           <li>Legjobb ár >10km-es taxival</li>
         </ul>
-        <a href="https://buy.stripe.com/test_5kQ3cw1F7d2yf4x6ei9AA0g" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('8alk_1k_25km')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
       <div class="pkg-card reveal reveal-delay-4" data-group="taxi-25">
@@ -750,7 +729,7 @@
           <li>10 km-nél távolabbi helyszín</li>
           <li>Teljes kényelmi csomag</li>
         </ul>
-        <a href="https://buy.stripe.com/test_3cIcN60B3faGbSlbyC9AA0h" class="pkg-btn" target="_blank" rel="noopener">Megveszem →</a>
+        <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('8alk_2k_25km')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
 
     </div>
@@ -921,54 +900,90 @@ const NAPKOZI_ISMERKEDO   = 'https://cal.com/timea-kucsera-6harfx/napkozi-ingyen
 const CALCOM_NAPKOZI_SLUG       = 'timea-kucsera-6harfx/napkozi-foglalas';       // normál (időpont választás)
 const CALCOM_NAPKOZI_TAXI_SLUG  = 'timea-kucsera-6harfx/napkozi-foglalas-taxi'; // ✅ 7:30–9:00, 1,5 órás taxi felvételi ablak
 
-// ── STRIPE FIZETÉSI LINKEK (Viki Stripe) ────────────────────────
+// ── NAPKÖZI ÁRAK (megjelenítéshez) ──────────────────────────────
 const STRIPE_LINKS = {
   notaxi: {
-    '1': { '4alk': { link: 'https://buy.stripe.com/test_5kQ5kE7TCaYJ9lK3yP0ZW06?client_reference_id=4alk_1k_notaxi', ar: '26 500 Ft', tipus: '4alk_1k_notaxi' },
-           '8alk': { link: 'https://buy.stripe.com/test_bJeeVe7TC7MxbtSc5l0ZW0c?client_reference_id=8alk_1k_notaxi', ar: '44 000 Ft', tipus: '8alk_1k_notaxi' } },
-    '2':  { '4alk': { link: 'https://buy.stripe.com/test_6oU8wQfm47MxcxWglB0ZW07?client_reference_id=4alk_2k_notaxi', ar: '42 500 Ft', tipus: '4alk_2k_notaxi' },
-           '8alk': { link: 'https://buy.stripe.com/test_00wcN6a1K6It41q2uL0ZW0d?client_reference_id=8alk_2k_notaxi', ar: '70 500 Ft', tipus: '8alk_2k_notaxi' } },
+    '1': { '4alk': { ar: '26 500 Ft', tipus: '4alk_1k_notaxi' },
+           '8alk': { ar: '44 000 Ft', tipus: '8alk_1k_notaxi' } },
+    '2':  { '4alk': { ar: '42 500 Ft', tipus: '4alk_2k_notaxi' },
+           '8alk': { ar: '70 500 Ft', tipus: '8alk_2k_notaxi' } },
   },
   '10km': {
-    '1': { '4alk': { link: 'https://buy.stripe.com/test_00wbJ22zifeZ7dCd9p0ZW08?client_reference_id=4alk_1k_10km', ar: '39 500 Ft', tipus: '4alk_1k_10km' },
-           '8alk': { link: 'https://buy.stripe.com/test_dRmeVec9S2sd7dC7P50ZW0e?client_reference_id=8alk_1k_10km', ar: '70 500 Ft', tipus: '8alk_1k_10km' } },
-    '2':  { '4alk': { link: 'https://buy.stripe.com/test_7sY3cw1ved6RcxW9Xd0ZW09?client_reference_id=4alk_2k_10km', ar: '63 000 Ft', tipus: '4alk_2k_10km' },
-           '8alk': { link: 'https://buy.stripe.com/test_28E14o1vec2NeG42uL0ZW0f?client_reference_id=8alk_2k_10km', ar: '112 000 Ft', tipus: '8alk_2k_10km' } },
+    '1': { '4alk': { ar: '39 500 Ft', tipus: '4alk_1k_10km' },
+           '8alk': { ar: '70 500 Ft', tipus: '8alk_1k_10km' } },
+    '2':  { '4alk': { ar: '63 000 Ft', tipus: '4alk_2k_10km' },
+           '8alk': { ar: '112 000 Ft', tipus: '8alk_2k_10km' } },
   },
   '25km': {
-    '1': { '4alk': { link: 'https://buy.stripe.com/test_5kQcN60ra4Al9lK1qH0ZW0a?client_reference_id=4alk_1k_25km', ar: '48 500 Ft', tipus: '4alk_1k_25km' },
-           '8alk': { link: 'https://buy.stripe.com/test_3cI3cwfm4aYJ1Tid9p0ZW0g?client_reference_id=8alk_1k_25km', ar: '88 000 Ft', tipus: '8alk_1k_25km' } },
-    '2':  { '4alk': { link: 'https://buy.stripe.com/test_eVqbJ21ve7MxcxW2uL0ZW0b?client_reference_id=4alk_2k_25km', ar: '77 500 Ft', tipus: '4alk_2k_25km' },
-           '8alk': { link: 'https://buy.stripe.com/test_6oU5kEc9S4AlcxWc5l0ZW0h?client_reference_id=8alk_2k_25km', ar: '140 000 Ft', tipus: '8alk_2k_25km' } },
+    '1': { '4alk': { ar: '48 500 Ft', tipus: '4alk_1k_25km' },
+           '8alk': { ar: '88 000 Ft', tipus: '8alk_1k_25km' } },
+    '2':  { '4alk': { ar: '77 500 Ft', tipus: '4alk_2k_25km' },
+           '8alk': { ar: '140 000 Ft', tipus: '8alk_2k_25km' } },
   },
 };
-// Egyszeri alkalom – taxi variánsokkal (Viki Stripe)
 const EGYSZERI_LINKS = {
   notaxi: {
-    '1': { link: 'https://buy.stripe.com/test_00wdRaddW9UF7dCfhx0ZW00', ar: '7 000 Ft', tipus: '1alk_1k_notaxi' },
-    '2': { link: 'https://buy.stripe.com/test_aFa4gA7TC4Al1Ti5GX0ZW01', ar: '13 500 Ft', tipus: '1alk_2k_notaxi' },
+    '1': { ar: '7 000 Ft', tipus: '1alk_1k_notaxi' },
+    '2': { ar: '13 500 Ft', tipus: '1alk_2k_notaxi' },
   },
   '10km': {
-    '1': { link: 'https://buy.stripe.com/test_bJe14oc9S8QBgOcc5l0ZW02', ar: '10 300 Ft', tipus: '1alk_1k_10km' },
-    '2': { link: 'https://buy.stripe.com/test_3cI3cwc9S4Al7dC0mD0ZW03', ar: '16 800 Ft', tipus: '1alk_2k_10km' },
+    '1': { ar: '10 300 Ft', tipus: '1alk_1k_10km' },
+    '2': { ar: '16 800 Ft', tipus: '1alk_2k_10km' },
   },
   '25km': {
-    '1': { link: 'https://buy.stripe.com/test_bJe7sM3Dmc2NeG46L10ZW04', ar: '12 500 Ft', tipus: '1alk_1k_25km' },
-    '2': { link: 'https://buy.stripe.com/test_aFa3cw1ve8QB0Pe5GX0ZW05', ar: '19 000 Ft', tipus: '1alk_2k_25km' },
+    '1': { ar: '12 500 Ft', tipus: '1alk_1k_25km' },
+    '2': { ar: '19 000 Ft', tipus: '1alk_2k_25km' },
+  },
+};
+const TAXI_KIEG_LINKS = {
+  '10km': {
+    '1ut':       { ar: '1 650 Ft', tipus: 'taxi_1ut_10km' },
+    'odavissza': { ar: '3 300 Ft', tipus: 'taxi_odavissza_10km' },
+  },
+  '25km': {
+    '1ut':       { ar: '2 750 Ft', tipus: 'taxi_1ut_25km' },
+    'odavissza': { ar: '5 500 Ft', tipus: 'taxi_odavissza_25km' },
   },
 };
 
-// Kiegészítő taxi linkek (Viki Stripe)
-const TAXI_KIEG_LINKS = {
-  '10km': {
-    '1ut':       { link: 'https://buy.stripe.com/test_bJe8wQ3Dm4AldC0glB0ZW0i', ar: '1 650 Ft', tipus: 'taxi_1ut_10km' },
-    'odavissza': { link: 'https://buy.stripe.com/test_6oUbJ24Hqc2N8hG2uL0ZW0j', ar: '3 300 Ft', tipus: 'taxi_odavissza_10km' },
-  },
-  '25km': {
-    '1ut':       { link: 'https://buy.stripe.com/test_aFa3cwgq86ItcxWfhx0ZW0k', ar: '2 750 Ft', tipus: 'taxi_1ut_25km' },
-    'odavissza': { link: 'https://buy.stripe.com/test_9B09AU8XG0k51Ti5GX0ZW0l', ar: '5 500 Ft', tipus: 'taxi_odavissza_25km' },
-  },
-};
+// ── NAPKÖZI CHECKOUT (backend Stripe session) ───────────────────
+async function napkoziCheckout(tipus, extraParams) {
+  const user = wdGetUser();
+  if (!user || !user.email) {
+    window.location.href = 'bejelentkezes.html?return=napkozi.html';
+    return;
+  }
+  localStorage.setItem('wd_pending_tipus', tipus);
+  const payload = {
+    action: 'napkozi_checkout',
+    tipus: tipus,
+    email: user.email,
+    nev: user.nev || '',
+    telefon: user.telefon || '',
+    kutya_neve: _kutya_neve || user.kutyaNev || '',
+    helyszin: _helyszin || '',
+  };
+  if (extraParams) Object.assign(payload, extraParams);
+  // Loading state
+  const btns = document.querySelectorAll('.napkozi-pay-btn');
+  btns.forEach(function(b) { b.disabled = true; b.style.opacity = '0.5'; });
+  const clickedBtn = event && event.target ? event.target.closest('.napkozi-pay-btn') : null;
+  if (clickedBtn) clickedBtn.textContent = 'Csatlakozás Stripe-hoz...';
+  try {
+    const resp = await fetch(WEBAPP_URL, { method: 'POST', body: JSON.stringify(payload) });
+    const result = await resp.json();
+    if (result.ok && result.checkout_url) {
+      window.location.href = result.checkout_url;
+    } else {
+      alert('Hiba: ' + (result.error || 'Ismeretlen hiba') + '\n\nKérlek próbáld újra, vagy hívj: 0670/5626926');
+      btns.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+      if (clickedBtn) clickedBtn.textContent = 'Próbáld újra';
+    }
+  } catch(err) {
+    alert('Kapcsolati hiba. Kérlek próbáld újra.');
+    btns.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+  }
+}
 
 let _vanBerlet   = false;
 let _kutya       = '1';
@@ -1227,19 +1242,18 @@ function onNapkoziBooked(detail) {
       const egysz = EGYSZERI_LINKS[taxi]?.[kutya] || EGYSZERI_LINKS['notaxi']?.[kutya];
       const div   = document.getElementById('berlet-opciok');
       if (div) {
-        const btnStyle = 'padding:14px 10px;font-size:14px;text-align:center;line-height:1.5;display:block;';
-        const saveTipus = function(t) { return 'onclick="localStorage.setItem(\'wd_pending_tipus\',\'' + t + '\')"'; };
+        const btnStyle = 'padding:14px 10px;font-size:14px;text-align:center;line-height:1.5;display:block;cursor:pointer;border:none;width:100%;';
         div.innerHTML = (opts ? (
-          '<a href="' + opts['4alk'].link + '" ' + saveTipus(opts['4alk'].tipus) + ' class="btn btn-gold" style="' + btnStyle + '">' +
+          '<button onclick="napkoziCheckout(\'' + opts['4alk'].tipus + '\')" class="btn btn-gold napkozi-pay-btn" style="' + btnStyle + '">' +
             '4 alkalom<br><strong>' + opts['4alk'].ar + '</strong>' +
-          '</a>' +
-          '<a href="' + opts['8alk'].link + '" ' + saveTipus(opts['8alk'].tipus) + ' class="btn btn-gold" style="' + btnStyle + '">' +
+          '</button>' +
+          '<button onclick="napkoziCheckout(\'' + opts['8alk'].tipus + '\')" class="btn btn-gold napkozi-pay-btn" style="' + btnStyle + '">' +
             '8 alkalom<br><strong>' + opts['8alk'].ar + '</strong>' +
-          '</a>'
+          '</button>'
         ) : '') + (egysz ?
-          '<a href="' + egysz.link + '" ' + saveTipus(egysz.tipus) + ' class="btn btn-outline" style="' + btnStyle + '">' +
+          '<button onclick="napkoziCheckout(\'' + egysz.tipus + '\')" class="btn btn-outline napkozi-pay-btn" style="' + btnStyle + '">' +
             'Egyszeri<br><strong>' + egysz.ar + '</strong>' +
-          '</a>' : '');
+          '</button>' : '');
       }
       document.getElementById('fizetes-szekció').style.display = 'block';
       document.getElementById('napkozi-siker').scrollIntoView({behavior:'smooth'});
@@ -1340,7 +1354,6 @@ function taxiKiegFrissit() {
   const irany = (oda && vissza) ? 'odavissza' : '1ut';
   const link  = TAXI_KIEG_LINKS[_taxiKiegKm]?.[irany];
   if (link) {
-    btn.href = link.link;
     ar.textContent = link.ar;
     btn.dataset.tipus = link.tipus;
     btn.style.display = 'inline-block';
@@ -1376,14 +1389,15 @@ function taxiKiegFizet() {
   }
   document.getElementById('taxi-kieg-cim').style.borderColor = 'var(--border-dim)';
   hiba.style.display = 'none';
-  // Adatok mentése
+  // Adatok mentése + backend checkout
   const kutyaNevek = [...kutyaCbs].map(function(cb) { return cb.value; });
   const btn = document.getElementById('taxi-kieg-btn');
-  localStorage.setItem('wd_pending_tipus', btn.dataset.tipus || '');
+  const tipus = btn.dataset.tipus || '';
   localStorage.setItem('wd_taxi_kieg_cim', cim);
   localStorage.setItem('wd_taxi_kieg_idopont', idopont);
   localStorage.setItem('wd_taxi_kieg_kutyak', kutyaNevek.join(', '));
-  return true; // allow navigation to Stripe
+  napkoziCheckout(tipus, { helyszin: cim });
+  return false; // prevent default navigation
 }
 
 function showTaxiKiegSection(show) {
