@@ -146,6 +146,9 @@
       .egyeni-hero-flex { flex-direction: column !important; gap: 24px !important; padding: 0 20px !important; }
       .egyeni-hero-flex > div:last-child { width: 100% !important; max-width: 320px; margin: 0 auto; }
       .egyeni-hero-flex > div:first-child { text-align: center; }
+      .option-card { padding: 28px 20px; }
+      .options-grid { gap: 16px; }
+      .egyeni-two-col { grid-template-columns: 1fr !important; gap: 24px !important; }
     }
   </style>
 </head>
@@ -191,7 +194,7 @@
 
 <!-- ── PAGE HERO ── -->
 <section class="page-hero" style="padding-top:90px; padding-bottom:32px;">
-  <div class="egyeni-hero-flex" style="max-width:1240px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:40px; padding:0 48px;">
+  <div class="egyeni-hero-flex" style="max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:40px; padding:0 80px;">
     <div style="text-align:left;">
       <div class="overline">Személyre szabva</div>
       <h1>Egyéni <span class="gold">oktatás</span></h1>
@@ -306,7 +309,7 @@
 <!-- ── HOW IT WORKS ── -->
 <div class="section-full section-dark">
   <div class="section" style="padding-top:28px; padding-bottom:28px;">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: stretch;">
+    <div class="egyeni-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: stretch;">
       <div>
         <div class="section-header reveal" style="margin-bottom:24px;">
           <div class="overline">A folyamat</div>
