@@ -1481,12 +1481,9 @@ function _applyNapkoziData(foglalasData, berletData, user) {
   // Kiegészítő taxi szekció – mindig látható, KIVÉVE ha taxis bérleten van
   const taxisBerlet = _vanBerlet && _taxi && _taxi !== 'notaxi';
   const taxiNelkIdop = berletData.taxiNelkuliIdopontok || [];
-  // Kutyanevek: backend-ből, fallback user profilból
-  var kutyaNevekArr = berletData.kutyaNevek || [];
-  if (kutyaNevekArr.length === 0) {
-    var wdKutyakLista = wdKutyak();
-    kutyaNevekArr = wdKutyakLista.map(function(k) { return k.nev; });
-  }
+  // Kutyanevek: mindig a bejelentkezett user profiljából (nem régi foglalásokból)
+  var wdKutyakLista = wdKutyak();
+  var kutyaNevekArr = wdKutyakLista.map(function(k) { return k.nev; }).filter(Boolean);
   if (!taxisBerlet && kutyaNevekArr.length > 0) {
     // Dropdown feltöltése (lehet üres ha nincs még foglalt nap)
     const sel = document.getElementById('taxi-kieg-idopont');
