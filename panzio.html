@@ -882,11 +882,16 @@ document.querySelectorAll('.dog-btn').forEach(btn => {
   ['calc-be-ora','calc-ki-ora'].forEach(function(id) {
     var sel = document.getElementById(id);
     if (!sel) return;
-    var alapertek = id === 'calc-be-ora' ? '09:00' : '16:00';
+    // Üres alapértelmezett opció
+    var placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = '– Válassz –';
+    placeholder.selected = true;
+    placeholder.disabled = true;
+    sel.appendChild(placeholder);
     orak.forEach(function(o) {
       var opt = document.createElement('option');
       opt.value = o; opt.textContent = o;
-      if (o === alapertek) opt.selected = true;
       sel.appendChild(opt);
     });
   });
