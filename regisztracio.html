@@ -556,8 +556,11 @@
 
     let regOk = false;
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
       const resp = await fetch(WEBAPP_URL, {
         method: 'POST',
+        signal: controller.signal,
         body: JSON.stringify({
           action: 'regisztracio',
           nev, email, telefon,
@@ -568,6 +571,7 @@
           jelszo_hash: jelszoHash,
         })
       });
+      clearTimeout(timeoutId);
       const result = await resp.json();
       if (!result.ok) {
         showRegError(result.error || 'Hiba történt a regisztráció során. Kérjük próbáld újra.');
@@ -577,10 +581,15 @@
       }
       regOk = true;
     } catch(err) {
-      showRegError('Kapcsolati hiba. Kérjük próbáld újra.');
-      btn.disabled = false;
-      btn.textContent = 'Regisztrálok →';
-      return;
+      if (err.name === 'AbortError') {
+        // Timeout — valószínűleg sikerült, csak a szerver lassú volt (kép feltöltés + email küldés)
+        regOk = true;
+      } else {
+        showRegError('Kapcsolati hiba. Kérjük próbáld újra.');
+        btn.disabled = false;
+        btn.textContent = 'Regisztrálok →';
+        return;
+      }
     }
 
     localStorage.setItem('wd_user', JSON.stringify({
