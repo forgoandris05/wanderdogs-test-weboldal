@@ -44,7 +44,7 @@
     <li><a href="tanfolyamok.html">Tanfolyamok</a></li>
     <li><a href="workshopok.html">Workshopok</a></li>
     <li><a href="rolunk.html">Rólunk</a></li>
-    <li><a href="#" onclick="wdHamarosan(event)">Kurzusok</a></li>
+    <li><a href="https://wanderdogsworld.com/courses/" target="_blank">Kurzusok</a></li>
     <li class="nav-cta-mobile"><a href="#bejelentkezes" class="nav-cta">Bejelentkezem</a></li>
   </ul>
   <div class="nav-right">
@@ -61,7 +61,7 @@
   <div class="overline">Természetben, együtt</div>
   <h1>Wander kutyás <span class="gold">túra</span></h1>
   <p class="subtitle">Szervezett túrák a természetben, szakember kíséretével. Mozgás, kaland és szocializáció – egyszerre.</p>
-  <a href="#bejelentkezes" class="btn btn-gold btn-lg">Jelentkezem</a>
+  <a href="https://www.facebook.com/groups/956709845427195" target="_blank" rel="noopener" class="btn btn-gold btn-lg">Jelentkezés Facebookon</a>
 </section>
 
 <div class="section-full" style="background: var(--black);">
@@ -165,76 +165,12 @@
       <p style="font-size: 12px; color: var(--text-faint); margin-top: 12px;">3+ kutyával? Írj emailt: <a href="mailto:info.wanderdogs@gmail.com" style="color:var(--gold);">info.wanderdogs@gmail.com</a></p>
     </div>
 
-    <!-- Foglalás form -->
+    <!-- Jelentkezés Facebook közösségen keresztül -->
     <div id="tura-foglalas" class="tura-foglalas-box reveal" style="background: var(--black-3); border: 1px solid var(--border); border-radius: 16px; padding: 48px 32px; text-align: center; max-width: 680px; margin: 32px auto 0;">
       <div style="font-size: 48px; margin-bottom: 20px;">🥾</div>
-      <h3 style="font-size: 22px; margin-bottom: 12px;">Online foglalás és fizetés</h3>
-
-      <!-- Túra info (API-ból töltődik) -->
-      <div id="tura-info" style="display:none; margin-bottom:24px;">
-        <div style="background:var(--gold-faint); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:8px;">
-          <p style="font-size:16px; font-weight:700; color:var(--gold);" id="tura-datum-display"></p>
-          <p style="font-size:14px; color:var(--text-dim);" id="tura-helyszin-display"></p>
-          <p style="font-size:13px; color:var(--text-dim); margin-top:4px;">9:00 – 12:00 · <span id="tura-szabad-display"></span></p>
-        </div>
-      </div>
-
-      <!-- Nincs aktív túra üzenet -->
-      <div id="tura-nincs" style="display:none; padding:20px;">
-        <p style="font-size:16px; color:var(--text-dim); margin-bottom:16px;">Jelenleg nincs meghirdetett túra.</p>
-        <a href="https://www.facebook.com/groups/956709845427195" target="_blank" rel="noopener" class="btn btn-outline">Facebook csoport – értesülj elsőként</a>
-      </div>
-
-      <!-- Betöltés -->
-      <div id="tura-loading" style="padding:20px;">
-        <p style="font-size:14px; color:var(--text-dim);">Betöltés...</p>
-      </div>
-
-      <!-- Nem belépett: login/reg gombok -->
-      <div id="tura-auth-buttons" style="display:none; flex-direction:column; gap:16px; align-items:center;">
-        <p style="font-size:14px; color:var(--text-dim); margin-bottom:8px;">A foglaláshoz bejelentkezés szükséges:</p>
-        <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
-          <a href="bejelentkezes.html?return=kutyatura.html" class="btn btn-gold btn-lg">Bejelentkezés</a>
-          <a href="regisztracio.html?return=kutyatura.html" class="btn btn-outline btn-lg">Regisztráció</a>
-        </div>
-      </div>
-
-      <!-- Belépett: foglalás form -->
-      <div id="tura-booking-form" style="display:none; text-align:left;">
-        <!-- Kutya checkboxok -->
-        <div id="tura-kutyak-wrapper" style="margin-bottom:20px;">
-          <label style="display:block; font-size:13px; font-weight:700; color:var(--text-dim); margin-bottom:8px;">Melyik kutyáidat hozod? (max 2)</label>
-          <div id="tura-kutyak-list"></div>
-        </div>
-
-        <!-- Fizetési mód -->
-        <div style="margin-bottom:20px;">
-          <label style="display:block; font-size:13px; font-weight:700; color:var(--text-dim); margin-bottom:8px;">Fizetési mód:</label>
-          <div style="display:flex; gap:10px;">
-            <label style="flex:1; display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--black-4); border:1px solid var(--gold); border-radius:10px; cursor:pointer; font-size:14px; color:var(--text);" id="tura-fizmod-online-label">
-              <input type="radio" name="tura-fizmod" value="online" checked style="accent-color:var(--gold);width:18px;height:18px;" onchange="turaUpdateFizmod()">
-              Online fizetés
-            </label>
-            <label style="flex:1; display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--black-4); border:1px solid var(--border-dim); border-radius:10px; cursor:pointer; font-size:14px; color:var(--text);" id="tura-fizmod-kp-label">
-              <input type="radio" name="tura-fizmod" value="kp" style="accent-color:var(--gold);width:18px;height:18px;" onchange="turaUpdateFizmod()">
-              Készpénz a helyszínen
-            </label>
-          </div>
-        </div>
-
-        <!-- Ár display -->
-        <div id="tura-ar" style="text-align:center; font-size:20px; font-weight:700; color:var(--gold); margin-bottom:20px;">
-          5 000 Ft
-        </div>
-
-        <!-- Hiba üzenet -->
-        <div id="tura-error" style="display:none; background:rgba(255,60,60,0.1); border:1px solid rgba(255,60,60,0.3); border-radius:10px; padding:12px; color:#ff6b6b; font-size:13px; text-align:center; margin-bottom:16px;"></div>
-
-        <!-- Foglalás gomb -->
-        <button id="tura-fizet-btn" class="btn btn-gold btn-lg" style="width:100%; font-size:16px;" onclick="turaCheckout()">
-          Foglalj és fizess – 5 000 Ft
-        </button>
-      </div>
+      <h3 style="font-size: 22px; margin-bottom: 12px;">Jelentkezés a Facebook közösségünkön keresztül</h3>
+      <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 28px;">A túrák időpontjait és részleteit a Facebook csoportunkban hirdetjük meg. Csatlakozz, hogy értesülj elsőként!</p>
+      <a href="https://www.facebook.com/groups/956709845427195" target="_blank" rel="noopener" class="btn btn-gold btn-lg">Facebook közösség</a>
     </div>
   </div>
 </div>
