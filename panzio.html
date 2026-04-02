@@ -564,6 +564,31 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
   </div>
 </div>
 
+<!-- ── INGYENES FELMÉRŐ (új vendégeknek) ── -->
+<div id="panzio-felmero-szekció" class="section-full" style="background: var(--black-2); display:none; padding-top:48px; padding-bottom:48px;">
+  <div class="section">
+    <div style="max-width:720px;">
+      <div class="overline">Új vendégeknek</div>
+      <h2 class="section-title">Első alkalommal <span class="gold">ingyenes ismerkedő</span></h2>
+      <p style="font-size: 16px; color: var(--text-dim); line-height: 1.75; margin: 20px 0 28px;">
+        Ha a kutyád még nem volt nálunk panzióban, szeretjük, ha először ingyenesen eljöttök ismerkedni. Megnézzük, hogyan érzi magát a környezetben, és megbeszéljük a részleteket.
+      </p>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px;">
+        <li style="display: flex; align-items: center; gap: 10px; font-size: 15px;">
+          <span style="color: var(--gold); font-weight: 700;">✓</span> Ingyenes, kötelezettség nélkül
+        </li>
+        <li style="display: flex; align-items: center; gap: 10px; font-size: 15px;">
+          <span style="color: var(--gold); font-weight: 700;">✓</span> ~30 perces találkozó
+        </li>
+        <li style="display: flex; align-items: center; gap: 10px; font-size: 15px;">
+          <span style="color: var(--gold); font-weight: 700;">✓</span> Megismerjük a kutyát és a körülményeket
+        </li>
+      </ul>
+      <a href="https://cal.com/timea-kucsera-6harfx/napkozi-ingyenes-felmeres" class="btn btn-gold btn-lg" target="_blank" rel="noopener">Ingyenes felmérőt foglalok</a>
+    </div>
+  </div>
+</div>
+
 <!-- ── CALCULATOR + FOGLALÁS ── -->
 <div class="section-full" id="kalkulalok" style="padding-top: 32px; background: var(--black-2);">
   <div class="section">
@@ -1160,6 +1185,8 @@ szamol();
       document.getElementById('hogyan').style.display = '';
       var btnH = document.getElementById('btn-hogyan');
       if (btnH) btnH.style.display = '';
+      var felmeroEl = document.getElementById('panzio-felmero-szekció');
+      if (felmeroEl) felmeroEl.style.display = 'block';
     }
   } catch (err) {
     console.log('[WD panzio] hogyan check hiba:', err);
