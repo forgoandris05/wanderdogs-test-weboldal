@@ -1319,14 +1319,6 @@ function napkoziFoglalas() {
     } else {
       // Nincs aktív bérlet → függő foglalás rögzítése + fizetési opciók mutatása
       berletSikerEl.style.display = 'none';
-      // Küldünk user emailt + rögzítjük a függő foglalást (24h múlva Timinek is megy)
-      fetch(WEBAPP_URL, { method: 'POST', body: JSON.stringify({
-        action:   'napkozi_pending_email',
-        email:    _user && _user.email,
-        nev:      _user && _user.nev,
-        kutyaNev: _kutya_neve || (_user && _user.kutyaNev) || '',
-        startTime: startTime,
-      })}).catch(() => {}); // fire & forget, UI-t nem blokkolja
       const kutya = parseInt(_kutya) >= 2 ? '2' : '1';
       const taxi  = _taxi || 'notaxi';
       const opts  = STRIPE_LINKS[taxi]?.[kutya];
