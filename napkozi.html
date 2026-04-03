@@ -1278,6 +1278,7 @@ function napkoziFoglalas() {
   document.getElementById('wd-status-banner').style.display      = 'none';
   showTaxiKiegSection(false);
   document.getElementById('napkozi-siker').style.display         = 'block';
+  document.getElementById('napkozi-siker').scrollIntoView({behavior:'smooth', block:'start'});
 
   // Mindig friss berlet_foglalas hívás – nem a page-load kori _vanBerlet-re támaszkodunk
   const berletSikerEl = document.getElementById('berlet-siker');
@@ -1311,7 +1312,6 @@ function napkoziFoglalas() {
         szovegEl.innerHTML = tipusSzov +
           'Bérletedből levontunk 1 alkalmat. Maradék: <strong>' + _escHtml(result.maradek) + ' alkalom</strong> · lejár: ' + _escHtml(result.lejar);
       }
-      document.getElementById('napkozi-siker').scrollIntoView({behavior:'smooth'});
     } else {
       // Nincs aktív bérlet → függő foglalás rögzítése + fizetési opciók mutatása
       berletSikerEl.style.display = 'none';
@@ -1343,14 +1343,12 @@ function napkoziFoglalas() {
           '</button>' : '');
       }
       document.getElementById('fizetes-szekció').style.display = 'block';
-      document.getElementById('napkozi-siker').scrollIntoView({behavior:'smooth'});
     }
   })
   .catch(() => {
     // Hálózati hiba → inkább fizetési opciók (biztonságos fallback)
     berletSikerEl.style.display = 'none';
     document.getElementById('fizetes-szekció').style.display = 'block';
-    document.getElementById('napkozi-siker').scrollIntoView({behavior:'smooth'});
   });
 }
 
