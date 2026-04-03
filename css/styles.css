@@ -539,7 +539,7 @@ footer {
 }
 
 @media (max-width: 768px) {
-  nav { padding: 0 20px; }
+  nav { padding: 0 20px; overflow: visible !important; }
   .nav-links, .nav-right .nav-phone { display: none; }
   .nav-cta-desktop { display: none !important; }
   .nav-burger { display: flex; }
