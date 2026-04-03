@@ -693,13 +693,6 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
             <span>Tudomásul veszem és elfogadom a lemondási feltételeket (24 órán belül <strong>nem visszatéríthető</strong>).</span>
           </label>
 
-          <button type="button" class="pay-btn" id="pay-btn" disabled onclick="fizetesIndit()">
-            Fizetek →
-          </button>
-          <div class="stripe-note">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            Biztonságos fizetés – Stripe
-          </div>
           <div id="panzio-tele-hiba" style="display:none; margin-top:14px; background:rgba(255,80,80,0.08); border:1px solid rgba(255,80,80,0.35); border-radius:10px; padding:14px 16px;">
             <p style="font-size:13px; color:#fca5a5; margin:0 0 6px; font-weight:700;">Sajnos ez az időpont foglalt</p>
             <p id="panzio-tele-uzenet" style="font-size:13px; color:#fca5a5; margin:0; line-height:1.6;"></p>
@@ -732,6 +725,13 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
           <p style="font-size: 11px; color: var(--text-faint); margin-top: 14px; line-height: 1.6;" id="calc-info">
             Teljes összeg, bankkártyával előre.
           </p>
+          <button type="button" class="pay-btn" id="pay-btn" disabled onclick="fizetesIndit()" style="margin-top:16px;">
+            Fizetek →
+          </button>
+          <div class="stripe-note" style="margin-top:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Biztonságos fizetés – Stripe
+          </div>
         </div>
 
         <!-- 3+ kutya panel -->
