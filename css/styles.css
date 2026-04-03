@@ -545,18 +545,23 @@ footer {
   .nav-burger { display: flex; }
 
   .nav-links.open {
-    display: flex; flex-direction: column; align-items: flex-start;
+    display: flex !important; flex-direction: column; align-items: flex-start;
     position: fixed; top: 72px; left: 0; right: 0; bottom: 0;
-    background: var(--black);
+    background: #000000;
     padding: 32px 24px;
     gap: 20px; overflow-y: auto;
     border-top: 1px solid var(--border-dim);
     z-index: 9999;
   }
+  .nav-links.open > li {
+    display: block !important;
+    width: 100%;
+  }
   .nav-links.open > li > a {
+    display: block !important;
     font-size: 18px; color: var(--text);
   }
-  .nav-links.open .nav-cta-mobile { display: list-item; }
+  .nav-links.open .nav-cta-mobile { display: list-item !important; }
   .nav-links.open .nav-mobile-kilepes {
     display: list-item; margin-top: auto; padding-top: 16px;
     border-top: 1px solid var(--border-dim);
