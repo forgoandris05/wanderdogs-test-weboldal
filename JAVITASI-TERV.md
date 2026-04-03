@@ -186,15 +186,120 @@
 ### GAS DEPLOY SZUKSEGES (Session #16)
 > A fenti 19. pont csak GAS deploy + website push utan mukodik!
 
-### Tesztelesi checklist (session #16)
-- [ ] **napkozi_idopontok:** helyes Ke-Pe napok + kapacitas visszajon
-- [ ] **Naptar UI:** Ke-Pe zold, He/hetvege szurke, 2 napon beluli disabled
-- [ ] **Nem-taxi flow:** nap + orapont valasztas → berlet levon → Calendar event
-- [ ] **Taxi flow:** nap valasztas (nincs idopont) → berlet levon → Calendar event + Taxi Menetrend
-- [ ] **Nincs-berlet flow:** nap valasztas → fizetes opciok megjelennek
-- [ ] **Kapacitas:** 50 kutya utan "Betelt" jelzes
-- [ ] **Egyeni orak NEM utkoznek** napkozivel (Calendar transparent)
-- [ ] **Ingyenes felmero Cal.com** link meg mukodik
+### 20. Zart napok kezeles (ZARVA tab)
+- ZARVA tab a CRM-ben: szolgaltatasokent max 3 zart intervallum
+- `_isZarva()` + `_getZarvaAdatok()` (5 perc cache) + `zarva_check` endpoint
+- 7 szolgaltatas: napkozi, panzio, csoportos, kutyatura, orzo, egyeni, terapia
+- Backend: minden foglalasi handler ellenorzi (napkozi, panzio, csoportos, kutyatura, orzo-vedo)
+- Frontend: napkozi "Zarva" cella, csoportos "ZARVA" dropdown, egyeni+terapia banner
+- `zarvaTabLetrehozas()` fuggveny a tab automatikus letrehozasahoz
+
+### 21. Csoportos Calendar event busy
+- `_csoportosNaptarBeIras()`: transparent → busy (blokkolja Timi Cal.com foglalasait)
+
+### 22. Panzio idopont valaszto
+- Kettos dropdown (ora:perc) mint a napkozinel
+- calc-be-ora/calc-ki-ora → calc-be-h + calc-be-m / calc-ki-h + calc-ki-m
+
+### 23. Napkozi UI javitasok
+- Naptar + idopont valaszto + gomb kozepre igazitas
+- Szabad helyek szam elrejtese
+- "Mikor jottok?" szoveg
+- Foglalas gomb utan nem ugrik az oldal aljara
+
+---
+
+## ═══════════════════════════════════════════════════
+## TESZTELESI TERV (Session #16 — minden valtoztatas)
+## ═══════════════════════════════════════════════════
+
+### ELOKESZITES
+1. GAS editorba masold be a frissitett kodot
+2. Deploy → New deployment
+3. Futtasd: `zarvaTabLetrehozas()` (leterehozza a ZARVA tabot)
+4. GitHub Pages mar frissult (push megvolt)
+5. Stripe tesztkartya: `4242 4242 4242 4242` (barmilyen datum/CVC)
+
+---
+
+### A) NAPKOZI NAPTAR — alapmukodes
+- [ ] **A1.** Nyisd meg napkozi.html → bejelentkezve → naptar megjelenik
+- [ ] **A2.** Naptar: Kedd-Pentek zold, Hetfo/hetvege szurke, mai+holnapi disabled
+- [ ] **A3.** Honap navigacio: elore/hatra nyilak mukodnek
+- [ ] **A4.** Kattints egy zold napra → arannyá valik, "Mikor jottok?" megjelenik
+- [ ] **A5.** Ora (8-16) + perc (00/15/30/45) valaszthato
+- [ ] **A6.** "Foglalas megerositese" gomb megjelenik a kivalasztott datummal
+
+### B) NAPKOZI — berlet foglalas
+- [ ] **B1.** Van berleted → kattints napra → ora/perc valasztas → "Foglalas megerositese"
+- [ ] **B2.** "Foglalas feldolgozasa..." megjelenik (NEM ugrik az oldal aljara!)
+- [ ] **B3.** Berlet levon → siker uzenet (maradek alkalom, lejar)
+- [ ] **B4.** Google Calendar-ban uj event: "Napkozi: Kutyanev (Gazdinev)" — **transparent** (free)
+- [ ] **B5.** CRM NAPKOZI tabban uj sor, Forras: "Website" (NEM "Cal.com")
+- [ ] **B6.** Visszaigazolo email erkezik
+
+### C) NAPKOZI — taxi flow
+- [ ] **C1.** Taxi kivalasztva (10km/25km) → cim mezo megjelenik
+- [ ] **C2.** Kattints napra → **NINCS** oravalaszto (fix 7:30)
+- [ ] **C3.** Foglalas → Calendar event + Taxi Menetrend 2 sor (hozas + hazavives)
+
+### D) NAPKOZI — nincs berlet flow
+- [ ] **D1.** Nincs berleted → kattints napra → oravalasztas → Foglalas megerositese
+- [ ] **D2.** Fizetes opciok megjelennek (4 alk / 8 alk / Egyszeri)
+- [ ] **D3.** Kattints "4 alkalom" → Stripe checkout → tesztkartya → napkozi-koszonjuk.html
+- [ ] **D4.** Koszonjuk oldalon: "Kovetkezo napot foglalj: itt kattints" (wanderdogsworld.hu/napkozi.html-re mutat, NEM Cal.com-ra)
+
+### E) NAPKOZI — ingyenes felmero
+- [ ] **E1.** Uj vendeg (nincs korabbi foglalas) → "Ingyenes felmero" banner megjelenik
+- [ ] **E2.** "Ingyenes felmerot foglalok" gomb → Cal.com link megnyilik (EZ MARAD Cal.com-on!)
+
+---
+
+### F) PANZIO — idopont valaszto
+- [ ] **F1.** Nyisd meg panzio.html → kalkulatorban ket kulon dropdown (ora + : + perc)
+- [ ] **F2.** Bekoltozes: ora valasztas (7-18) + perc (00/15/30/45)
+- [ ] **F3.** Kikoltozes: ora valasztas + 11:00 elott → "utolso nap nem szamit" info megjelenik
+- [ ] **F4.** Fizetes gomb CSAK akkor aktiv ha mindket idopont ki van valasztva
+
+---
+
+### G) ZART NAPOK — ZARVA tab
+- [ ] **G1.** CRM-ben letrejott a "⏸️ Zart Napok" tab (7 sor, szines)
+- [ ] **G2.** Irj be: Napkozi sor → Zarva 1 -tol: 2026-04-08 → Zarva 1 -ig: 2026-04-08
+
+### H) ZART NAPOK — napkozi
+- [ ] **H1.** Napkozi naptar: apr 8 szurke + "Zarva" felirat (nem kattinthato)
+- [ ] **H2.** Ha megprobalsz berlettel foglalni zart napra → "Ez a nap nem foglalhato (zarva)."
+- [ ] **H3.** Torold ki a ZARVA cellakat → apr 8 ujra zold (5 perc cache var!)
+
+### I) ZART NAPOK — csoportos
+- [ ] **I1.** Irj be: Csoportos sor → egy kovetkezo szombat datuma
+- [ ] **I2.** Csoportos dropdown: az a szombat "ZARVA" felirattal, disabled
+- [ ] **I3.** Ha megprobalsz foglalni (API) → "Ez a szombat nem foglalhato (zarva)."
+
+### J) ZART NAPOK — panzio
+- [ ] **J1.** Irj be: Panzio sor → egy jovo heti datum
+- [ ] **J2.** Panzio foglalasnal ha az idoszak erintett → "A panzio X napon zarva tart."
+
+### K) ZART NAPOK — egyeni ora + viselkedesterapia
+- [ ] **K1.** Irj be: Egyeni ora sor → mai datum -tol -ig
+- [ ] **K2.** egyeni-ora.html: foglalj gomb eltunik → "Jelenleg nem foglalhato" banner
+- [ ] **K3.** Irj be: Viselkedesterapia sor → mai datum
+- [ ] **K4.** viselkedesterapia.html: ugyanaz a banner
+
+---
+
+### L) UTKOZES MATRIX — ellenorzes
+- [ ] **L1.** Napkozi Calendar event = transparent (free) → Cal.com-ban foglalhato ugyanarra az idopontra egyeni ora
+- [ ] **L2.** Csoportos Calendar event = busy → Cal.com-ban NEM foglalhato egyeni ora szombat 9-10-re
+- [ ] **L3.** Ket kulonbozo ember foglal napkozit ugyanarra a napra → mindketto sikerrel (kapacitason belul)
+
+---
+
+### TESZT UTAN TAKARITAS
+- [ ] Torold a ZARVA tab teszt datumokat (ures cellak = nincs zarolas)
+- [ ] Torold a teszt foglalasokat a NAPKOZI tabbol
+- [ ] Torold a teszt Calendar eventeket
 
 ---
 
