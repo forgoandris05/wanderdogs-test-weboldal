@@ -1148,6 +1148,7 @@ function renderNapkoziCalendar() {
     const foglalt = napAdat ? napAdat.foglalt : 0;
     const szabad  = napAdat ? napAdat.szabad : 50;
     const tele    = szabad <= 0;
+    const zarva   = napAdat ? napAdat.zarva : false;
 
     let cellClass = 'nk-cal-cell';
     let cellContent = '<span>' + nap + '</span>';
@@ -1155,6 +1156,9 @@ function renderNapkoziCalendar() {
 
     if (!isKeddPentek || !isJovo) {
       cellClass += ' disabled';
+    } else if (zarva) {
+      cellClass += ' disabled';
+      cellContent += '<span class="spot-count" style="display:block;color:var(--text-dim);font-size:9px;">Zárva</span>';
     } else if (tele) {
       cellClass += ' full';
       cellContent += '<span class="spot-count">Betelt</span>';

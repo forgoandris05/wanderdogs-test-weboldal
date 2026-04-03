@@ -204,6 +204,17 @@
 // ── Oltási könyv ellenőrzés ──────────────────────────────────
 if (wdOltasBlokk('foglalas')) { /* blokkolva */ }
 
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+
+// Zárt nap ellenőrzés
+fetch(WEBAPP_URL, { method: 'POST', body: JSON.stringify({ action: 'zarva_check', szolgaltatas: 'terapia' }) })
+  .then(r => r.json()).then(resp => {
+    if (resp.ok && resp.zarva) {
+      const c = document.getElementById('viselkedes-foglal-container');
+      if (c) c.innerHTML = '<div style="padding:16px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:12px;text-align:center;"><p style="color:var(--gold);font-weight:700;margin:0;">Jelenleg nem foglalható</p><p style="color:var(--text-dim);font-size:13px;margin:4px 0 0;">Kérlek próbáld később vagy írj nekünk emailt.</p></div>';
+    }
+  }).catch(() => {});
+
 (function() {
   const user = wdGetUser();
   if (!user || !user.registered) return;
