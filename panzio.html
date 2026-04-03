@@ -642,13 +642,25 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
           <label>Időpontok</label>
           <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">A legjobb ha 8–11 között tudod hozni és 16–17 között elvinni. A pontos időpont e-mailben még egyeztetésre kerülhet.</p>
           <div style="display:flex;gap:16px;flex-wrap:wrap;">
-            <div style="flex:1;min-width:140px;">
-              <label for="calc-be-ora" style="font-size:12px;color:var(--text-dim);display:block;margin-bottom:4px;">Beköltözés időpontja</label>
-              <select id="calc-be-ora" style="width:100%;padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;font-family:inherit;"></select>
+            <div style="flex:1;min-width:180px;">
+              <label for="calc-be-h" style="font-size:12px;color:var(--text-dim);display:block;margin-bottom:4px;">Beköltözés időpontja</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <select id="calc-be-h" style="padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;font-family:inherit;cursor:pointer;"></select>
+                <span style="color:var(--text-dim);font-size:16px;font-weight:700;">:</span>
+                <select id="calc-be-m" style="padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;font-family:inherit;cursor:pointer;">
+                  <option value="00">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option>
+                </select>
+              </div>
             </div>
-            <div style="flex:1;min-width:140px;">
-              <label for="calc-ki-ora" style="font-size:12px;color:var(--text-dim);display:block;margin-bottom:4px;">Kiköltözés időpontja</label>
-              <select id="calc-ki-ora" style="width:100%;padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;font-family:inherit;"></select>
+            <div style="flex:1;min-width:180px;">
+              <label for="calc-ki-h" style="font-size:12px;color:var(--text-dim);display:block;margin-bottom:4px;">Kiköltözés időpontja</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <select id="calc-ki-h" style="padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;font-family:inherit;cursor:pointer;"></select>
+                <span style="color:var(--text-dim);font-size:16px;font-weight:700;">:</span>
+                <select id="calc-ki-m" style="padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;font-family:inherit;cursor:pointer;">
+                  <option value="00">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option>
+                </select>
+              </div>
             </div>
           </div>
           <p id="tizenegy-info" style="font-size:12px;margin-top:8px;color:var(--gold);display:none;">✓ Kiköltözés 11:00 előtt → az utolsó nap nem számít megkezdettnek</p>
@@ -866,39 +878,28 @@ document.querySelectorAll('.dog-btn').forEach(btn => {
     el.addEventListener('input', szamol); // azonnal frissül dátumválasztáskor
   }
 });
-['calc-etel','calc-be-ora','calc-ki-ora'].forEach(id => {
+['calc-etel','calc-be-h','calc-be-m','calc-ki-h','calc-ki-m'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('change', szamol);
 });
-// Időpont selectek feltöltése (15 percenként, 7:00–18:00)
+// Időpont selectek feltöltése (óra: 7–18, perc: 00/15/30/45)
 (function() {
-  var orak = [];
-  for (var h = 7; h <= 18; h++) {
-    for (var m = 0; m < 60; m += 15) {
-      if (h === 18 && m > 0) break;
-      orak.push(('0'+h).slice(-2) + ':' + ('0'+m).slice(-2));
-    }
-  }
-  ['calc-be-ora','calc-ki-ora'].forEach(function(id) {
+  ['calc-be-h','calc-ki-h'].forEach(function(id) {
     var sel = document.getElementById(id);
     if (!sel) return;
-    // Üres alapértelmezett opció
     var placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = '– Válassz –';
-    placeholder.selected = true;
-    placeholder.disabled = true;
+    placeholder.value = ''; placeholder.textContent = '–'; placeholder.selected = true; placeholder.disabled = true;
     sel.appendChild(placeholder);
-    orak.forEach(function(o) {
+    for (var h = 7; h <= 18; h++) {
       var opt = document.createElement('option');
-      opt.value = o; opt.textContent = o;
+      opt.value = ('0'+h).slice(-2); opt.textContent = ('0'+h).slice(-2);
       sel.appendChild(opt);
-    });
+    }
   });
 })();
 
 // ── Fizetés gomb aktiválása ───────────────────────────────────
-['f-nev','f-kutya','f-email','elfogadom'].forEach(id => {
+['f-nev','f-kutya','f-email','elfogadom','calc-be-h','calc-be-m','calc-ki-h','calc-ki-m'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('input', frissitGomb);
   if (el) el.addEventListener('change', frissitGomb);
@@ -908,9 +909,13 @@ function szamol() {
   const be = document.getElementById('calc-be').value;
   const ki = document.getElementById('calc-ki').value;
   const etel = document.getElementById('calc-etel').checked;
-  const beOra = document.getElementById('calc-be-ora').value;
-  const kiOra = document.getElementById('calc-ki-ora').value;
-  const tizenegy = kiOra < '11:00';
+  const beH = document.getElementById('calc-be-h').value;
+  const beM = document.getElementById('calc-be-m').value;
+  const kiH = document.getElementById('calc-ki-h').value;
+  const kiM = document.getElementById('calc-ki-m').value;
+  const beOra = beH ? (beH + ':' + beM) : '';
+  const kiOra = kiH ? (kiH + ':' + kiM) : '';
+  const tizenegy = kiOra && kiOra < '11:00';
 
   // 11:00 info szöveg megjelenítése
   var infoEl = document.getElementById('tizenegy-info');
@@ -1000,9 +1005,9 @@ function frissitGomb() {
   // Ha checkbox lista van, az ott kiválasztott kutyákat is elfogadjuk
   const kutyaOk = kutya || document.querySelectorAll('#kutya-valaszto input:checked').length > 0;
 
-  const beOra   = document.getElementById('calc-be-ora').value;
-  const kiOra   = document.getElementById('calc-ki-ora').value;
-  const minden = panzioCalc && nev && kutyaOk && email && elfog && beOra && kiOra;
+  const beH     = document.getElementById('calc-be-h').value;
+  const kiH     = document.getElementById('calc-ki-h').value;
+  const minden = panzioCalc && nev && kutyaOk && email && elfog && beH && kiH;
   document.getElementById('pay-btn').disabled = !minden;
 }
 
