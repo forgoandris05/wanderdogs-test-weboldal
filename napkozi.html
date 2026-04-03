@@ -223,6 +223,24 @@
     .price-table td { padding:12px 16px; font-size:14px; color:var(--text-dim); border-bottom:1px solid var(--border-dim); }
     .price-table tr:last-child td { border-bottom:none; }
     .price-table tr:hover td { background:var(--gold-faint); }
+
+    /* ── NAPKÖZI NAPTÁR ── */
+    .nk-cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .nk-cal-nav button { background:none; border:1px solid var(--border-dim); color:var(--gold); font-size:18px; width:36px; height:36px; border-radius:8px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+    .nk-cal-nav button:hover { border-color:var(--gold); background:rgba(255,215,0,0.08); }
+    .nk-cal-nav .nk-cal-month { font-size:16px; font-weight:800; color:var(--text); }
+    .nk-cal-header { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:4px; }
+    .nk-cal-header span { text-align:center; font-size:11px; font-weight:700; color:var(--text-dim); text-transform:uppercase; padding:6px 0; }
+    .nk-cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+    .nk-cal-cell { aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:10px; font-size:14px; font-weight:700; cursor:default; border:2px solid transparent; transition:all 0.2s; min-height:48px; }
+    .nk-cal-cell.empty { visibility:hidden; }
+    .nk-cal-cell.disabled { opacity:0.2; }
+    .nk-cal-cell.available { background:rgba(76,175,80,0.1); border-color:rgba(76,175,80,0.3); color:var(--text); cursor:pointer; }
+    .nk-cal-cell.available:hover { border-color:var(--gold); transform:scale(1.05); }
+    .nk-cal-cell.full { background:rgba(244,67,54,0.1); border-color:rgba(244,67,54,0.2); color:var(--text-dim); }
+    .nk-cal-cell.selected { background:var(--gold) !important; color:var(--black) !important; border-color:var(--gold) !important; }
+    .nk-cal-cell .spot-count { font-size:9px; font-weight:600; margin-top:1px; opacity:0.7; }
+    @keyframes spin { to { transform:rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -460,13 +478,37 @@
         <span style="font-size:15px;">⏰</span>
         <span style="font-size:13px; color:var(--text-dim);">Foglalás legalább <strong style="color:var(--gold);">2 nappal előre</strong> lehetséges.</span>
       </div>
-      <div id="cal-napkozi-wrapper" style="position:relative;">
-        <div id="cal-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%;
-             background:rgba(0,0,0,0.55); z-index:10; border-radius:12px;
-             align-items:center; justify-content:center;">
-          <p id="cal-overlay-msg" style="color:var(--gold); font-weight:700; font-size:15px; text-align:center; padding:24px;"></p>
+      <!-- Naptár grid -->
+      <div id="napkozi-calendar" style="max-width:560px;">
+        <div id="napkozi-cal-loading" style="text-align:center;padding:40px;">
+          <div style="width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;"></div>
+          <span style="color:var(--text-dim);font-size:14px;margin-left:12px;">Napok betöltése...</span>
         </div>
-        <div id="cal-napkozi"></div>
+        <div id="napkozi-cal-grid" style="display:none;"></div>
+      </div>
+
+      <!-- Időpont választó (taxi nélkül) -->
+      <div id="napkozi-ido-valaszto" style="display:none; margin-top:20px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--text);">Mikor hozod? *</div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <select id="napkozi-ora" style="padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;cursor:pointer;">
+            <option value="08">08</option><option value="09">09</option><option value="10">10</option>
+            <option value="11">11</option><option value="12">12</option><option value="13">13</option>
+            <option value="14">14</option><option value="15">15</option><option value="16">16</option>
+          </select>
+          <span style="color:var(--text-dim);font-size:16px;font-weight:700;">:</span>
+          <select id="napkozi-perc" style="padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;cursor:pointer;">
+            <option value="00">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Foglalás gomb -->
+      <div id="napkozi-foglal-btn-wrapper" style="display:none; margin-top:24px;">
+        <div id="napkozi-foglal-error" style="display:none;color:#ff6b6b;font-size:13px;margin-bottom:12px;font-weight:600;"></div>
+        <button id="napkozi-foglal-btn" onclick="napkoziFoglalas()" style="padding:16px 40px;font-size:16px;font-weight:800;border:none;border-radius:12px;background:var(--gold);color:var(--black);cursor:pointer;transition:all 0.2s;">
+          Foglalás megerősítése
+        </button>
       </div>
     </div>
 
@@ -863,23 +905,6 @@
   </div>
 </footer>
 
-<!-- Cal.com Embed Loader -->
-<script>
-(function (C, A, L) {
-  let p = function (a, ar) { a.q.push(ar); };
-  let d = C.document;
-  C.Cal = C.Cal || function () {
-    let cal = C.Cal; let ar = arguments;
-    if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || [];
-      d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; }
-    if (ar[0] === L) { const api = function () { p(api, arguments); };
-      const namespace = ar[1]; api.q = api.q || [];
-      if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api;
-        p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar);
-      return; } p(cal, ar);
-  };
-})(window, "https://app.cal.com/embed/embed.js", "init");
-</script>
 <script src="js/main.js?v=20260402"></script>
 <script>
 // ── Oltási könyv ellenőrzés ──────────────────────────────────
@@ -897,8 +922,6 @@ function _escHtml(str) {
 
 // ── KONSTANSOK ────────────────────────────────────────────────
 const NAPKOZI_ISMERKEDO   = 'https://cal.com/timea-kucsera-6harfx/napkozi-ingyenes-felmeres';
-const CALCOM_NAPKOZI_SLUG       = 'timea-kucsera-6harfx/napkozi-foglalas';       // normál (időpont választás)
-const CALCOM_NAPKOZI_TAXI_SLUG  = 'timea-kucsera-6harfx/napkozi-foglalas-taxi'; // ✅ 7:30–9:00, 1,5 órás taxi felvételi ablak
 
 // ── NAPKÖZI ÁRAK (megjelenítéshez) ──────────────────────────────
 const STRIPE_LINKS = {
@@ -990,8 +1013,9 @@ let _kutya       = '1';
 let _taxi        = 'notaxi';
 let _helyszin    = '';
 let _kutya_neve  = '';
-let _calInitDone = false;
-let _user        = null; // globálisan elérhető a Cal.com prefillhez
+let _user        = null;
+let _selectedNapkoziDate = ''; // kiválasztott napközi nap (yyyy-MM-dd)
+let _napkoziNapok = [];        // backend-ről kapott napok + kapacitás
 
 // ── PREFS (localStorage) ──────────────────────────────────────
 const WD_PREFS_KEY = 'wd_napkozi_prefs';
@@ -1042,116 +1066,165 @@ function arFrissit() {
   document.getElementById('napkozi-cal-section').style.display = is3plus ? 'none'  : 'block';
 }
 
-// ── NAPTÁR VALIDÁCIÓS OVERLAY ─────────────────────────────────
-function updateCalOverlay() {
-  var overlay = document.getElementById('cal-overlay');
-  if (!overlay) return;
-  if (_vanBerlet) { overlay.style.display = 'none'; return; }
+// ── NAPKÖZI NAPTÁR – saját backend alapú ─────────────────────
+let _napkoziViewMonth = new Date().getMonth();
+let _napkoziViewYear  = new Date().getFullYear();
 
-  var kutyaValaszto = document.getElementById('napkozi-kutya-valaszto');
-  var kutyaOk = false;
-  if (kutyaValaszto) {
-    kutyaOk = kutyaValaszto.querySelectorAll('input:checked').length > 0;
-  } else {
-    var ki = document.getElementById('kutya-neve-input');
-    kutyaOk = ki && ki.value.trim().length > 0;
-  }
+function loadNapkoziNapok() {
+  const loadingEl = document.getElementById('napkozi-cal-loading');
+  const gridEl    = document.getElementById('napkozi-cal-grid');
+  if (loadingEl) loadingEl.style.display = 'block';
+  if (gridEl)    gridEl.style.display = 'none';
 
-  var taxiCimOk = _taxi === 'notaxi' || !!_helyszin.trim();
-
-  if (!kutyaOk) {
-    document.getElementById('cal-overlay-msg').textContent = 'Előbb válaszd ki melyik kutyá(i)dat hozod!';
-    overlay.style.display = 'flex';
-  } else if (!taxiCimOk) {
-    document.getElementById('cal-overlay-msg').textContent = 'Add meg a taxi felvételi címet!';
-    overlay.style.display = 'flex';
-  } else {
-    overlay.style.display = 'none';
-  }
+  fetch(WEBAPP_URL, { method: 'POST', body: JSON.stringify({ action: 'napkozi_idopontok' }) })
+    .then(r => r.json())
+    .then(resp => {
+      if (resp.ok && resp.napok) {
+        _napkoziNapok = resp.napok;
+      }
+      renderNapkoziCalendar();
+    })
+    .catch(() => {
+      renderNapkoziCalendar(); // üres naptár, de megjelenik
+    });
 }
 
-// ── CAL.COM EMBED INIT (Cal.com hivatalos embed API) ─────────
-let _calCurrentTaxi = null;
-let _calNsCounter = 0; // namespace counter a dinamikus újratöltéshez
+function renderNapkoziCalendar() {
+  const gridEl    = document.getElementById('napkozi-cal-grid');
+  const loadingEl = document.getElementById('napkozi-cal-loading');
+  if (!gridEl) return;
+  if (loadingEl) loadingEl.style.display = 'none';
+  gridEl.style.display = 'block';
 
-function initCalEmbed(forceReload) {
-  if (parseInt(_kutya) >= 3) return;
+  const honapNevek = ['Január','Február','Március','Április','Május','Június','Július','Augusztus','Szeptember','Október','November','December'];
+  const napNevek = ['H','K','Sz','Cs','P','Sz','V'];
 
+  const year = _napkoziViewYear;
+  const month = _napkoziViewMonth;
+
+  // Hónap navigáció
+  let html = '<div class="nk-cal-nav">';
+  html += '<button onclick="nkCalPrev()" aria-label="Előző hónap">&lsaquo;</button>';
+  html += '<span class="nk-cal-month">' + honapNevek[month] + ' ' + year + '</span>';
+  html += '<button onclick="nkCalNext()" aria-label="Következő hónap">&rsaquo;</button>';
+  html += '</div>';
+
+  // Napok fejléc
+  html += '<div class="nk-cal-header">';
+  napNevek.forEach(n => { html += '<span>' + n + '</span>'; });
+  html += '</div>';
+
+  // Naptár grid
+  html += '<div class="nk-cal-grid">';
+
+  const elsoNap = new Date(year, month, 1);
+  let elsoNapIndex = elsoNap.getDay(); // 0=vas
+  if (elsoNapIndex === 0) elsoNapIndex = 7; // hétfővel kezdjük
+  elsoNapIndex--; // 0-indexed (H=0)
+
+  const napokSzama = new Date(year, month + 1, 0).getDate();
+
+  const ma = new Date();
+  ma.setHours(0,0,0,0);
+
+  // Üres cellák az elején
+  for (let e = 0; e < elsoNapIndex; e++) {
+    html += '<div class="nk-cal-cell empty"></div>';
+  }
+
+  for (let nap = 1; nap <= napokSzama; nap++) {
+    const d = new Date(year, month, nap);
+    const dow = d.getDay(); // 0=vas, 2=kedd, 5=péntek
+    const datumStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(nap).padStart(2, '0');
+
+    // Elérhető nap? Kedd-Péntek + jövőben + min 2 nap előre
+    const minDate = new Date(ma);
+    minDate.setDate(minDate.getDate() + 2);
+    const isKeddPentek = dow >= 2 && dow <= 5;
+    const isJovo = d >= minDate;
+
+    // Kapacitás keresés
+    const napAdat = _napkoziNapok.find(n => n.datum === datumStr);
+    const foglalt = napAdat ? napAdat.foglalt : 0;
+    const szabad  = napAdat ? napAdat.szabad : 50;
+    const tele    = szabad <= 0;
+
+    let cellClass = 'nk-cal-cell';
+    let cellContent = '<span>' + nap + '</span>';
+    let onclick = '';
+
+    if (!isKeddPentek || !isJovo) {
+      cellClass += ' disabled';
+    } else if (tele) {
+      cellClass += ' full';
+      cellContent += '<span class="spot-count">Betelt</span>';
+    } else {
+      cellClass += ' available';
+      cellContent += '<span class="spot-count">' + szabad + ' hely</span>';
+      onclick = ' onclick="nkCalSelect(\'' + datumStr + '\', this)"';
+    }
+
+    if (datumStr === _selectedNapkoziDate) {
+      cellClass += ' selected';
+    }
+
+    html += '<div class="' + cellClass + '"' + onclick + '>' + cellContent + '</div>';
+  }
+
+  html += '</div>';
+  gridEl.innerHTML = html;
+}
+
+function nkCalPrev() {
+  _napkoziViewMonth--;
+  if (_napkoziViewMonth < 0) { _napkoziViewMonth = 11; _napkoziViewYear--; }
+  renderNapkoziCalendar();
+}
+function nkCalNext() {
+  _napkoziViewMonth++;
+  if (_napkoziViewMonth > 11) { _napkoziViewMonth = 0; _napkoziViewYear++; }
+  renderNapkoziCalendar();
+}
+
+function nkCalSelect(datumStr, el) {
+  _selectedNapkoziDate = datumStr;
+  // Hiba elrejtése
+  const errEl = document.getElementById('napkozi-foglal-error');
+  if (errEl) errEl.style.display = 'none';
+
+  // Kiválasztott cella kiemelése
+  renderNapkoziCalendar();
+
+  // Időpont választó megjelenítése (nem taxi esetén)
   const isTaxi = _taxi && _taxi !== 'notaxi';
-  if (_calInitDone && _calCurrentTaxi === isTaxi && !forceReload) return;
+  const idoValaszto = document.getElementById('napkozi-ido-valaszto');
+  if (idoValaszto) idoValaszto.style.display = isTaxi ? 'none' : 'block';
 
-  _calInitDone = true;
-  _calCurrentTaxi = isTaxi;
-  prefsSave();
+  // Foglalás gomb megjelenítése
+  const btnWrapper = document.getElementById('napkozi-foglal-btn-wrapper');
+  if (btnWrapper) btnWrapper.style.display = 'block';
 
-  const calSlug = isTaxi ? CALCOM_NAPKOZI_TAXI_SLUG : CALCOM_NAPKOZI_SLUG;
-  const taxiLabel = {notaxi:'Nem', '10km':'Igen – ≤10 km', '25km':'Igen – 10-25 km'}[_taxi] || 'Nem';
-  const notesStr = [
-    (_kutya_neve || (_user && _user.kutyaNev)) ? 'Kutya: ' + (_kutya_neve || (_user && _user.kutyaNev)) : '',
-    _kutya + ' kutya',
-    taxiLabel !== 'Nem' ? 'Taxi: ' + taxiLabel : '',
-  ].filter(Boolean).join(' | ');
-
-  // Konténer ürítése + új embed div
-  const container = document.getElementById('cal-napkozi');
-  container.innerHTML = '';
-  const embedDiv = document.createElement('div');
-  embedDiv.id = 'cal-napkozi-embed';
-  embedDiv.style.cssText = 'width:100%;min-height:650px;overflow:auto;';
-  container.appendChild(embedDiv);
-
-  // Egyedi namespace minden embed példányhoz (taxi toggle)
-  _calNsCounter++;
-  const ns = 'napkozi' + _calNsCounter;
-
-  Cal("init", ns, {origin: "https://app.cal.com"});
-
-  Cal.ns[ns]("inline", {
-    elementOrSelector: "#cal-napkozi-embed",
-    calLink: calSlug,
-    config: {
-      name:   (_user && _user.nev)   || '',
-      email:  (_user && _user.email) || '',
-      notes:  notesStr,
-      layout: 'month_view',
-      theme:  'dark',
-    },
-  });
-
-  Cal.ns[ns]("ui", {
-    hideEventTypeDetails: false,
-    styles: { branding: { brandColor: "#FFD700" } },
-  });
-
-  // Booking siker figyelése
-  Cal.ns[ns]("on", {
-    action: "bookingSuccessfulV2",
-    callback: function(e) {
-      console.log('[WD napkozi] Cal.com bookingSuccessfulV2:', e.detail);
-      onNapkoziBooked(e.detail);
-    }
-  });
-
-  // Debug: minden Cal.com event logolása (teszteléshez)
-  Cal.ns[ns]("on", {
-    action: "*",
-    callback: function(e) {
-      console.log('[WD napkozi] Cal.com event:', e.detail.type, e.detail);
-    }
-  });
+  // Dátum formázva a gombon
+  const d = new Date(datumStr + 'T00:00:00');
+  const honapNevek = ['jan.','feb.','márc.','ápr.','máj.','jún.','júl.','aug.','szept.','okt.','nov.','dec.'];
+  const napNevek = ['vasárnap','hétfő','kedd','szerda','csütörtök','péntek','szombat'];
+  const btn = document.getElementById('napkozi-foglal-btn');
+  if (btn) {
+    btn.textContent = 'Foglalás megerősítése — ' + d.getFullYear() + '. ' + honapNevek[d.getMonth()] + ' ' + d.getDate() + '. (' + napNevek[d.getDay()] + ')';
+  }
 }
 
-// Diagnosztikai logger: nyers postMessage-ek a Cal.com iframe-ből
-window.addEventListener('message', function(e) {
-  if (e.origin && e.origin.includes('cal.com')) {
-    console.log('[WD napkozi] Raw Cal.com postMessage:', e.data);
-  }
-});
+// ── NAPKÖZI FOGLALÁS MEGERŐSÍTÉSE ─────────────────────────────
+let _bookingHandled = false;
+function napkoziFoglalas() {
+  if (_bookingHandled) return;
 
-// ── CAL.COM BOOKING SIKERES ───────────────────────────────────
-let _bookingHandled = false; // dupla Cal.com event ellen
-function onNapkoziBooked(detail) {
-  if (_bookingHandled) return; // 2. hívás ignorálva
+  // Validáció: nap kiválasztva?
+  if (!_selectedNapkoziDate) {
+    const errEl = document.getElementById('napkozi-foglal-error');
+    if (errEl) { errEl.textContent = 'Kérlek válassz egy napot a naptárból!'; errEl.style.display = 'block'; }
+    return;
+  }
 
   // Taxi validáció: helyszín kötelező
   const isTaxiBooking = _taxi && _taxi !== 'notaxi';
@@ -1161,6 +1234,16 @@ function onNapkoziBooked(detail) {
     if (hInput) { hInput.focus(); hInput.style.borderColor = '#ff6b6b'; }
     if (hHiba) hHiba.style.display = 'block';
     return;
+  }
+
+  // Időpont validáció (nem taxi esetén)
+  if (!isTaxiBooking) {
+    const oraEl = document.getElementById('napkozi-ora');
+    if (!oraEl || !oraEl.value) {
+      const errEl = document.getElementById('napkozi-foglal-error');
+      if (errEl) { errEl.textContent = 'Kérlek válassz időpontot!'; errEl.style.display = 'block'; }
+      return;
+    }
   }
 
   _bookingHandled = true;
@@ -1177,12 +1260,16 @@ function onNapkoziBooked(detail) {
     return;
   }
 
-  // bookingSuccessfulV2 formátum: detail = { type, data: { startTime, ... } }
-  const eventData = (detail && detail.data) || detail || {};
-  const startTime = eventData.startTime ||
-                    (eventData.allBookings && eventData.allBookings[0] && eventData.allBookings[0].startTime) ||
-                    new Date().toISOString();
-  console.log('[WD napkozi] onNapkoziBooked – startTime:', startTime, 'email:', _user.email);
+  // startTime összerakás: kiválasztott nap + időpont
+  let startTime;
+  if (isTaxiBooking) {
+    startTime = _selectedNapkoziDate + 'T07:30:00';
+  } else {
+    const ora  = document.getElementById('napkozi-ora').value || '08';
+    const perc = document.getElementById('napkozi-perc').value || '00';
+    startTime = _selectedNapkoziDate + 'T' + ora.padStart(2, '0') + ':' + perc.padStart(2, '0') + ':00';
+  }
+  console.log('[WD napkozi] napkoziFoglalas – startTime:', startTime, 'email:', _user.email);
   localStorage.setItem('wd_pending_booking', JSON.stringify({ startTime }));
 
   document.getElementById('napkozi-cal-section').style.display   = 'none';
@@ -1293,11 +1380,7 @@ document.querySelectorAll('[data-taxi]').forEach(btn => {
     }
     arFrissit();
     prefsSave();
-    // Cal.com naptár CSAK ha taxi ↔ notaxi váltás (10km↔25km-nél nem kell)
-    if (prevIsTaxi !== newIsTaxi) {
-      initCalEmbed(true);
-    }
-    // Cal.com intro szöveg frissítése
+    // Intro szöveg + időpont választó frissítése taxi váltásnál
     const calIntroText = document.getElementById('cal-intro-text');
     if (calIntroText) {
       const kutyaNev = _kutya_neve || (_user && _user.kutyaNev) || 'a kutyádat';
@@ -1308,7 +1391,11 @@ document.querySelectorAll('[data-taxi]').forEach(btn => {
         calIntroText.textContent = 'Válaszd ki melyik időpontban hozod ' + kutyaNev + '-t.';
       }
     }
-    updateCalOverlay();
+    // Időpont választó mutatása/rejtése taxi módnál
+    const idoValaszto = document.getElementById('napkozi-ido-valaszto');
+    if (idoValaszto && _selectedNapkoziDate) {
+      idoValaszto.style.display = newIsTaxi ? 'none' : 'block';
+    }
   });
 });
 document.getElementById('helyszin-input').addEventListener('input', function() {
@@ -1317,12 +1404,10 @@ document.getElementById('helyszin-input').addEventListener('input', function() {
   const hHiba = document.getElementById('helyszin-hiba');
   if (hHiba) hHiba.style.display = 'none';
   prefsSave();
-  updateCalOverlay();
 });
 document.getElementById('kutya-neve-input').addEventListener('input', e => {
   _kutya_neve = e.target.value;
   prefsSave();
-  updateCalOverlay();
 });
 
 // ── KIEGÉSZÍTŐ TAXI LOGIKA ────────────────────────────────────
@@ -1581,7 +1666,6 @@ function _applyNapkoziData(foglalasData, berletData, user) {
             document.querySelectorAll('[data-kutya]').forEach(b => b.classList.toggle('active', b.dataset.kutya === _kutya));
             arFrissit();
             prefsSave();
-            updateCalOverlay();
           });
           selector.appendChild(row);
         });
@@ -1604,7 +1688,7 @@ function _applyNapkoziData(foglalasData, berletData, user) {
     document.getElementById('napkozi-konfigurator').style.display = 'block';
   }
 
-  // Cal.com embed megjelenítése (mindig, bérletesnél is)
+  // Naptár szekció megjelenítése (mindig, bérletesnél is)
   document.getElementById('napkozi-cal-section').style.display = 'block';
   arFrissit();
 
@@ -1619,8 +1703,7 @@ function _applyNapkoziData(foglalasData, berletData, user) {
     }
   }
 
-  initCalEmbed();
-  updateCalOverlay();
+  loadNapkoziNapok();
 }
 
 (async function napkoziBanner() {

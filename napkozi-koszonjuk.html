@@ -269,8 +269,8 @@ function showBerletSuccess(result) {
   const foglalasStep = document.getElementById('foglalas-step');
   if (pendingUsed) {
     foglalasStep.innerHTML = 'Első időpontod már rögzítve van!';
-  } else if (result.calcomLink) {
-    foglalasStep.innerHTML = 'Időpontot foglalj: <a href="' + result.calcomLink + '" target="_blank" style="color:var(--gold);">itt kattints</a>';
+  } else if (result.napkoziLink) {
+    foglalasStep.innerHTML = 'Következő napot foglalj: <a href="' + result.napkoziLink + '" style="color:var(--gold);">itt kattints</a>';
   }
   // "Add meg kutyád nevét" lépés elavult – elrejtjük
   const nextOl = document.querySelector('#next-berlet ol');
