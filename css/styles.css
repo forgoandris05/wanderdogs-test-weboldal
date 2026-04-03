@@ -551,6 +551,7 @@ footer {
     padding: 32px 24px;
     gap: 20px; overflow-y: auto;
     border-top: 1px solid var(--border-dim);
+    z-index: 9999;
   }
   .nav-links.open > li > a {
     font-size: 18px; color: var(--text);
