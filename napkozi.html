@@ -488,25 +488,25 @@
       </div>
 
       <!-- Időpont választó (taxi nélkül) -->
-      <div id="napkozi-ido-valaszto" style="display:none; margin-top:20px;">
-        <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--text);">Mikor hozod? *</div>
-        <div style="display:flex;gap:12px;align-items:center;">
-          <select id="napkozi-ora" style="padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;cursor:pointer;">
+      <div id="napkozi-ido-valaszto" style="display:none; margin-top:20px; text-align:center;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--text);font-family:inherit;">Mikor jöttök? *</div>
+        <div style="display:inline-flex;gap:12px;align-items:center;">
+          <select id="napkozi-ora" style="padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;cursor:pointer;font-family:inherit;">
             <option value="08">08</option><option value="09">09</option><option value="10">10</option>
             <option value="11">11</option><option value="12">12</option><option value="13">13</option>
             <option value="14">14</option><option value="15">15</option><option value="16">16</option>
           </select>
           <span style="color:var(--text-dim);font-size:16px;font-weight:700;">:</span>
-          <select id="napkozi-perc" style="padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;cursor:pointer;">
+          <select id="napkozi-perc" style="padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;cursor:pointer;font-family:inherit;">
             <option value="00">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option>
           </select>
         </div>
       </div>
 
       <!-- Foglalás gomb -->
-      <div id="napkozi-foglal-btn-wrapper" style="display:none; margin-top:24px;">
+      <div id="napkozi-foglal-btn-wrapper" style="display:none; margin-top:24px; text-align:center;">
         <div id="napkozi-foglal-error" style="display:none;color:#ff6b6b;font-size:13px;margin-bottom:12px;font-weight:600;"></div>
-        <button id="napkozi-foglal-btn" onclick="napkoziFoglalas()" style="padding:16px 40px;font-size:16px;font-weight:800;border:none;border-radius:12px;background:var(--gold);color:var(--black);cursor:pointer;transition:all 0.2s;">
+        <button id="napkozi-foglal-btn" onclick="napkoziFoglalas()" style="padding:16px 40px;font-size:16px;font-weight:800;border:none;border-radius:12px;background:var(--gold);color:var(--black);cursor:pointer;transition:all 0.2s;font-family:inherit;">
           Foglalás megerősítése
         </button>
       </div>
