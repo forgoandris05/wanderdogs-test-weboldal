@@ -5,7 +5,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // ── NAV AUTH STATE ───────────────────────────────────────
-  wdNavAuth();
+  try { wdNavAuth(); } catch(e) { console.error('wdNavAuth hiba:', e); }
 
   // ── BURGER MENU ──────────────────────────────────────────
   const burger = document.querySelector('.nav-burger');
