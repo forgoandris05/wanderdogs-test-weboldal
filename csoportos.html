@@ -553,7 +553,10 @@ function loadSzombatok() {
       const label = d.getFullYear() + '. ' + honapNevek[d.getMonth()] + ' ' + d.getDate() + '. (szombat)';
       const opt = document.createElement('option');
       opt.value = sz.datum;
-      if (sz.szabad <= 0) {
+      if (sz.zarva) {
+        opt.textContent = label + ' – ZÁRVA';
+        opt.disabled = true;
+      } else if (sz.szabad <= 0) {
         opt.textContent = label + ' – BETELT';
         opt.disabled = true;
       } else {
