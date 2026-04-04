@@ -1281,8 +1281,13 @@ function napkoziFoglalas() {
   document.getElementById('napkozi-3kutya-box').style.display    = 'none';
   document.getElementById('wd-status-banner').style.display      = 'none';
   showTaxiKiegSection(false);
+  // Árlista + csomag szekció elrejtése foglalás után
+  var arlistaEl = document.getElementById('arlista');
+  if (arlistaEl) arlistaEl.style.display = 'none';
+  var berletekEl = document.getElementById('berletek');
+  if (berletekEl) berletekEl.style.display = 'none';
   document.getElementById('napkozi-siker').style.display         = 'block';
-  document.getElementById('napkozi-siker').scrollIntoView({behavior:'smooth', block:'start'});
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
   // Mindig friss berlet_foglalas hívás – nem a page-load kori _vanBerlet-re támaszkodunk
   const berletSikerEl = document.getElementById('berlet-siker');
