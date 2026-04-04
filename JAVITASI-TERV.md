@@ -117,11 +117,11 @@
 - [ x] **Panzio fizetes:** gomb → Stripe checkout megnyilik (nem "tizenegy" hiba)
 - [ x] **Napkozi berlet fizetes:** gomb → "Csatlakozas Stripe-hoz..." → Stripe → koszonjuk oldal
 - [x ] **Napkozi egyszeri fizetes:** gomb → Stripe → koszonjuk oldal
-- [ ] **Napkozi taxi kiegeszito:** irany valasztas → gomb → Stripe → koszonjuk
-- [ ] **Regisztracio:** sikeres reg → siker uzenet → atiranyitas (nem "Feltoltes...")
+- [x ] **Napkozi taxi kiegeszito:** irany valasztas → gomb → Stripe → koszonjuk
+- [ x] **Regisztracio:** sikeres reg → siker uzenet → atiranyitas (nem "Feltoltes...")
 
 ### CRM tesztek
-- [ ] **Napkozi berlet:** BERLETEK tabban uj sor megjelenik
+- [x ] **Napkozi berlet:** BERLETEK tabban uj sor megjelenik
 - [ ] **Taxis berlet 1. alkalom:** TAXI_MENETREND-ben 2 sor (Reggel hozas + Delutan hazavives)
 - [ ] **Taxis berlet felhasznalasnal:** TAXI_MENETREND-ben 2 sor
 - [ ] **Kiegeszito taxi (oda ut):** TAXI_MENETREND-ben 1 sor (Reggel hozas)
@@ -300,6 +300,28 @@
 - [ ] Torold a ZARVA tab teszt datumokat (ures cellak = nincs zarolas)
 - [ ] Torold a teszt foglalasokat a NAPKOZI tabbol
 - [ ] Torold a teszt Calendar eventeket
+
+---
+
+## KESZ - Session #17 (2026-04-04) - ICS/CALENDAR FIX + SCOPE BUG
+
+### 24. Napkozi Calendar event → user naptaraba kerul
+- `_napkoziCalendarEvent`: guests + sendInvites:false → csendben bekerül a user naptárába
+- `_csoportosNaptarBeIras`: ugyanez csoportosra
+- Google Meet link eltávolítás (conferenceData: null patch)
+- ICS melléklet eltávolítva (nem kell, mert a guest invite megoldja)
+- Google Calendar link az emailben (backup, kattintható)
+- emailToHtml: URL auto-linking (https linkek kattinthatóvá válnak)
+
+### 25. kutyakSzama scope bug fix (egyszeriConfirm)
+- **Problema:** `kutyakSzama` const az `if (ssId) {}` blokkon belül volt, de az ICS/email kód kívül hivatkozott rá
+- **Hatas:** `kutyakSzama is not defined` → ICS generálás crash → try-catch elnyelte → email ment ICS nélkül
+- **Ez volt az eredeti ICS bug gyökéroka!**
+- **Javitas:** `ecKutyaDb` változó a scope-on kívül számolva
+
+### 26. _napkoziIcsGeneralas robusztusabb date kezelés
+- Date instanceof check + regex fallback (YYYY-MM-DDTHH:MM)
+- Nem dob silent hibát invalid startTime-ra
 
 ---
 
