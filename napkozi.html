@@ -1218,6 +1218,19 @@ function nkCalSelect(datumStr, el) {
   }
 }
 
+// ── Szekciók visszaállítása hiba esetén ───────────────────────
+function _napkoziResetSzekciok() {
+  _bookingHandled = false;
+  _selectedNapkoziDate = '';
+  document.getElementById('napkozi-siker').style.display = 'none';
+  document.getElementById('napkozi-cal-section').style.display = 'block';
+  document.getElementById('napkozi-konfigurator').style.display = 'block';
+  document.getElementById('napkozi-foglal-btn-wrapper').style.display = 'none';
+  var idoV = document.getElementById('napkozi-ido-valaszto');
+  if (idoV) idoV.style.display = 'none';
+  loadNapkoziNapok();
+}
+
 // ── NAPKÖZI FOGLALÁS MEGERŐSÍTÉSE ─────────────────────────────
 let _bookingHandled = false;
 function napkoziFoglalas() {
@@ -1281,13 +1294,8 @@ function napkoziFoglalas() {
   document.getElementById('napkozi-3kutya-box').style.display    = 'none';
   document.getElementById('wd-status-banner').style.display      = 'none';
   showTaxiKiegSection(false);
-  // Árlista + csomag szekció elrejtése foglalás után
-  var arlistaEl = document.getElementById('arlista');
-  if (arlistaEl) arlistaEl.style.display = 'none';
-  var berletekEl = document.getElementById('berletek');
-  if (berletekEl) berletekEl.style.display = 'none';
   document.getElementById('napkozi-siker').style.display         = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('napkozi-siker').scrollIntoView({behavior:'smooth', block:'center'});
 
   // Mindig friss berlet_foglalas hívás – nem a page-load kori _vanBerlet-re támaszkodunk
   const berletSikerEl = document.getElementById('berlet-siker');
@@ -1321,8 +1329,12 @@ function napkoziFoglalas() {
         szovegEl.innerHTML = tipusSzov +
           'Bérletedből levontunk 1 alkalmat. Maradék: <strong>' + _escHtml(result.maradek) + ' alkalom</strong> · lejár: ' + _escHtml(result.lejar);
       }
+    } else if (result.error && (result.error.includes('már van foglalásod') || result.error.includes('zárva') || result.error.includes('nincs hely'))) {
+      // Dupla foglalás / zárt nap / tele → hibaüzenet + visszaállítás
+      _napkoziResetSzekciok();
+      alert(result.error);
     } else {
-      // Nincs aktív bérlet → függő foglalás rögzítése + fizetési opciók mutatása
+      // Nincs aktív bérlet → fizetési opciók mutatása
       berletSikerEl.style.display = 'none';
       const kutya = parseInt(_kutya) >= 2 ? '2' : '1';
       const taxi  = _taxi || 'notaxi';
@@ -1346,10 +1358,10 @@ function napkoziFoglalas() {
       document.getElementById('fizetes-szekció').style.display = 'block';
     }
   })
-  .catch(() => {
-    // Hálózati hiba → inkább fizetési opciók (biztonságos fallback)
-    berletSikerEl.style.display = 'none';
-    document.getElementById('fizetes-szekció').style.display = 'block';
+  .catch((err) => {
+    // Hálózati hiba → visszaállítás
+    _napkoziResetSzekciok();
+    alert('Hálózati hiba: ' + (err.message || 'próbáld újra'));
   });
 }
 
