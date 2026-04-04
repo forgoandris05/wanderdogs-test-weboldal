@@ -1016,6 +1016,7 @@ let _kutya_neve  = '';
 let _user        = null;
 let _selectedNapkoziDate = ''; // kiválasztott napközi nap (yyyy-MM-dd)
 let _napkoziNapok = [];        // backend-ről kapott napok + kapacitás
+let _napkoziZarvaIntervallumok = []; // backend-ről kapott zárt intervallumok [['2026-05-07','2026-05-13'],...]
 
 // ── PREFS (localStorage) ──────────────────────────────────────
 const WD_PREFS_KEY = 'wd_napkozi_prefs';
@@ -1081,6 +1082,7 @@ function loadNapkoziNapok() {
     .then(resp => {
       if (resp.ok && resp.napok) {
         _napkoziNapok = resp.napok;
+        _napkoziZarvaIntervallumok = resp.zarvaIntervallumok || [];
       }
       renderNapkoziCalendar();
     })
@@ -1148,7 +1150,15 @@ function renderNapkoziCalendar() {
     const foglalt = napAdat ? napAdat.foglalt : 0;
     const szabad  = napAdat ? napAdat.szabad : 50;
     const tele    = szabad <= 0;
-    const zarva   = napAdat ? napAdat.zarva : false;
+    let zarva = napAdat ? napAdat.zarva : false;
+    if (!zarva && !napAdat) {
+      // Backend 5 héten túli napok: ZARVA intervallumból ellenőrzés
+      for (let zi = 0; zi < _napkoziZarvaIntervallumok.length; zi++) {
+        if (datumStr >= _napkoziZarvaIntervallumok[zi][0] && datumStr <= _napkoziZarvaIntervallumok[zi][1]) {
+          zarva = true; break;
+        }
+      }
+    }
 
     let cellClass = 'nk-cal-cell';
     let cellContent = '<span>' + nap + '</span>';
