@@ -128,8 +128,14 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================================
 
 function wdGetUser() {
-  try { return JSON.parse(localStorage.getItem('wd_user') || 'null'); }
-  catch { return null; }
+  try {
+    var u = JSON.parse(localStorage.getItem('wd_user') || 'null');
+    if (u && u.token_created && (Date.now() - u.token_created > 23 * 3600 * 1000)) {
+      localStorage.removeItem('wd_user');
+      return null;
+    }
+    return u;
+  } catch(e) { return null; }
 }
 
 // ── SHA-256 jelszó hash (Web Crypto API) ─────────────────
