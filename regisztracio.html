@@ -398,13 +398,14 @@
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
 
   function getReturnUrl() {
-    return new URLSearchParams(window.location.search).get('return') || 'index.html';
+    // Regisztráció után mindig a főoldalra irányítunk
+    return 'index.html';
   }
 
   // Ha már be van lépve → redirect
   (function() {
     const user = wdGetUser();
-    if (user && user.registered) window.location.href = getReturnUrl();
+    if (user && user.registered) window.location.href = 'index.html';
     // Bejelentkezés link ?return átadása
     const bl = document.getElementById('belepes-link');
     if (bl) bl.href = 'bejelentkezes.html?return=' + encodeURIComponent(getReturnUrl());

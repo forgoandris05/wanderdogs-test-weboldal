@@ -174,9 +174,11 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBuk
   const user = wdGetUser();
   const params = new URLSearchParams(window.location.search);
   const returnUrl = params.get('return') || 'index.html';
+  // Bejelentkezés után mindig a főoldalra irányítunk
+  const afterLoginUrl = 'index.html';
 
   if (user && user.registered) {
-    window.location.href = returnUrl;
+    window.location.href = afterLoginUrl;
     return;
   }
 
@@ -218,7 +220,7 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBuk
           token_created: Date.now(),
           registered: true,
         }));
-        window.location.href = returnUrl;
+        window.location.href = afterLoginUrl;
       } else {
         showError(data.error || 'Hibás email vagy jelszó.');
         btn.disabled = false;
