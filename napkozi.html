@@ -1236,7 +1236,7 @@ function _napkoziResetSzekciok() {
   _selectedNapkoziDate = '';
   document.getElementById('napkozi-siker').style.display = 'none';
   document.getElementById('napkozi-cal-section').style.display = 'block';
-  document.getElementById('napkozi-konfigurator').style.display = 'block';
+  document.getElementById('napkozi-konfigurator').style.display = _vanBerlet ? 'none' : 'block';
   document.getElementById('napkozi-foglal-btn-wrapper').style.display = 'none';
   var idoV = document.getElementById('napkozi-ido-valaszto');
   if (idoV) idoV.style.display = 'none';
