@@ -13,4 +13,7 @@
   <url><loc>https://wanderdogsworld.hu/tanfolyamok.html</loc><priority>0.6</priority></url>
   <url><loc>https://wanderdogsworld.hu/workshopok.html</loc><priority>0.6</priority></url>
   <url><loc>https://wanderdogsworld.hu/vip.html</loc><priority>0.5</priority></url>
+  <url><loc>https://wanderdogsworld.hu/bejelentkezes.html</loc><priority>0.4</priority></url>
+  <url><loc>https://wanderdogsworld.hu/regisztracio.html</loc><priority>0.4</priority></url>
+  <url><loc>https://wanderdogsworld.hu/profil.html</loc><priority>0.4</priority></url>
 </urlset>
