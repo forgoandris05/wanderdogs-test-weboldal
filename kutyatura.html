@@ -389,6 +389,7 @@ function turaCheckout() {
       action: 'kutyatura_checkout',
       email: user.email,
       nev: user.nev,
+      auth_token: user.auth_token || '',
       datum: _turaDatum,
       kutyak: kutyakNevek.join(','),
       kutya_db: kutyaDb,

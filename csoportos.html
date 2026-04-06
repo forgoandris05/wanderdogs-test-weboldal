@@ -631,6 +631,7 @@ function csoportosCheckout() {
       action: 'csoportos_checkout',
       email: user.email,
       nev: user.nev,
+      auth_token: user.auth_token || '',
       datum: datum,
       kutyak: kutyakNevek.join(','),
       kutya_db: kutyaDb,

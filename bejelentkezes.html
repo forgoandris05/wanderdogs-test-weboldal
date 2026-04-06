@@ -215,6 +215,7 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBuk
           kutyaNev:   data.kutyaNev   || '',
           kutyak:     data.kutyak     || [],
           auth_token: data.auth_token || '',
+          token_created: Date.now(),
           registered: true,
         }));
         window.location.href = returnUrl;
