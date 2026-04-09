@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="canonical" href="https://wanderdogsworld.hu/adatkezeles.html">
+  <title>Adatkezelési tájékoztató – Wanderdogs | Kutyaoktatás Solymár</title>
+  <meta name="description" content="A Wanderdogs adatkezelési tájékoztatója. GDPR-kompatibilis adatvédelmi szabályzat – hogyan kezeljük személyes adataidat.">
+  <meta property="og:title" content="Adatkezelési tájékoztató – Wanderdogs">
+  <meta property="og:description" content="A Wanderdogs adatkezelési tájékoztatója. GDPR-kompatibilis adatvédelmi szabályzat.">
+  <meta property="og:url" content="https://wanderdogsworld.hu/adatkezeles.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=20260403">
+  <style>
+    .privacy-content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 24px 100px;
+    }
+    .privacy-content h2 {
+      font-size: clamp(20px, 2.5vw, 26px);
+      font-weight: 800;
+      margin-top: 48px;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    .privacy-content h2 .section-num {
+      color: var(--gold);
+      margin-right: 8px;
+    }
+    .privacy-content p,
+    .privacy-content li {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+    .privacy-content ul {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 20px;
+    }
+    .privacy-content ul li {
+      padding: 6px 0 6px 24px;
+      position: relative;
+    }
+    .privacy-content ul li::before {
+      content: '\2726';
+      color: var(--gold);
+      position: absolute;
+      left: 0;
+      font-size: 11px;
+      top: 9px;
+    }
+    .privacy-content strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .privacy-content a {
+      color: var(--gold);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .privacy-content a:hover {
+      color: #fff;
+    }
+    .privacy-content .info-box {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin: 24px 0;
+    }
+    .privacy-content .info-box p {
+      margin-bottom: 6px;
+    }
+    .privacy-content .info-box p:last-child {
+      margin-bottom: 0;
+    }
+    .privacy-date {
+      font-size: 13px;
+      color: var(--text-faint);
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-dim);
+      text-align: center;
+    }
+    .privacy-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 14px;
+    }
+    .privacy-content table th,
+    .privacy-content table td {
+      text-align: left;
+      padding: 12px 16px;
+      border: 1px solid var(--border-dim);
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .privacy-content table th {
+      background: var(--black-3);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    @media (max-width: 768px) {
+      .privacy-content { padding: 40px 20px 80px; }
+      .privacy-content h2 { margin-top: 36px; }
+      .privacy-content table { font-size: 13px; }
+      .privacy-content table th,
+      .privacy-content table td { padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVIGATION ══ -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">WANDERDOGS</a>
+
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Főoldal</a></li>
+    <li class="nav-dropdown">
+      <a href="#">Szolgáltatások</a>
+      <ul class="dropdown-menu">
+        <li><a href="egyeni-ora.html">🎯 Egyéni oktatás</a></li>
+        <li><a href="csoportos.html">🐶 Csoportos oktatás</a></li>
+        <li><a href="napkozi.html">🏫 Napközi</a></li>
+        <li><a href="panzio.html">🏨 Panzió</a></li>
+        <li><a href="kutyataxi.html">🚐 Kutya taxi</a></li>
+        <li><a href="kutyatura.html">🥾 Wander kutyás túra</a></li>
+        <li><a href="viselkedesterapia.html">🧠 Viselkedésterápia</a></li>
+        <li><a href="orzo-vedo.html">🛡️ Őrző-védő képzés</a></li>
+      </ul>
+    </li>
+    <li><a href="tanfolyamok.html">Tanfolyamok</a></li>
+    <li><a href="workshopok.html">Workshopok</a></li>
+    <li><a href="https://wanderdogsworld.com/courses/" target="_blank">Kurzusok</a></li>
+    <li><a href="rolunk.html">Rólunk</a></li>
+    <li class="nav-cta-mobile"><a href="egyeni-ora.html" class="nav-cta">Foglalj időpontot</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <a href="egyeni-ora.html" class="nav-cta nav-cta-desktop">Foglalj időpontot</a>
+    <span class="nav-phone">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+      0670/5626926
+    </span>
+    <button class="nav-burger" id="burger" aria-label="Menü">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="page-hero">
+  <span class="overline">Jogi információ</span>
+  <h1>Adatkezelési <em class="gold">tájékoztató</em></h1>
+  <p class="subtitle">Az Európai Unió Általános Adatvédelmi Rendelete (GDPR) alapján készült adatvédelmi szabályzat.</p>
+</section>
+
+<hr class="gold-line">
+
+<!-- ══ PRIVACY POLICY CONTENT ══ -->
+<div class="privacy-content">
+
+  <!-- 1. Adatkezelő adatai -->
+  <h2><span class="section-num">1.</span> Az adatkezelő adatai</h2>
+  <div class="info-box">
+    <p><strong>Név:</strong> Kucsera Tímea EV</p>
+    <p><strong>Székhely:</strong> 2085 Solymár, Rozália sor</p>
+    <p><strong>Telefon:</strong> 0670/5626926</p>
+    <p><strong>E-mail:</strong> <a href="mailto:info.wanderdogs@gmail.com">info.wanderdogs@gmail.com</a></p>
+    <p><strong>Weboldal:</strong> <a href="https://wanderdogsworld.hu">wanderdogsworld.hu</a></p>
+  </div>
+  <p>Az adatkezelő a jelen tájékoztató keretében ismerteti az adatkezelési gyakorlatát a wanderdogsworld.hu weboldalon és a kapcsolódó szolgáltatások igénybevétele során kezelt személyes adatokkal kapcsolatban, az Európai Parlament és a Tanács (EU) 2016/679 rendelete (GDPR), valamint az információs önrendelkezési jogról és az információszabadságról szóló 2011. évi CXII. törvény (Infotv.) alapján.</p>
+
+  <!-- 2. Az adatkezelés célja és jogalapja -->
+  <h2><span class="section-num">2.</span> Az adatkezelés célja és jogalapja</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Adatkezelési cél</th>
+        <th>Jogalap (GDPR)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Regisztráció, felhasználói fiók kezelése</td>
+        <td>Az érintett hozzájárulása – 6. cikk (1) a)</td>
+      </tr>
+      <tr>
+        <td>Foglalás és szolgáltatás nyújtása</td>
+        <td>Szerződés teljesítése – 6. cikk (1) b)</td>
+      </tr>
+      <tr>
+        <td>Számlázás, könyvelés</td>
+        <td>Jogi kötelezettség – 6. cikk (1) c)</td>
+      </tr>
+      <tr>
+        <td>Kapcsolattartás (e-mail, telefon)</td>
+        <td>Jogos érdek – 6. cikk (1) f)</td>
+      </tr>
+      <tr>
+        <td>Oltási igazolás kezelése (állatai egészségügyi biztonsága érdekében)</td>
+        <td>Jogos érdek – 6. cikk (1) f)</td>
+      </tr>
+      <tr>
+        <td>Online fizetés (Stripe)</td>
+        <td>Szerződés teljesítése – 6. cikk (1) b)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 3. A kezelt adatok köre -->
+  <h2><span class="section-num">3.</span> A kezelt adatok köre</h2>
+  <p>A szolgáltatás igénybevétele során az alábbi személyes adatokat kezeljük:</p>
+  <ul>
+    <li><strong>Regisztrációs adatok:</strong> teljes név, e-mail cím, telefonszám</li>
+    <li><strong>Jelszó:</strong> kizárólag SHA-256 hash formátumban tároljuk; a jelszó eredeti formájában semmilyen rendszerben nem kerül tárolásra</li>
+    <li><strong>Kutya adatok:</strong> a kutya neve, fajtája, kora, neme, viselkedési információk, egészségügyi megjegyzések</li>
+    <li><strong>Oltási igazolás:</strong> a gazdi által feltöltött fénykép (Google Drive-on tároljuk)</li>
+    <li><strong>Foglalási adatok:</strong> választott szolgáltatás, időpont, megjegyzések</li>
+    <li><strong>Fizetési adatok:</strong> a fizetés a Stripe rendszeren keresztül történik; bankkártya adatokat a wanderdogsworld.hu nem tárol, azokat kizárólag a Stripe kezeli</li>
+    <li><strong>Kapcsolattartási adatok:</strong> a Gmailen keresztül folytatott levelezés tartalma</li>
+    <li><strong>CRM adatok:</strong> az ügyfélkapcsolat-kezelés Google Sheets-en keresztül történik (név, elérhetőség, foglalási előzmények)</li>
+  </ul>
+
+  <!-- 4. Az adatkezelés időtartama -->
+  <h2><span class="section-num">4.</span> Az adatkezelés időtartama</h2>
+  <ul>
+    <li><strong>Felhasználói fiók adatai:</strong> a fiók törléséig, illetve az utolsó bejelentkezéstől számított 2 évig, amennyiben a fiók inaktívvá válik</li>
+    <li><strong>Foglalási és szolgáltatási adatok:</strong> a szolgáltatás teljesítését követő 5 évig (polgári jogi elévülési idő)</li>
+    <li><strong>Számlázási adatok:</strong> a számvitelről szóló 2000. évi C. törvény alapján 8 évig</li>
+    <li><strong>Oltási igazolás:</strong> a kutya aktív státuszának fennállásáig, de legfeljebb a fiók törléséig</li>
+    <li><strong>E-mail levelezés:</strong> az üzleti kapcsolat fennállásáig, illetve a jogos érdek fennállásáig</li>
+  </ul>
+
+  <!-- 5. Adatfeldolgozók -->
+  <h2><span class="section-num">5.</span> Adatfeldolgozók</h2>
+  <p>Az adatkezelő az alábbi adatfeldolgozókat veszi igénybe a szolgáltatás működtetéséhez:</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Adatfeldolgozó</th>
+        <th>Tevékenység</th>
+        <th>Székhely</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Google LLC</strong></td>
+        <td>Gmail (levelezés), Google Drive (oltási igazolás tárolás), Google Sheets (CRM), Google Calendar (időpontkezelés)</td>
+        <td>USA</td>
+      </tr>
+      <tr>
+        <td><strong>Stripe, Inc.</strong></td>
+        <td>Online fizetésfeldolgozás (bankkártya adatokat kizárólag a Stripe kezeli)</td>
+        <td>USA</td>
+      </tr>
+      <tr>
+        <td><strong>Cal.com, Inc.</strong></td>
+        <td>Online időpontfoglalás</td>
+        <td>USA</td>
+      </tr>
+      <tr>
+        <td><strong>GitHub, Inc. (Microsoft)</strong></td>
+        <td>Weboldal tárhelyszolgáltatás (GitHub Pages)</td>
+        <td>USA</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 6. Adattovábbítás harmadik országba -->
+  <h2><span class="section-num">6.</span> Adattovábbítás harmadik országba</h2>
+  <p>A fenti adatfeldolgozók székhelye az Amerikai Egyesült Államokban található. Az adattovábbítás jogalapját az <strong>EU-US Data Privacy Framework</strong> (Adatvédelmi Keretrendszer) biztosítja, amelyet az Európai Bizottság 2023. július 10-i megfelelőségi határozatával hagyott jóvá. Az adatfeldolgozók mindegyike tanúsított résztvevője a Data Privacy Framework programnak.</p>
+  <p>Az adatkezelő folyamatosan figyelemmel kíséri a Data Privacy Framework érvényességét, és szükség esetén kiegészítő biztonsági intézkedéseket alkalmaz.</p>
+
+  <!-- 7. Az érintett jogai -->
+  <h2><span class="section-num">7.</span> Az érintett jogai</h2>
+  <p>A GDPR alapján az érintettek az alábbi jogokat gyakorolhatják:</p>
+  <ul>
+    <li><strong>Hozzáférés joga (15. cikk):</strong> tájékoztatást kérhetsz arról, hogy milyen adataidat kezeljük, milyen célból és mennyi ideig</li>
+    <li><strong>Helyesbítés joga (16. cikk):</strong> kérheted pontatlan vagy hiányos adataid javítását</li>
+    <li><strong>Törlés joga (17. cikk):</strong> kérheted személyes adataid törlését, amennyiben az adatkezelés célja megszűnt</li>
+    <li><strong>Adatkezelés korlátozása (18. cikk):</strong> kérheted az adatkezelés korlátozását meghatározott esetekben</li>
+    <li><strong>Adathordozhatóság joga (20. cikk):</strong> kérheted adataid géppel olvasható formátumban történő kiadását</li>
+    <li><strong>Tiltakozás joga (21. cikk):</strong> tiltakozhatsz a jogos érdeken alapuló adatkezelés ellen</li>
+    <li><strong>Hozzájárulás visszavonása:</strong> a hozzájáruláson alapuló adatkezelés esetén a hozzájárulás bármikor, indokolás nélkül visszavonható</li>
+  </ul>
+  <p>Jogaid gyakorlásához írj nekünk az <a href="mailto:info.wanderdogs@gmail.com">info.wanderdogs@gmail.com</a> címre. Kérelmedet legkésőbb 30 napon belül megválaszoljuk.</p>
+
+  <!-- 8. Fiók törlése -->
+  <h2><span class="section-num">8.</span> Fiók törlése</h2>
+  <p>A felhasználói fiók törlését bármikor kérheted az <a href="mailto:info.wanderdogs@gmail.com">info.wanderdogs@gmail.com</a> e-mail címre küldött üzenetben. A törlési kérelmet 15 munkanapon belül teljesítjük.</p>
+  <p>A fiók törlése esetén az alábbi adatok kerülnek eltávolításra:</p>
+  <ul>
+    <li>Felhasználói fiók és regisztrációs adatok</li>
+    <li>Kutya adatok és oltási igazolás (Google Drive-ról is)</li>
+    <li>CRM bejegyzések (Google Sheets)</li>
+    <li>Cal.com foglalási előzmények</li>
+  </ul>
+  <p><strong>Kivétel:</strong> a számviteli törvény által előírt adatokat (számlázási adatok) a törvényes megőrzési idő (8 év) lejártáig megőrizzük.</p>
+
+  <!-- 9. Cookie-k és localStorage -->
+  <h2><span class="section-num">9.</span> Cookie-k és localStorage</h2>
+  <p>A wanderdogsworld.hu weboldal <strong>nem használ cookie-kat</strong> marketing vagy nyomkövetési célokra.</p>
+  <p>A weboldal az alábbi helyi tárolási megoldásokat alkalmazza:</p>
+  <ul>
+    <li><strong>localStorage – hitelesítési token:</strong> a bejelentkezést követően egy hitelesítési token kerül tárolásra a böngésző localStorage-ában, amely <strong>23 óra</strong> elteltével automatikusan lejár. Ez kizárólag a munkamenet fenntartásához szükséges (technikai célú adatkezelés).</li>
+  </ul>
+  <p>A localStorage tartalmát a böngésző beállításaiban bármikor törölheted.</p>
+
+  <!-- 10. Automatikus döntéshozatal és profilalkotás -->
+  <h2><span class="section-num">10.</span> Automatikus döntéshozatal és profilalkotás</h2>
+  <p>Az adatkezelő <strong>nem alkalmaz</strong> automatikus döntéshozatalt, és <strong>nem végez profilalkotást</strong> a GDPR 22. cikke értelmében. Semmilyen, az érintettre nézve joghatással járó vagy őt jelentősen érintő döntés nem születik kizárólag automatizált adatkezelés alapján.</p>
+
+  <!-- 11. Adatbiztonság -->
+  <h2><span class="section-num">11.</span> Adatbiztonság</h2>
+  <p>Az adatkezelő az alábbi technikai és szervezési intézkedéseket alkalmazza a személyes adatok védelme érdekében:</p>
+  <ul>
+    <li>A jelszavak kizárólag SHA-256 hash formátumban kerülnek tárolásra</li>
+    <li>A weboldal HTTPS titkosítással működik (SSL/TLS)</li>
+    <li>A fizetési adatokat a PCI DSS tanúsított Stripe kezeli; bankkártya adatokat nem tárolunk</li>
+    <li>A hitelesítési token 23 óra után automatikusan lejár</li>
+    <li>A Google szolgáltatások (Drive, Sheets, Calendar, Gmail) vállalati szintű titkosítással működnek</li>
+    <li>Az adatokhoz kizárólag az adatkezelő jogosult hozzáférni</li>
+  </ul>
+
+  <!-- 12. Jogorvoslati lehetőségek -->
+  <h2><span class="section-num">12.</span> Jogorvoslati lehetőségek</h2>
+  <p>Amennyiben úgy érzed, hogy személyes adataid kezelése sérti a GDPR vagy az Infotv. rendelkezéseit, az alábbi jogorvoslati lehetőségekkel élhetsz:</p>
+  <ul>
+    <li><strong>Közvetlen megkeresés:</strong> először fordulj hozzánk az <a href="mailto:info.wanderdogs@gmail.com">info.wanderdogs@gmail.com</a> e-mail címen, és igyekszünk 30 napon belül megoldást találni.</li>
+    <li><strong>Hatósági panasz:</strong> panasszal fordulhatsz a Nemzeti Adatvédelmi és Információszabadság Hatósághoz (NAIH).</li>
+  </ul>
+  <div class="info-box">
+    <p><strong>Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH)</strong></p>
+    <p><strong>Cím:</strong> 1055 Budapest, Falk Miksa utca 9-11.</p>
+    <p><strong>Telefon:</strong> +36 (1) 391-1400</p>
+    <p><strong>E-mail:</strong> <a href="mailto:ugyfelszolgalat@naih.hu">ugyfelszolgalat@naih.hu</a></p>
+    <p><strong>Weboldal:</strong> <a href="https://naih.hu" target="_blank" rel="noopener">naih.hu</a></p>
+  </div>
+  <p>Emellett az érintett jogainak megsértése esetén bírósághoz is fordulhatsz. A per a lakóhelyed vagy tartózkodási helyed szerinti törvényszék előtt is megindítható.</p>
+
+  <!-- 13. A tájékoztató módosítása -->
+  <h2><span class="section-num">13.</span> A tájékoztató módosítása</h2>
+  <p>Az adatkezelő fenntartja a jogot, hogy a jelen adatkezelési tájékoztatót egyoldalúan módosítsa. A módosításról a weboldalon keresztül értesítjük az érintetteket. A módosított tájékoztató a weboldalon történő közzététel napján lép hatályba.</p>
+  <p>Javasoljuk, hogy rendszeresen tekintsd át a jelen tájékoztatót a wanderdogsworld.hu oldalon.</p>
+
+  <p class="privacy-date">Utolsó módosítás: <strong>2026. április 9.</strong> | Hatályos: 2026. április 9-től</p>
+
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>🐾 Wanderdogs</h3>
+        <p>Szakmai kutyaoktatás, gondozási tippek és online kurzusok – hogy te és kutyád igazán megértsétek egymást. A harmonikus kapcsolat tanulható.</p>
+        <div class="footer-socials">
+          <a href="https://www.facebook.com/wanderdogskutyakikepzes" target="_blank" aria-label="Facebook">f</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Szolgáltatások</h4>
+        <ul>
+          <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
+          <li><a href="csoportos.html">Csoportos oktatás</a></li>
+          <li><a href="napkozi.html">Napközi</a></li>
+          <li><a href="panzio.html">Panzió</a></li>
+          <li><a href="kutyataxi.html">Kutya taxi</a></li>
+          <li><a href="kutyatura.html">Wander kutyás túra</a></li>
+          <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
+          <li><a href="orzo-vedo.html">Őrző-védő</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Információ</h4>
+        <ul>
+          <li><a href="rolunk.html">Rólunk</a></li>
+          <li><a href="https://wanderdogsworld.com/courses/" target="_blank">Online kurzusok</a></li>
+          <li><a href="rolunk.html#gyik">GYIK</a></li>
+          <li><a href="adatkezeles.html">Adatkezelés</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Elérhetőség</h4>
+        <p>📍 Rozália sor, Solymár 2085</p>
+        <p>📞 0670/5626926</p>
+        <p>✉️ info.wanderdogs@gmail.com</p>
+        <p style="margin-top:12px; font-size:12px; color:var(--text-faint);">
+          H–P: 8:00–17:00<br>
+          Szombat: 9:00–18:00
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>&copy; 2026 Wanderdogs. Minden jog fenntartva.</span>
+      <span>wanderdogsworld.hu</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js?v=20260403"></script>
+</body>
+</html>
