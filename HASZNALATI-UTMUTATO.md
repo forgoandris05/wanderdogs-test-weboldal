@@ -1,441 +1,617 @@
-# Wanderdogs Website -- Használati útmutató
+# Wanderdogs -- Teljes Hasznalati Utmutato
 
-Ez az útmutató a **wanderdogsworld.hu** weboldal teljes működését írja le: mit lát az ügyfél, mi történik a háttérben, és mit kell Timinek kezelnie.
-
----
-
-## Tartalomjegyzék
-
-1. [Ügyfél oldal -- Regisztráció és bejelentkezés](#1-ugyfél-oldal----regisztráció-és-bejelentkezés)
-2. [Ügyfél oldal -- Profil és kutya kezelés](#2-ügyfél-oldal----profil-és-kutya-kezelés)
-3. [Szolgáltatások és foglalás](#3-szolgáltatások-és-foglalás)
-4. [Fizetés (Stripe)](#4-fizetés-stripe)
-5. [Admin oldal -- Google Sheets CRM](#5-admin-oldal----google-sheets-crm)
-6. [Admin oldal -- Zárt napok kezelése](#6-admin-oldal----zárt-napok-kezelése)
-7. [Automatikus emailek](#7-automatikus-emailek)
-8. [Oltási könyv rendszer](#8-oltási-könyv-rendszer)
-9. [Google Naptár integráció](#9-google-naptár-integráció)
-10. [Bérletek (napközi)](#10-bérletek-napközi)
-11. [Biztonsági rendszer](#11-biztonsági-rendszer)
-12. [Gyakori kérdések és hibaelhár��tás](#12-gyakori-kérdések-és-hibaelhárítás)
+**Wanderdogs World** | Kucsera Timea | Solymár, Rozália sor 2085
+Tel: 0670/5626926 | Email: info.wanderdogs@gmail.com | Web: wanderdogsworld.hu
 
 ---
 
-## 1. Ügyfél oldal -- Regisztráció és bejelentkezés
+## Tartalomjegyzek
 
-### Regisztráció
-
-Az ügyfél a **regisztracio.html** oldalon tud fiókot létrehozni. Kötelező megadni:
-
-- **Teljes név**
-- **Telefonszám**
-- **Email cím** (ez lesz a felhasználónév)
-- **Jelszó** (min. 6 karakter)
-- **Kutya adatok**: név, fajta, kor (max 4 kutya)
-- **Oltási könyv**: lejárat dátuma + fotó feltöltése (JPG/PNG, max 5 MB)
-- **Probléma/cél leírás** (szöveges mező)
-
-Regisztráció után az ügyfél automatikusan be van jelentkezve, és a rendszer:
-- elmenti az adatokat a **Felhasználók** Google Sheets tabra
-- feltölti az oltási könyv fotóját a **Google Drive**-ra
-- visszairányítja az ügyfelet arra az oldalra, ahonnan jött (pl. csoportos.html)
-
-### Bejelentkezés
-
-A **bejelentkezes.html** oldalon email + jelszó kell. Sikeres bejelentkezés után az ügyfél adatai a böngésző memóriájába (localStorage) kerülnek, és **23 óráig érvényesek**. Utána automatikusan kijelentkezteti a rendszer (lásd: Biztonsági rendszer).
+1. [Napi rutin](#1-napi-rutin)
+2. [Foglalasi rendszer -- ugyfél oldal](#2-foglalasi-rendszer----ugyfél-oldal)
+3. [Szolgaltatasok reszletesen](#3-szolgaltatasok-reszletesen)
+4. [CRM tabok es szinkodolas](#4-crm-tabok-es-szinkodolas)
+5. [Zart napok](#5-zart-napok)
+6. [Regi ugyfelek](#6-regi-ugyfelek)
+7. [Oltasi konyv rendszer](#7-oltasi-konyv-rendszer)
+8. [Google Naptar](#8-google-naptar)
+9. [Automatikus emailek](#9-automatikus-emailek)
+10. [napiKarbantartas() trigger](#10-napikarbantartas-trigger)
+11. [Stripe fizetesi rendszer](#11-stripe-fizetesi-rendszer)
+12. [Biztonsag](#12-biztonsag)
+13. [Hibaelharitas](#13-hibaelharitas)
+14. [Cal.com alnaptar beallitas](#14-calcom-alnaptar-beallitas)
 
 ---
 
-## 2. Ügyfél oldal -- Profil és kutya kezelés
+## 1. Napi rutin
 
-A **profil.html** oldalon az ügyfél:
+Minden reggel egy gyors ellenorzest kell vegezni a Google Sheets CRM-ben. A szinkodolas segit, hogy azonnal lasd, mi a teendo:
 
-- Látja a saját nevét és email címét
-- Látja a regisztrált kutyáit, mindegyiknél:
-  - **Zöld badge** = érvényes oltás (dátummal)
-  - **Piros badge** = lejárt oltás (dátummal)
-  - **Szürke badge** = hiányzó oltási adat
-- **Frissítheti** az oltási könyvet (új fotó + dátum)
-- **Hozzáadhat** új kutyát (max 4 összesen)
-- **Törölhet** kutyát
-- **Törölheti a teljes fiókját** (visszavonhatatlan!)
+| Szin | Jelentes |
+|------|----------|
+| **Zold hatter** | Az adott foglalas **MA** van -- ezekkel kell ma foglalkozni |
+| **Sarga hatter** | A **legkozelebb kovetkezo** foglalas -- ezekre kell keszulni |
+| **Feher hatter** | Tavoli vagy lezart foglalasok |
+
+**Reggeli rutinod (5 perc):**
+
+1. Nyisd meg a CRM-et (Google Sheets)
+2. Nezd at a **zold** sorokat -- ezek a mai foglalasok
+3. Nezd at a **sarga** sorokat -- ezekre keszulj
+4. Ellenorizd a **Taxi Menetrend** tabot -- kik jonnek taxival, milyen cimet kell felvenni
+5. Pald at az info.wanderdogs@gmail.com email fiokot -- uj foglalasok, erdeklodok
+6. Ha Cal.com foglalasod is van (egyeni ora, viselkedesterapia): nezd meg a Cal.com dashboard-ot
+
+A szinezest a rendszer automatikusan frissiti minden uj foglalas utan. Ha valami nem stimmel, kézzel futtathatod: Apps Script editor > `crmSzinezesfrissites()`.
+
+---
+
+## 2. Foglalasi rendszer -- ugyfél oldal
+
+### Regisztracio
+
+Az ugyfél a **regisztracio.html** oldalon tud fiokot letrehozni. Kötelezo megadni:
+
+- **Teljes nev**
+- **Telefonszam**
+- **Email cim** (ez lesz a felhasznalonev)
+- **Jelszo** (min. 6 karakter)
+- **Kutya adatok**: nev, fajta, kor (max 4 kutya)
+- **Oltasi konyv**: lejarat datuma + foto feltoltese (JPG/PNG, max 5 MB)
+- **Problema/cel leiras** (szoveges mezo)
+
+Regisztracio utan:
+- Az ugyfél automatikusan bejelentkezve marad
+- Az adatok a **Felhasznalok** Google Sheets tabra kerulnek
+- Az oltasi konyv fotoja a **Google Drive** "Wanderdogs_Oltasi_Konyvek" mappaba kerul
+- Visszairanyitas arra az oldalra, ahonnan jott (pl. csoportos.html)
+
+### Bejelentkezes
+
+A **bejelentkezes.html** oldalon email + jelszo kell. Sikeres bejelentkezes utan az ugyfél adatai a böngészo memóriajaba (localStorage) kerulnek, es **23 oraig ervenyesek**. Utana automatikusan kijelentkezteti a rendszer.
+
+### Profil kezelés
+
+A **profil.html** oldalon az ugyfél:
+
+- Latja a sajat nevet es email cimet
+- Latja a regisztralt kutyait, mindegyiknel:
+  - **Zold badge** = ervenyes oltas (datummal)
+  - **Piros badge** = lejart oltas (datummal)
+  - **Szurke badge** = hianyzo oltasi adat
+- **Frissitheti** az oltasi konyvet (uj foto + datum)
+- **Hozzaadhat** uj kutyat (max 4 osszesen)
+- **Torolhet** kutyat
+- **Torolheti a teljes fiokjat** (visszavonhatatlan!)
 - Kijelentkezhet
 
 ---
 
-## 3. Szolgáltatások és foglalás
+## 3. Szolgaltatasok reszletesen
 
-### Csoportos oktatás (csoportos.html)
+### 3.1 Csoportos oktatas (csoportos.html)
 
 - **Mikor**: minden szombat, 9:00--10:00
 - **Hol**: Solymár, Rozália sor
-- **Max létszám**: 20 kutya / szombat
-- **Ár**: 7 000 Ft / kutya / alkalom
+- **Max letszam**: 20 kutya / szombat
+- **Ar**: 7 000 Ft / kutya / alkalom
 
-**Foglalás menete:**
-1. Ügyfél bejelentkezik (ha nincs, "Bejelentkezés" gomb jelenik meg)
-2. Kiválaszt egy szombatot a legördülő listából (csak szabad helyesek jelennek meg)
-3. Kiválasztja, melyik kutyáját hozza (max 3)
-4. Választ fizetési módot: **online (Stripe)** vagy **készpénz a helyszínen**
+**Foglalas menete:**
+1. Ugyfél bejelentkezik (ha nincs, "Bejelentkezes" gomb jelenik meg)
+2. Kivalaszt egy szombatot a legordulo listabol (csak szabad helyesek jelennek meg)
+3. Kivalasztja, melyik kutyajat hozza (max 3)
+4. Valaszt fizetesi modot: **online (Stripe)** vagy **keszpenz a helyszinen**
 5. Kattint a "Foglalok" gombra
-6. Online fizetésnél: átirányítás a Stripe fizetési oldalra
-7. Készpénznél: foglalás azonnal rögzítve, köszönjük oldal
+6. Online fizetesnel: atiranyitas a Stripe fizetesi oldalra, majd koszonjuk oldal
+7. Keszpenznel: foglalas azonnal rogzitve, koszonjuk oldal
 
-### Napközi (napkozi.html)
+**Stripe fiok**: David fiokja kezeli a csoportos fizeteseket.
 
-- **Mikor**: kedd--péntek, 8:00--17:00
-- **Max létszám**: 50 kutya / nap
-- **Érvényesség**: 5 hét a vásárlástól
+**Keszpenz**: A rendszer CRM bejegyzest keszit "KP" megjegyzessel. A helyszinen kell beszedni.
 
-**Bérlet típusok (ár kutya szám és taxi szerint változik):**
+### 3.2 Napkozi (napkozi.html)
 
-| Típus | 1 kutya | 2 kutya |
+- **Mikor**: kedd--pentek, 8:00--17:00
+- **Max letszam**: 50 kutya / nap
+- **Berlet ervenyesseg**: 5 het a vasarlastol
+
+**Berlet tipusok:**
+
+| Tipus | 1 kutya | 2 kutya |
 |-------|---------|---------|
-| 4 alkalom, taxi nélkül | 26 500 Ft | 42 500 Ft |
-| 8 alkalom, taxi nélkül | 44 000 Ft | 70 500 Ft |
-| 4 alkalom, taxi ≤10km | 39 500 Ft | 63 000 Ft |
-| 8 alkalom, taxi ≤10km | 70 500 Ft | 112 000 Ft |
+| 4 alkalom, taxi nelkul | 26 500 Ft | 42 500 Ft |
+| 8 alkalom, taxi nelkul | 44 000 Ft | 70 500 Ft |
+| 4 alkalom, taxi <=10km | 39 500 Ft | 63 000 Ft |
+| 8 alkalom, taxi <=10km | 70 500 Ft | 112 000 Ft |
 | 4 alkalom, taxi >10km | 48 500 Ft | 77 500 Ft |
 | 8 alkalom, taxi >10km | 88 000 Ft | 140 000 Ft |
 
-**Egyszeri alkalom is elérhető** (bérlet nélkül, magasabb egységár).
+**Egyszeri alkalom** is elerheto (berlet nelkul, magasabb egysegar).
 
-**Foglalás menete:**
-1. Ügyfél bejelentkezik
-2. Kiválasztja a kutya számot és taxi opciót
-3. Kiválasztja a bérlet típust
-4. Stripe fizetés
-5. Fizetés után: naptárból választ napot a bérleten belül
-6. A rendszer automatikusan levonja az alkalmat a bérletből
+**Foglalas menete:**
+1. Ugyfél bejelentkezik
+2. Kivalasztja a kutya szamot es taxi opciot
+3. Kivalasztja a berlet tipust
+4. Stripe fizetes (Viki fiokjan keresztul)
+5. Fizetes utan: a sajat havi naptarbol valaszt napot (Ke-Pe, zold=szabad, piros=tele, arany=kivalasztott)
+6. Idopont-valaszto: ora (8-16) + perc (00/15/30/45) -- taxinal rejtve (fix idoablak)
+7. A rendszer automatikusan levonja az alkalmat a berletbol
 
-**Taxi**: reggel 7:30--9:00 felvétel, délután 17:00--18:00 hazavivés.
+**Taxi**: reggel 7:30--9:00 felvetel, delutan 17:00--18:00 hazavives. A taxi foglalasok automatikusan megjelennek a Taxi Menetrend tabban.
 
-### Panzió (panzio.html)
+**Berlet kitolodas**: Ha a kutya panzioba kerul, a berlet lejárata automatikusan kitolodik annyi nappal, ahany ejszakat a panzioba tolt -- DE csak ha a berlet OSSZES kutyaja panzioba van.
 
-- **Max létszám**: 25 kutya / nap
-- **Ár**: dinamikus kalkulátor az oldalon (éjszakák × kutyaszám × opciók)
+**Fuggo foglalasok**: Ha az ugyfélnek nincs berlete es foglalni probal:
+- A foglalas a **Napkozi Fuggo** tabra kerul
+- Az ugyfél emailben kap Stripe fizetesi linket
+- 24 ora mulva automatikus emlekeztetoget kap, ha nem fizetett
 
-**Foglalás menete:**
-1. Ügyfél kitölti: kutya szám (1--2), érkezés és távozás dátum, opciók
-2. Az árkalkulátor valós időben mutatja a végösszeget
-3. Stripe fizetés
-4. Sikeres fizetés után: CRM bejegyzés + naptár event + visszaigazoló email
+### 3.3 Panzio (panzio.html)
 
-**Extra**: Panzió taxi add-on külön rendelhető (panzio_taxi_checkout).
+- **Max letszam**: 25 kutya / nap
+- **Ar**: dinamikus kalkulator az oldalon (ejszakak x kutyaszam x opciok)
 
-### Kutyatúra (kutyatura.html)
+**Foglalas menete:**
+1. Ugyfél kitolti: kutya szam (1--2), erkezes es tavozas datum, opciok
+2. Az arkalkulator valos idoben mutatja a vegosszeget
+3. Stripe fizetes (Timi fiokjan keresztul)
+4. Sikeres fizetes utan: CRM bejegyzes + naptar event + visszaigazolo email
 
-- **Mikor**: havonta, változó helyszínen
-- **Max létszám**: 20 kutya / túra
-- **Max kutya/fő**: 2
+**Extra**: Panzio taxi add-on kulon rendelheto (panzio_taxi_checkout, Viki fiokjan keresztul).
 
-| | Online | Készpénz |
+### 3.4 Egyeni ora (egyeni-ora.html)
+
+- **Foglalás**: Cal.com feluleten keresztul
+- **Ket tipus**: palyanal / haznal
+- Az ugyfél kivalasztja az idopontot a Cal.com naptarbol
+- **Kutya valaszto**: az ugyfél kivalasztja melyik kutyajaval jon
+- A rendszer automatikusan beirja a CRM EGYENI tabra
+- A Cal.com event a Google Naptarba is bekerül (busy, blokkol mas egyeni orat)
+
+### 3.5 Viselkedesterapia (viselkedesterapia.html)
+
+- **Foglalás**: Cal.com feluleten keresztul (viselkedesterapia + viselkedesterapia-felmero slug)
+- Az ugyfél kivalasztja az idopontot a Cal.com naptarbol
+- CRM bejegyzes automatikus a TERAPIA tabra
+- 24 oras lemondasi policy
+
+### 3.6 Ingyenes felmero
+
+- **MARAD Cal.com-on** (nem a sajat rendszeren!)
+- Az ugyfél a viselkedesterapia oldalon talal ra
+- Cal.com event: busy, Timi tartja szemelyesen
+- Automatikus CRM bejegyzes
+
+### 3.7 Kutyatura (kutyatura.html)
+
+- **Mikor**: havonta, valtozo helyszinen
+- **Max letszam**: 20 kutya / tura
+- **Max kutya/fo**: 2
+
+| | Online | Keszpenz |
 |---|--------|----------|
 | 1 kutya | 5 000 Ft | 6 000 Ft |
 | 2 kutya | 8 000 Ft | 9 000 Ft |
 
-**Foglalás menete:**
-1. A rendszer mutatja a következő túra dátumát és szabad helyeket
-2. Ügyfél kiválasztja a kutyáit
-3. Választ fizetési módot (online / készpénz)
-4. Foglalás
+A rendszer mutatja a kovetkezo tura datumat es szabad helyeket. Foglalás: kutya kiválasztás, fizetési mód választás (online/készpénz), majd foglalás. Stripe fiok: Dávid.
 
-### Egyéni oktatás, Viselkedésterápia, Őrző-védő
+### 3.8 Orzo-vedo (orzo-vedo.html)
 
-Ezek **Cal.com**-on keresztül foglalhatók (nem a saját foglalási rendszeren). Az ügyfél kiválasztja az időpontot a Cal.com naptárból, és a rendszer automatikusan beírja a CRM-be.
-
----
-
-## 4. Fizetés (Stripe)
-
-A rendszer **Stripe** fizetési kaput használ. Jelenleg **sandbox (teszt) módban** van -- élesítés előtt át kell kapcsolni live módra.
-
-**Hogyan működik:**
-1. Ügyfél kattint a "Foglalok" gombra
-2. A szerver létrehoz egy Stripe checkout session-t (az ár, ügyfél adatok, szolgáltatás alapján)
-3. Az ügyfél átirányítódik a Stripe fizetési oldalra
-4. Sikeres fizetés után: visszairányítás a "köszönjük" oldalra
-5. A köszönjük oldal meghívja a backend-et, ami: CRM bejegyzés + naptár + email
-
-**Stripe fiókok:**
-- Dávid fiókja: csoportos + kutyatúra fizetések
-- Timi fiókja: panzió fizetések
-- Viki fiókja: napközi + panzió taxi fizetések
-
-> **Fontos**: Élesítés előtt a Stripe Dashboard-on "Kucsera Dávid" → "Wanderdogs" nevet kell átírni (Dávid és Viki fiókoknál).
+- **Foglalás**: Cal.com-on keresztul (orzo-vedo-szombat slug)
+- **Fizetes**: **helyszinen**, 3 500 Ft / kutya (NEM Stripe!)
+- Ha 2+ foglalas van adott szombatra: mindenkinek megerosito email megy
+- CRM bejegyzes: ORZO_FOGLALAS tab
 
 ---
 
-## 5. Admin oldal -- Google Sheets CRM
+## 4. CRM tabok es szinkodolas
 
-A teljes ügyfélkezelés egy **Google Sheets** táblázatban történik. A tábla automatikusan frissül minden foglaláskor.
+A teljes ugyfélkezeles egy **Google Sheets** tablazatban tortenik. A tabla automatikusan frissul minden foglalaskor.
 
-### Fő tabok:
+### Fo tabok:
 
 | Tab neve | Tartalom |
 |----------|----------|
-| **Összes érdeklődő** | Minden weboldalról érkező érdeklődés |
-| **Egyéni óra** | Egyéni oktatás foglalások |
-| **Csoportos tanfolyam** | Szombati csoportos foglalások |
-| **Napközi** | Napközi bejegyzések (napi szinten) |
-| **Panzió** | Panzió foglalások |
-| **Kutyatúra** | Túra foglalások |
-| **Viselkedésterápia** | Terápiás foglalások |
-| **Kutyataxi** | Taxi menetrendek |
-| **Őrző-védő** | Őrző-védő foglalások |
-| **Napközi Bérletek** | Aktív/lejárt bérletek nyilvántartása |
-| **Felhasználók** | Regisztrált felhasználók + oltási adatok |
-| **Napközi Függő** | Bérlet nélküli foglalások (fizetésre várnak) |
-| **Taxi Menetrend** | Központi taxi menetrend napi bontásban |
-| **⏸️ Zárt Napok** | Szolgáltatásonkénti szünetek |
+| **Osszes erdeklodo** | Minden weboldalrol erkezo erdeklodes (contact form) |
+| **Egyeni ora** | Egyeni oktatas foglalasok (Cal.com-bol) |
+| **Csoportos tanfolyam** | Szombati csoportos foglalasok |
+| **Napkozi** | Napkozi bejegyzesek (napi szinten) |
+| **Panzio** | Panzio foglalasok |
+| **Kutyatura** | Tura foglalasok |
+| **Viselkedesterapia** | Terapias foglalasok (Cal.com-bol) |
+| **Kutyataxi** | Taxi bejegyzesek |
+| **Orzo-vedo** | Orzo-vedo foglalasok (Cal.com-bol) |
+| **Napkozi Berletek** | Aktiv/lejart berletek nyilvantartasa |
+| **Felhasznalok** | Regisztralt felhasznalok + oltasi adatok (16 oszlop) |
+| **Napkozi Fuggo** | Berlet nelkuli foglalasok (fizetesre varnak) |
+| **Taxi Menetrend** | Kozponti taxi menetrend napi bontasban |
+| **Pause Zart Napok** | Szolgaltatasokenti szunetek |
 
-### Színkódolás (automatikus):
+### Szinkodolas (automatikus):
 
-- **Zöld háttér** = az adott foglalás **ma** van
-- **Sárga háttér** = a **legközelebbi jövőbeli** foglalás
-- **Fehér háttér** = többi
+- **Zold hatter** = az adott foglalas **MA** van
+- **Sarga hatter** = a **legkozelebb jovoben** foglalas
+- **Feher hatter** = tobbi
 
-Ez automatikusan frissül foglaláskor. Ha valami elromlik, kézzel futtatható: Apps Script editor → `crmSzinezesfrissites()` futtatás.
+Ez automatikusan frissul foglalaskor. Ha valami elromlik: Apps Script editor > `crmSzinezesfrissites()` futtatas.
+
+### Taxi Menetrend tab reszletesen
+
+Ez a tab napi bontasban mutatja a taxi menetrendet:
+
+| Oszlop | Tartalom |
+|--------|----------|
+| Taxi napja | A nap datuma |
+| Idoablak | "Reggel (7:30-9:00)" = **hozas** / "Delutan (17:00-18:00)" = **hazavives** |
+| Nev | Gazdi neve |
+| Kutyak | Kutya neve(k) |
+| Felveteli cim | Az ugyfél cime (hozasnal: az ugyfél cime; hazavivesnel: a palya cime) |
+| Tavolsag | <=10km vagy >10km |
+| Forras | Honnan jott a foglalas (Website / Cal.com) |
+| Megjegyzes | Extra info |
+
+**Fontos**: A hozas es hazavives KET KULON sor a tabban -- igy latod, hogy reggel kit kell felvenni es delutan kit kell hazavinni. A reggeli sorok "Reggel (7:30-9:00)" idoablakkal, a delutani sorok "Delutan (17:00-18:00)" idoablakkal jelennek meg.
+
+### Napkozi Berletek tab oszlopai:
+
+| Oszlop | Tartalom |
+|--------|----------|
+| Datum | Vasarlas datuma |
+| Gazdi neve | Ugyfél neve |
+| Kutya | Kutya neve |
+| Email | Ugyfél emailje |
+| Tipus | Berlet tipus (pl. "4 alk, 1 kutya, taxi nelkul") |
+| Osszes | Osszes alkalom (4 vagy 8) |
+| Felhasznalt | Eddig levont alkalmak |
+| Maradek | Hatralevo alkalmak |
+| Lejarat | Berlet lejarati datuma (vasarlas + 5 het) |
+| Panzio kitolodas | Hany nappal tolodott ki panzioba miatt |
+| Tenyleges lejar | Vegso lejarati datum kitolodas utan |
+| Statusz | Aktiv / Kimerult / Lejart |
+| Stripe session | Fizetes azonosito |
+| Helyszin | Taxi cim |
 
 ---
 
-## 6. Admin oldal -- Zárt napok kezelése
+## 5. Zart napok
 
-Ha Timi szabadságra megy vagy egy szolgáltatás szünetel, a **"⏸️ Zárt Napok"** tabban kell beállítani.
+Ha szabadsagra mesz vagy egy szolgaltatas szunetel, a **"Pause Zart Napok"** tabban kell beallitani.
 
 ### Hogyan:
 
 1. Nyisd meg a Google Sheets CRM-et
-2. Menj a **⏸️ Zárt Napok** tabra
-3. A táblázat így néz ki:
+2. Menj a **Pause Zart Napok** tabra
+3. A tablazat igy nez ki:
 
-| Szolgáltatás | Zárva 1 -tól | Zárva 1 -ig | Zárva 2 -tól | Zárva 2 -ig | Zárva 3 -tól | Zárva 3 -ig |
+| Szolgaltatas | Zarva 1 -tol | Zarva 1 -ig | Zarva 2 -tol | Zarva 2 -ig | Zarva 3 -tol | Zarva 3 -ig |
 |--------------|-------------|-------------|-------------|-------------|-------------|-------------|
-| Napközi | 2026-05-01 | 2026-05-05 | | | | |
-| Panzió | | | | | | |
+| Napkozi | 2026-05-01 | 2026-05-05 | | | | |
+| Panzio | | | | | | |
 | Csoportos | 2026-04-20 | 2026-04-20 | | | | |
-| Kutyatúra | | | | | | |
-| Őrző-védő | | | | | | |
-| Egyéni óra | | | | | | |
-| Viselkedésterápia | | | | | | |
+| Kutyatura | | | | | | |
+| Orzo-vedo | | | | | | |
+| Egyeni ora | | | | | | |
+| Viselkedesterapia | | | | | | |
 
-4. Írd be a **kezdő és záró dátumot** `yyyy-mm-dd` formátumban
-5. Max **3 zárt intervallum** állítható be szolgáltatásonként
-6. A rendszer **5 percenként** frissíti a cache-t, tehát kis késéssel érvényesül
+4. Ird be a **kezdo es zaro datumot** `yyyy-mm-dd` formatumban (pl. 2026-05-01)
+5. Max **3 zart intervallum** allithato be szolgaltatasonkent
+6. A rendszer **5 percenkent** frissiti a cache-t, tehat kis kesessel ervenyes
 
-**Mit csinál a zárt nap:**
-- A weboldalon az adott napokat **nem lehet foglalni** (a naptárban pirosak/kiszürkítettek)
-- Ha valaki mégis megpróbálja: "Ez a nap nem foglalható (zárva)" hibaüzenet
-- Csoportos: az adott szombat eltűnik a választható listából
-- Napközi: a naptárban nem kattintható
+**Mit csinal a zart nap:**
+- A weboldalon az adott napokat **nem lehet foglalni** (naptarban piros/kiszurkitett)
+- Ha valaki megis megprobalja: "Ez a nap nem foglalhato (zarva)" hibauzenet
+- Csoportos: az adott szombat eltunik a valaszthato listabol
+- Napkozi: a naptarban nem kattinthato
 
-> **Tipp**: Ha egy napra zárod be (pl. csoportos 1 szombat), a -tól és -ig dátum legyen ugyanaz.
-
----
-
-## 7. Automatikus emailek
-
-A rendszer automatikusan küld emaileket -- Timinek semmit nem kell csinálnia.
-
-### Ügyfélnek küldött emailek:
-
-| Esemény | Email tartalma |
-|---------|----------------|
-| **Regisztráció** | Üdvözlő email, fiók létrehozva |
-| **Csoportos foglalás** (online fizetés után) | Visszaigazolás: dátum, helyszín, kutyák, összeg |
-| **Csoportos foglalás** (készpénz) | Foglalás rögzítve, helyszíni fizetés emlékeztető |
-| **Panzió foglalás** (fizetés után) | Visszaigazolás: dátumok, összeg, részletek |
-| **Napközi bérlet vásárlás** | Bérlet típus, alkalmak száma, érvényesség |
-| **Napközi foglalás** (alkalomlevonás) | Foglalt nap + maradék alkalmak |
-| **Kutyatúra foglalás** | Túra dátum, helyszín, kutyák |
-| **Oltás lejárat előtt 30 nappal** | Emlékeztető: "Frissítsd az oltási könyvet!" |
-| **Oltás lejárt** | Figyelmeztetés: foglalás blokkolva amíg nem frissít |
-
-### Timinek küldött emailek:
-
-| Esemény | Email tartalma |
-|---------|----------------|
-| **Új érdeklődő** (contact form) | Név, email, telefon, szolgáltatás, kutya adatok |
-| **Minden foglalás** | Részletes foglalás adatok (ki, mit, mikor, mennyiért) |
-| **Kapacitás betelt** | "BETELT: [szolgáltatás] [dátum]" figyelmeztetés |
-| **Oltás lejárt** | Melyik ügyfél melyik kutyájánál |
-| **Zárt napon foglalás** (pl. őrző-védő Cal.com) | Figyelmeztetés: kézzel kell kezelni |
-
-Minden email az **info.wanderdogs@gmail.com** fiókból megy ki.
+**Tipp**: Ha egy napra zarod be (pl. csoportos 1 szombat), a -tol es -ig datum legyen UGYANAZ.
 
 ---
 
-## 8. Oltási könyv rendszer
+## 6. Regi ugyfelek
 
-Ez az egyik legfontosabb biztonsági funkció -- **érvényes oltás nélkül nem lehet foglalni egyetlen szolgáltatást sem**.
+A CRM-ben van egy **Regi ugyfelek** (👥) tab, amely lehetove teszi, hogy korabban regisztralt ugyfeleket gyorsan visszahozzunk a rendszerbe anelkul, hogy ujra vegig kellene menniuk a teljes konzultacios folyamaton.
 
-### Hogyan működik:
+### Hogyan mukodik:
 
-1. **Regisztrációkor** az ügyfél feltölti az oltási könyv fotóját + lejárat dátumát
-2. A fotó a **Google Drive** "Wanderdogs_Oltasi_Konyvek" mappába kerül
-3. A lejárat dátum a **Felhasználók** tabra
-4. Minden foglaláskor a rendszer ellenőrzi, hogy érvényes-e
+1. Menj a 👥 tabra a Google Sheets CRM-ben
+2. Add meg az ugyfél adatait:
+   - **Email cim** (kotelezo -- ez azonositja az ugyfelet)
+   - **Kutya 1 neve** (kotelezo)
+   - **Kutya 2 neve** (opcionalis)
+3. Az igy hozzaadott ugyfelek **atugorjak a konzultacios/felmeroi lepest** -- azonnal foglalhatnak szolgaltatast
 
-### Mi történik ha lejárt:
+Ez hasznos peldaul korabbi ugyfeleknek, akik mar jartaik nalad es ismerod a kutyajukat. Nem kell ujra ingyenes felmerore jonniuk.
 
-- **Weboldalon**: piros figyelmeztetés jelenik meg a foglalási űrlap helyett: *"Foglalás nem lehetséges: lejárt oltási könyv"* + link a profilhoz
-- **Backend-en**: ha valahogy mégis eljut a kérés, a szerver is elutasítja
-- **30 nappal lejárat előtt**: automatikus emlékeztető email az ügyfélnek
-- **Lejáratkor**: Timi is kap értesítést
+---
 
-### Frissítés:
+## 7. Oltasi konyv rendszer
 
-Az ügyfél a **profil.html** oldalon bármikor frissítheti: új dátum + opcionálisan új fotó. Amint frissíti, azonnal tud újra foglalni.
+Ez az egyik legfontosabb biztonsagi funkcio -- **ervenyes oltas nelkul nem lehet foglalni egyetlen szolgaltatast sem**.
+
+### Hogyan mukodik:
+
+1. **Regisztraciokkor** az ugyfél feltolti az oltasi konyv fotojat + lejarat datumat
+2. A foto a **Google Drive** "Wanderdogs_Oltasi_Konyvek" mappaba kerul
+3. A lejarat datum a **Felhasznalok** tabra (kutyankent: oltas lejarat + kep URL -- osszesen 16 oszlop)
+4. Minden foglalaskor a rendszer ellenorzi mind a frontend-en, mind a backend-en
+
+### Emlekeztetok:
+
+| Ido | Mi tortenik |
+|-----|-------------|
+| **30 nappal lejarat elott** | Automatikus emlekeztet email az ugyfélnek: "Frissitsd az oltasi konyvet!" |
+| **Lejaratkor** | Timi is kap ertesitest + ugyfél figyelmeztetest |
+| **Lejart utan** | Piros figyelmeztes a weboldalon foglalas helyett: "Foglalas nem lehetes: lejart oltasi konyv" + link a profilhoz |
+
+### Blokkolas:
+
+- **Weboldalon**: 6 szolgaltatas oldalon `wdOltasBlokk()` blokkolja a foglalast
+- **Backend-en**: minden booking handler ellenorzi -- ha valahogy megis eljut a keres, a szerver is elutasitja
+
+### Frissites:
+
+Az ugyfél a **profil.html** oldalon barmikor frissitheti: uj datum + opcionálisan uj foto. Amint frissiti, azonnal tud ujra foglalni.
 
 ### Napi trigger:
 
-Minden nap automatikusan lefut az `_oltasiEmlekeztetoEllenorzes()` -- megnézi az összes regisztrált felhasználót, és szükség esetén emailt küld.
+Minden nap automatikusan lefut az `_oltasiEmlekeztetoEllenorzes()` -- megnezi az osszes regisztralt felhasznalot, es szukseg eseten emailt kuld.
 
 ---
 
-## 9. Google Naptár integráció
+## 8. Google Naptar
 
-A foglalások automatikusan bekerülnek a Wanderdogs Google Naptárba.
+A foglalasok automatikusan bekerulnek a Wanderdogs Google Naptarba.
 
-| Szolgáltatás | Naptár bejegyzés | Típus |
+### Naptar bejegyzesek formatuma:
+
+| Szolgaltatas | Naptar bejegyzes | Tipus |
 |--------------|-----------------|-------|
-| Panzió | "🏨 Panzió: [Név] ([Kutyák])" | Normál (busy) |
-| Csoportos | "🐶 Csoportos: [Név]" | Normál (busy) |
-| Napközi | "Napközi: [Kutya] - [Név]" | **Átlátszó (transparent)** |
-| Egyéni óra (Cal.com) | Cal.com event | Normál (busy) |
+| Panzio | "Panzio: [Nev] ([Kutyak])" | Normal (busy) |
+| Csoportos | "Csoportos: [Nev]" | Normal (busy) |
+| Napkozi | "Napkozi: [Kutya] - [Nev]" | **Atlatszo (transparent)** |
+| Egyeni ora (Cal.com) | Cal.com event | Normal (busy) |
+| Taxi | Sarga szinu bejegyzes | Megkulonbozteto |
 
-> **Fontos**: A napközi bejegyzések **transparent** módban vannak, tehát nem blokkolják az egyéni óra időpontokat a Cal.com-ban. Ez szándékos!
+### Fontos: Transparent vs Busy
 
-### Mit NEM szabad csinálni:
+A napkozi bejegyzesek **transparent** modban vannak, tehat **NEM blokkolják** az egyeni ora idopontokat a Cal.com-ban. Ez szandekos!
 
-- **Ne módosítsd kézzel** a rendszer által létrehozott naptárbejegyzéseket -- a CRM adatok nem a naptárból jönnek
-- **A kézi bejegyzéseidet** (pl. "social media marketing") a rendszer nem bántja (csak a foglalásból érkező eventeket kezeli)
+| Foglalas | Blokkol egyeni-t? | Blokkol napkozit? |
+|---|---|---|
+| Egyeni ora (Cal.com) | IGEN (busy) | NEM |
+| Napkozi | NEM (transparent) | NEM |
+| Panzio | NEM (transparent) | NEM |
+| Ingyenes felmero | IGEN (busy, Timi tartja) | NEM |
+| Manualis egyeni (Timi kezzel) | IGEN (busy) | NEM |
 
----
+### Szabalyok:
 
-## 10. Bérletek (napközi)
-
-### Bérlet nyilvántartás:
-
-A **Napközi Bérletek** tabban látható minden aktív és lejárt bérlet:
-
-| Oszlop | Tartalom |
-|--------|----------|
-| Dátum | Vásárlás dátuma |
-| Gazdi neve | Ügyfél neve |
-| Kutya | Kutya neve |
-| Email | Ügyfél emailje |
-| Típus | Bérlet típus (pl. "4 alk, 1 kutya, taxi nélkül") |
-| Összes | Összes alkalom (4 vagy 8) |
-| Felhasznált | Eddig levont alkalmak |
-| Maradék | Hátralévő alkalmak |
-| Lejárat | Bérlet lejárati dátuma (vásárlás + 5 hét) |
-| Státusz | Aktív / Kimerült / Lejárt |
-| Stripe session | Fizetés azonosító |
-
-### Automatikus működés:
-
-- Foglaláskor a rendszer automatikusan **levonja** az alkalmat
-- Ha az összes alkalom elfogyott: státusz → **"Kimerült"**
-- Ha lejárt a 5 hét: státusz → **"Lejárt"**
-- **Bérlet kitolódás**: ha a kutya panzióban van, a bérlet lejárata automatikusan kitolódik annyi nappal, ahány éjszakát a panzióban tölt (de CSAK ha a bérlet ÖSSZES kutyája panzióban van)
-
-### Függő foglalások:
-
-Ha az ügyfélnek **nincs bérletre** és foglalni próbál:
-- A foglalás a **Napközi Függő** tabra kerül
-- Az ügyfél emailben kap Stripe fizetési linket
-- 24 óra múlva automatikus emlékeztető, ha nem fizetett
+- **Ne modositsd kezzel** a rendszer altal letrehozott naptarbejegyzeseket -- a CRM adatok nem a naptarbol jonnek
+- **A kezi bejegyzeseidet** (pl. "social media marketing") a rendszer nem bantja -- csak a foglalasbol erkezo eventeket kezeli
+- A rendszer NEM ir bele a te kezi bejegyzeseidbe (korabban volt ilyen bug, javitva lett)
 
 ---
 
-## 11. Biztonsági rendszer
+## 9. Automatikus emailek
+
+A rendszer automatikusan kuld emaileket -- neked semmit nem kell csinalnia. Minden email az **info.wanderdogs@gmail.com** fiokbol megy ki.
+
+### Ugyfélnek kuldott emailek:
+
+| Esemeny | Email tartalma |
+|---------|----------------|
+| **Regisztracio** | Udvozlo email, fiok letrehozva |
+| **Csoportos foglalas** (online fizetes utan) | Visszaigazolas: datum, helyszin, kutyak, osszeg |
+| **Csoportos foglalas** (keszpenz) | Foglalas rogzitve, helyszini fizetes emlekeztet |
+| **Panzio foglalas** (fizetes utan) | Visszaigazolas: datumok, osszeg, reszletek |
+| **Napkozi berlet vasarlas** | Berlet tipus, alkalmak szama, ervenyesseg |
+| **Napkozi foglalas** (alkalomlenovas) | Foglalt nap + maradek alkalmak |
+| **Kutyatura foglalas** | Tura datum, helyszin, kutyak |
+| **Oltas lejarat elott 30 nappal** | Emlekeztet: "Frissitsd az oltasi konyvet!" |
+| **Oltas lejart** | Figyelmeztetes: foglalas blokkolva amig nem frissit |
+
+### Timinek kuldott emailek:
+
+| Esemeny | Email tartalma |
+|---------|----------------|
+| **Uj erdeklodo** (contact form) | Nev, email, telefon, szolgaltatas, kutya adatok |
+| **Minden foglalas** | Reszletes foglalas adatok (ki, mit, mikor, mennyiert) |
+| **Kapacitas betelt** | "BETELT: [szolgaltatas] [datum]" figyelmeztetes |
+| **Oltas lejart** | Melyik ugyfél melyik kutyajanal |
+| **Zart napon foglalas** (pl. orzo-vedo Cal.com) | Figyelmeztetes: kezzel kell kezelni |
+| **Orzo-vedo 2+ foglalas** | Megerosito email mindenkinek adott szombatra |
+
+---
+
+## 10. napiKarbantartas() trigger
+
+A rendszerben van egy automatikus napi trigger ami minden nap lefut es elvegzi a karbantartasi feladatokat:
+
+### Mit csinal:
+
+1. **Oltasi emlekeztet ellenorzes** (`_oltasiEmlekeztetoEllenorzes()`):
+   - Vegignezi az osszes regisztralt felhasznalot
+   - 30 nappal lejarat elott: emlekeztet emailt kuld az ugyfélnek
+   - Lejaratkor: ertesiti Timit is
+
+2. **Berlet statusz frissites**:
+   - Kimerult berletek (0 maradek alkalom) statuszt frissiti
+   - Lejart berletek (5 het letelt) statuszt frissiti
+   - Panzio kitolodas szamitas
+
+3. **CRM szinezesfrissites**:
+   - Frissiti a zold/sarga/feher szinkodolast az osszes tabban
+   - Hogy reggel mindig aktualis legyen a kep
+
+Ezt a triggert NEM kell kezzel futtatni -- automatikusan megy. Ha megis szukseges, az Apps Script editorban futtathato: `napiKarbantartas()`.
+
+---
+
+## 11. Stripe fizetesi rendszer
+
+A rendszer **Stripe** fizetesi kaput hasznal. Jelenleg **sandbox (teszt) modban** van.
+
+### Harom Stripe fiok:
+
+| Fiok | Szolgaltatasok |
+|------|---------------|
+| **David fiokja** (STRIPE_SECRET_KEY) | Csoportos + Kutyatura fizetesek |
+| **Timi fiokja** (STRIPE_KEY_PANZIO) | Panzio fizetesek |
+| **Viki fiokja** (STRIPE_KEY_NAPKOZI) | Napkozi berletek + Panzio taxi |
+
+### Hogyan mukodik:
+
+1. Ugyfél kattint a "Foglalok" gombra
+2. A szerver letrehoz egy Stripe checkout session-t (ar, ugyfél adatok, szolgaltatas alapjan)
+3. Az ugyfél atiranyitodik a Stripe fizetesi oldalra
+4. Sikeres fizetes utan: visszairanyitas a "koszonjuk" oldalra
+5. A koszonjuk oldal meghivja a backend-et, ami: CRM bejegyzes + naptar + email
+
+### Elesites elotti tennivalok:
+
+1. Stripe Dashboard-on: **Test mode > Live mode** atkapcsolas (mind 3 fioknal)
+2. GAS Script Properties-ben: csereld ki a test kulcsokat live kulcsokra
+3. Success URL-ekben: GitHub Pages URL > **wanderdogsworld.hu**
+4. **Stripe Dashboard "Kucsera David" > "Wanderdogs" nevet kell atirni** (David es Viki fiokoknal)
+
+### Napkozi berlet Stripe linkek:
+
+Minden Stripe link `?client_reference_id=TIPUS` parametert tartalmaz, ami azonositja a berlet tipusat. A linkek a `stripe linkek.txt` fajlban vannak osszegyujtve.
+
+---
+
+## 12. Biztonsag
 
 ### Auth token (munkamenet)
 
-- Bejelentkezéskor a rendszer egy **24 órás auth token**-t generál (SHA-256 hash)
-- Minden foglalási kérésnél a szerver ellenőrzi a token érvényességét
-- Ha a token lejárt: *"Érvénytelen vagy lejárt munkamenet. Kérlek jelentkezz be újra."*
+- Bejelentkezeskor a rendszer egy **24 oras auth token**-t general (SHA-256 hash / HMAC)
+- Minden foglalasi keresnel a szerver ellenorzi a token ervenyesseget
+- Ha a token lejart: *"Ervenytelen vagy lejart munkamenet. Kerlek jelentkezz be ujra."*
+- A `berlet_check` es `berlet_foglalas` NEM hasznal auth-ot (kulon kezeles)
+- Vedett muveletek: kutya_hozzaad, kutya_torol, es minden foglalasi handler
 
-### Auto-logout (23 óra)
+### Auto-logout (23 ora)
 
-- A frontend **23 óra** után automatikusan kijelentkezteti az ügyfelet (1 óra puffer a 24 órás token-hez képest)
-- Az ügyfél egyszerűen azt látja, hogy kijelentkeztették -- újra be kell lépnie
-- Ez megakadályozza, hogy valaki lejárt token-nel próbáljon foglalni
+- A frontend **23 ora** utan automatikusan kijelentkezteti az ugyfelet (1 ora puffer a 24 oras token-hez kepest)
+- Az ugyfél egyszeruen azt latja, hogy kijelentkeztettek -- ujra be kell lepnie
+- Ez megakadalyozza, hogy valaki lejart token-nel probaljon foglalni
 
 ### Rate limiting
 
-- Emailenként **max 10 kérés / perc** a szerver felé
-- Ha valaki túl sokat próbálkozik: *"Túl sok kérés. Kérlek várj egy percet."*
-- Ez megakadályozza a spammelést és a visszaéléseket
+- Emailenkent **max 10 keres / perc** a szerver fele
+- Ha valaki tul sokat probalkozik: *"Tul sok keres. Kerlek varj egy percet."*
+- Ez megakadalyozza a spammelest es a visszaeleseket
 
-### Race condition védelem (LockService)
+### Race condition vedelem (LockService)
 
-- Ha két ügyfél **egyszerre** próbál foglalni az utolsó szabad helyre, a rendszer **sorba állítja** a kéréseket
-- Csak az első foglalás sikerül, a második hibaüzenetet kap
-- Ez megakadályozza a túlfoglalást
-- Érintett szolgáltatások: csoportos, panzió, napközi, kutyatúra
+- Ha ket ugyfél **egyszerre** probal foglalni az utolso szabad helyre, a rendszer **sorba allitja** a kereseket
+- Csak az elso foglalas sikerul, a masodik hibauzenet kap
+- Ez megakadalyozza a tulfoglalast
+- Erintett szolgaltatasok: csoportos, panzio, napkozi, kutyatura
 
 ---
 
-## 12. Gyakori kérdések és hibaelhárítás
+## 13. Hibaelharitas
 
-### "Az ügyfél nem tud foglalni, azt mondja nincs bejelentkezve"
+### "Az ugyfél nem tud foglalni, azt mondja nincs bejelentkezve"
 
-Az ügyfél token-je valószínűleg lejárt (24 óra). Kérje meg, hogy **jelentkezzen ki, majd vissza**. Ezzel új token-t kap.
+Az ugyfél token-je valoszinuleg lejart (24 ora). Kerd meg, hogy **jelentkezzen ki, majd vissza**. Ezzel uj token-t kap.
 
-### "A CRM színei nem frissülnek"
+### "A CRM szinei nem frissulnek"
 
-Menj az Apps Script editorba és futtasd kézzel a `crmSzinezesfrissites()` függvényt.
+Menj az Apps Script editorba es futtasd kezzel a `crmSzinezesfrissites()` fuggvenyt.
 
-### "Egy ügyfél nem tud foglalni, azt írja 'lejárt oltási könyv'"
+### "Egy ugyfél nem tud foglalni, azt irja 'lejart oltasi konyv'"
 
-Az ügyfélnek frissítenie kell az oltási könyvét a **profil.html** oldalon (új dátum + fotó). Amint frissíti, azonnal tud foglalni.
+Az ugyfélnek frissitenie kell az oltasi konyvet a **profil.html** oldalon (uj datum + foto). Amint frissiti, azonnal tud foglalni.
 
-### "Zárt napot állítottam be, de az ügyfél még foglalni tud"
+### "Zart napot allitottam be, de az ugyfél meg foglalni tud"
 
-A zárt napok **5 perc cache**-sel működnek. Várj 5 percet és próbáld újra. Ha továbbra sem működik, ellenőrizd, hogy a dátum formátuma helyes-e (`yyyy-mm-dd`).
+A zart napok **5 perc cache**-sel mukodnek. Varj 5 percet es probald ujra. Ha tovabbra sem mukodik, ellenorizd:
+- A datum formatuma helyes-e (`yyyy-mm-dd`)
+- A szolgaltatas neve pontosan egyezik-e a tabban
 
-### "A Stripe fizetés nem működik"
+### "A Stripe fizetes nem mukodik"
 
-Jelenleg **sandbox módban** van. Éles fizetéshez:
-1. Stripe Dashboard-on: Test mode → Live mode
-2. GAS Script Properties-ben: cseréld ki a test kulcsokat live kulcsokra
-3. Success URL-ekben: github pages URL → wanderdogsworld.hu
+Jelenleg **sandbox modban** van. Eles fizeteshez:
+1. Stripe Dashboard-on: Test mode > Live mode (mind 3 fiok!)
+2. GAS Script Properties-ben: csereld ki a test kulcsokat live kulcsokra
+3. Success URL-ekben: GitHub Pages URL > wanderdogsworld.hu
 
-### "Egy ügyfél kétszer foglalt ugyanarra az időpontra"
+### "Egy ugyfél ketszer foglalt ugyanarra az idopontra"
 
-A rendszer ellenőrzi a dupla foglalásokat a csoportos és napközi foglalasoknál. Ha mégis megtörtént, az valószínűleg a régi rendszerben történt (a LockService most már megakadályozza).
+A rendszer ellenorzi a dupla foglalasokat. A csoportosnal kulon dupla-check van beepitve. Ha megis megtortent, az valoszinuleg a regi rendszerben tortent (a LockService most mar megakadalyozza).
 
-### "Bérlet nem vonódik le"
+### "Berlet nem vonodik le"
 
-Ellenőrizd a **Napközi Bérletek** tabban:
-- A bérlet státusza "Aktív"?
-- Van maradék alkalom?
-- Nem járt-e le a 5 hét?
+Ellenorizd a **Napkozi Berletek** tabban:
+- A berlet statusza "Aktiv"?
+- Van maradek alkalom?
+- Nem jart-e le az 5 het?
 - A kutya neve pontosan egyezik-e?
 
-### "Emailt szeretnék átírni / ügyfelet átregisztrálni"
+### "Emailt szeretnek atirni / ugyfelet atregisztralni"
 
-Ezt kézzel kell a **Felhasználók** tabban. A weboldalon nincs email módosítási lehetőség.
+Ezt kezzel kell a **Felhasznalok** tabban. A weboldalon nincs email modositasi lehetoseg.
+
+### "A naptar nem frissul / nem jelenik meg a foglalas"
+
+Ellenorizd az Apps Script Executions logot (Script editor > Executions). Ha hibat latsz, a legtobb esetben ujrainditas (deploy) segit.
+
+### "Timi kezi naptarbejegyzeseibe idegen adatok kerulnek"
+
+Ez egy korabban javitott bug. A rendszer NEM modositja Timi kezi bejegyzeseit -- csak a foglalasbol erkezo eventeket kezeli. Ha megis elofordul, jelezd a fejlesztonek.
 
 ---
 
-## Összefoglaló: Mit kell Timinek napi szinten csinálnia?
+## 14. Cal.com alnaptar beallitas
 
-| Feladat | Gyakoriság | Hol |
+Az egyeni orak es viselkedesterapia foglalasok Cal.com-on keresztul tortennek. A helyes mukodejshez fontos a naptar beallitas.
+
+### Alapbeallitas:
+
+1. Cal.com dashboard > **Availability** > ellenorizd, hogy a megfelelo idopontok vannak beallitva
+2. Cal.com dashboard > **Event Types**:
+   - `egyeni-oktatas-palyanal` -- egyeni ora a palyanal
+   - `egyeni-oktatas-haznal` -- egyeni ora a haznal
+   - `viselkedesterapia` -- viselkedesterapia
+   - `viselkedesterapia-felmero` -- ingyenes felmero
+   - `orzo-vedo-szombat` -- orzo-vedo foglalasok
+
+### Alnaptar (Destination Calendar):
+
+- Az egyeni oraknak kulon **alnaptar** van beallitva: **"Egyeni orak"**
+- Cal.com > Settings > **Calendars** > az "Egyeni orak" naptart valaszd ki mint **Destination Calendar**
+- Ez biztositja, hogy az egyeni ora foglalasok kulon naptarba keruljenek es ne keveredjenek a tobbievel
+- A fo Wanderdogs naptar tovabbra is latja ezeket (ha be van kapcsolva az alnaptar megjelenitese a Google Calendar-ban)
+
+### Fontos:
+
+- A Cal.com **conflict check**-je a fo naptaron fut -- ha valami busy event van (egyeni ora, ingyenes felmero, kezi bejegyzes), az uj egyeni ora nem foglalhato arra az idopontra
+- A napkozi es panzio bejegyzesek **transparent** modban vannak, tehat NEM blokkolnak egyeni ora idopontokat
+
+---
+
+## Osszefoglalo: Napi es heti teendok
+
+| Feladat | Gyakorisag | Hol |
 |---------|-----------|-----|
-| Foglalások ellenőrzése | Naponta reggel | Google Sheets CRM (zöld = ma) |
-| Email értesítések olvasása | Folyamatosan | info.wanderdogs@gmail.com |
-| Cal.com foglalások kezelése | Igény szerint | Cal.com dashboard |
-| Zárt napok beállítása | Szabadság/szünet előtt | CRM → ⏸️ Zárt Napok tab |
-| Függő foglalások ellenőrzése | Hetente | CRM → Napközi Függő tab |
+| Foglalasok ellenorzese (zold/sarga sorok) | **Naponta reggel** | Google Sheets CRM |
+| Taxi menetrend atnezese | **Naponta reggel** | CRM > Taxi Menetrend tab |
+| Email ertesitesek olvasasa | **Folyamatosan** | info.wanderdogs@gmail.com |
+| Cal.com foglalasok kezelese | **Igeny szerint** | Cal.com dashboard |
+| Zart napok beallitasa | **Szabadsag/szunet elott** | CRM > Pause Zart Napok tab |
+| Fuggo foglalasok ellenorzese | **Hetente** | CRM > Napkozi Fuggo tab |
+| Berletek allapota | **Hetente** | CRM > Napkozi Berletek tab |
 
-**Ami automatikusan megy (nem kell csinálni semmit):**
-- CRM bejegyzés minden foglaláskor
-- Google Naptár event létrehozás
-- Visszaigazoló emailek küldése
-- Oltási emlékeztetők
-- Bérlet levonás
-- Kapacitás ellenőrzés
-- Színkódolás a CRM-ben
+**Ami automatikusan megy (NEM kell csinalnia semmit):**
+- CRM bejegyzes minden foglalaskor
+- Google Naptar event letrehozas
+- Visszaigazolo emailek kuldese
+- Oltasi emlekeztetok
+- Berlet levonas
+- Kapacitas ellenorzes
+- Szinkodolas a CRM-ben
+- napiKarbantartas() trigger (napi)
+- Zart napok ervenyre juttatasa (5 perc cache)
