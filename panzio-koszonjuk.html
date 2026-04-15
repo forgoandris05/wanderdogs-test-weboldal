@@ -99,7 +99,7 @@
       <div class="detail-row"><span>Kutya neve</span><span id="d-kutya">–</span></div>
       <div class="detail-row"><span>Beköltözés</span><span id="d-be">–</span></div>
       <div class="detail-row"><span>Kiköltözés</span><span id="d-ki">–</span></div>
-      <div class="detail-row"><span>Éjszakák</span><span id="d-ejszakak">–</span></div>
+      <div class="detail-row"><span>Megkezdett napok</span><span id="d-ejszakak">–</span></div>
       <div class="detail-row"><span>Kutyák száma</span><span id="d-kutyak">–</span></div>
       <div class="detail-row"><span>Étel biztosítás</span><span id="d-etel">–</span></div>
       <div class="detail-row" style="border-top: 2px solid var(--gold); margin-top: 8px; padding-top: 12px;">
@@ -166,7 +166,7 @@ function showSuccess(result) {
     document.getElementById('d-kutya').textContent    = r.kutya_nev || '–';
     document.getElementById('d-be').textContent       = r.erkezes || '–';
     document.getElementById('d-ki').textContent       = r.tavozas || '–';
-    document.getElementById('d-ejszakak').textContent = r.ejszakak ? r.ejszakak + ' éjszaka' : '–';
+    document.getElementById('d-ejszakak').textContent = (r.napok || r.ejszakak) ? (r.napok || r.ejszakak) + ' nap' : '–';
     document.getElementById('d-kutyak').textContent   = r.kutyak ? r.kutyak + ' kutya' : '–';
     document.getElementById('d-etel').textContent     = r.etel === 'true' ? 'Igen' : 'Nem';
     document.getElementById('d-vegosszeg').textContent = r.vegosszeg ? fmt(r.vegosszeg) + ' Ft' : '–';
