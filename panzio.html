@@ -717,7 +717,7 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
             </p>
           </div>
           <div class="calc-breakdown" id="calc-breakdown" style="display:none;">
-            <div class="calc-row"><span id="r-ejszakak-label">Éjszakák</span><span id="r-ejszakak">–</span></div>
+            <div class="calc-row"><span id="r-ejszakak-label">Megkezdett napok</span><span id="r-ejszakak">–</span></div>
             <div class="calc-row"><span id="r-napidij-label">Napidíj</span><span id="r-napidij">–</span></div>
             <div class="calc-row discount" id="r-kedv-row" style="display:none;"><span>Kedvezmény</span><span id="r-kedvezmeny">–</span></div>
             <div class="calc-row" id="r-etel-row" style="display:none;"><span>Étel biztosítás</span><span id="r-etel">–</span></div>
@@ -932,10 +932,10 @@ function szamol() {
 
   const d1 = new Date(be);
   const d2 = new Date(ki);
-  let ejszakak = Math.round((d2 - d1) / 86400000);
-  if (tizenegy && ejszakak > 0) ejszakak = Math.max(0, ejszakak - 1);
+  let napok = Math.round((d2 - d1) / 86400000) + 1;  // megkezdett napok
+  if (tizenegy && napok > 1) napok -= 1;  // 11 előtt elvitel → utolsó nap nem számít
 
-  if (ejszakak <= 0) {
+  if (napok <= 0) {
     showEmpty('A kiköltözés dátuma nem megfelelő.');
     return;
   }
@@ -944,23 +944,23 @@ function szamol() {
   const napidij = NAPIDIJ[selectedKutya] || 8000;
 
   let kedvPct = 0;
-  if (ejszakak >= 32)      kedvPct = 30;
-  else if (ejszakak >= 16) kedvPct = 20;
-  else if (ejszakak >= 8)  kedvPct = 10;
+  if (napok >= 32)      kedvPct = 30;
+  else if (napok >= 16) kedvPct = 20;
+  else if (napok >= 8)  kedvPct = 10;
 
-  const alap     = ejszakak * napidij;
+  const alap     = napok * napidij;
   const kedv     = Math.round(alap * kedvPct / 100);
-  const etelDij  = etel ? ejszakak * 1000 * selectedKutya : 0;
+  const etelDij  = etel ? napok * 1000 * selectedKutya : 0;
   const vegosszeg = alap - kedv + etelDij;
 
-  panzioCalc = { ejszakak, napidij, kedvPct, kedv, etelDij, vegosszeg, kutya: selectedKutya, be, ki, beOra, kiOra, etel, tizenegy };
+  panzioCalc = { napok, napidij, kedvPct, kedv, etelDij, vegosszeg, kutya: selectedKutya, be, ki, beOra, kiOra, etel, tizenegy };
 
   // Frissíti a UI-t
   document.getElementById('calc-empty-state').style.display = 'none';
   document.getElementById('calc-breakdown').style.display   = 'flex';
   document.getElementById('calc-info').style.display        = 'block';
 
-  document.getElementById('r-ejszakak-label').textContent = ejszakak + ' éjszaka × napidíj';
+  document.getElementById('r-ejszakak-label').textContent = napok + ' megkezdett nap × napidíj';
   document.getElementById('r-ejszakak').textContent       = fmt(alap) + ' Ft';
   document.getElementById('r-napidij-label').textContent  = 'Napidíj (' + selectedKutya + ' kutya)';
   document.getElementById('r-napidij').textContent        = fmt(napidij) + ' Ft / nap';
@@ -1068,7 +1068,7 @@ async function fizetesIndit() {
     kutyak:    panzioCalc.kutya,
     etel:      panzioCalc.etel,
     tizenegy:  panzioCalc.tizenegy,
-    ejszakak:  panzioCalc.ejszakak,
+    napok:     panzioCalc.napok,
     vegosszeg: panzioCalc.vegosszeg,
   };
 
