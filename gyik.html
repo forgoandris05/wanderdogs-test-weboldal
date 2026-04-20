@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="canonical" href="https://wanderdogsworld.hu/gyik.html">
+  <title>Gyakori Kérdések – Wanderdogs</title>
+  <meta name="description" content="Gyakran ismételt kérdések a Wanderdogs szolgáltatásairól: foglalás, fizetés, napközi, panzió, oltási könyv és egyéb tudnivalók.">
+  <meta property="og:title" content="Gyakori Kérdések – Wanderdogs">
+  <meta property="og:description" content="Gyakran ismételt kérdések a Wanderdogs szolgáltatásairól: foglalás, fizetés, napközi, panzió, oltási könyv és egyéb tudnivalók.">
+  <meta property="og:url" content="https://wanderdogsworld.hu/gyik.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=20260403">
+  <style>
+    /* ── FAQ PAGE SPECIFIC ── */
+    .faq-category {
+      margin-bottom: 56px;
+    }
+    .faq-category-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-dim);
+    }
+    .faq-list { max-width: 720px; }
+    .faq-item {
+      border-bottom: 1px solid var(--border-dim);
+      padding: 20px 0;
+    }
+    .faq-q {
+      font-size: 15px; font-weight: 700;
+      cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 16px;
+    }
+    .faq-q::after {
+      content: '+';
+      font-size: 22px; font-weight: 300;
+      color: var(--gold);
+      flex-shrink: 0;
+      transition: transform 0.25s;
+    }
+    .faq-item.open .faq-q::after { transform: rotate(45deg); }
+    .faq-a {
+      font-size: 14px; color: var(--text-dim);
+      line-height: 1.7;
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s;
+    }
+    .faq-item.open .faq-a { max-height: 500px; padding-top: 12px; }
+
+    /* ── CONTACT SECTION ── */
+    .faq-contact {
+      background: var(--black-3);
+      border: 1px solid var(--border-dim);
+      border-radius: 16px;
+      padding: 48px;
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .faq-contact h3 {
+      font-size: 22px; font-weight: 700; margin-bottom: 12px;
+    }
+    .faq-contact p {
+      font-size: 14px; color: var(--text-dim); margin-bottom: 8px;
+    }
+    .faq-contact a {
+      color: var(--gold); text-decoration: none;
+    }
+    .faq-contact a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .faq-contact { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVIGATION ══ -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">WANDERDOGS</a>
+
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Főoldal</a></li>
+    <li class="nav-dropdown">
+      <a href="#">Szolgáltatások</a>
+      <ul class="dropdown-menu">
+        <li><a href="egyeni-ora.html">🎯 Egyéni oktatás</a></li>
+        <li><a href="csoportos.html">🐶 Csoportos oktatás</a></li>
+        <li><a href="napkozi.html">🏫 Napközi</a></li>
+        <li><a href="panzio.html">🏨 Panzió</a></li>
+        <li><a href="kutyataxi.html">🚐 Kutya taxi</a></li>
+        <li><a href="kutyatura.html">🥾 Wander kutyás túra</a></li>
+        <li><a href="viselkedesterapia.html">🧠 Viselkedésterápia</a></li>
+        <li><a href="orzo-vedo.html">🛡️ Őrző-védő képzés</a></li>
+      </ul>
+    </li>
+    <li><a href="tanfolyamok.html">Tanfolyamok</a></li>
+    <li><a href="workshopok.html">Workshopok</a></li>
+    <li><a href="https://wanderdogsworld.com/courses/" target="_blank">Kurzusok</a></li>
+    <li><a href="rolunk.html">Rólunk</a></li>
+    <li class="nav-cta-mobile"><a href="egyeni-ora.html" class="nav-cta">Foglalj időpontot</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <a href="egyeni-ora.html" class="nav-cta nav-cta-desktop">Foglalj időpontot</a>
+    <span class="nav-phone">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+      0670/5626926
+    </span>
+    <button class="nav-burger" id="burger" aria-label="Menü">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="page-hero">
+  <span class="overline">GYIK</span>
+  <h1>Gyakori <em class="gold">Kérdések</em></h1>
+  <p class="subtitle">Összegyűjtöttük a leggyakrabban feltett kérdéseket, hogy könnyebben eligazodj.</p>
+</section>
+
+<hr class="gold-line">
+
+<!-- ══ FAQ CONTENT ══ -->
+<section class="section">
+  <div class="faq-list" style="max-width:720px; margin:0 auto;">
+
+    <!-- ── FOGLALÁS ── -->
+    <div class="faq-category reveal">
+      <h2 class="faq-category-title">Foglalás</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Hogyan tudok időpontot foglalni?</div>
+        <div class="faq-a">1. Regisztrálj a wanderdogsworld.hu oldalon (név, email, jelszó, kutya adatok + oltási könyv fotó). 2. Jelentkezz be. 3. Válaszd ki a szolgáltatást. 4. Kövesd a foglalási lépéseket és fizess online bankkártyával. 5. Kapj visszaigazoló emailt!</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Kell regisztrálnom a foglaláshoz?</div>
+        <div class="faq-a">Igen! A regisztrációhoz szükséged lesz az email címedre, egy jelszóra, a kutyád nevére és az oltási könyv fotójára. Ez biztosítja, hogy minden foglalás biztonságos és nyomon követhető legyen.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Hogyan tudok fizetni?</div>
+        <div class="faq-a">Online bankkártyával  - a fizetés a Stripe rendszeren keresztül történik, ami teljesen biztonságos. Csoportos oktatásnál készpénzes fizetés is választható a helyszínen.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Kapok visszaigazolást a foglalásról?</div>
+        <div class="faq-a">Igen! Emailben kapsz visszaigazolást az összes részlettel, és a foglalás bekerül a naptáradba is.</div>
+      </div>
+    </div>
+
+    <!-- ── RÉGI ÜGYFELEK ── -->
+    <div class="faq-category reveal">
+      <h2 class="faq-category-title">Régi ügyfelek</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Korábban jártam nálatok, de a rendszer újnak lát engem. Miért?</div>
+        <div class="faq-a">Az új online foglalási rendszerben mindenkinek külön regisztrálnia kell. Ha korábban voltál nálunk napköziben vagy panzióban, a rendszer kérni fog egy rövid, ingyenes felmérőt  - ez mindössze pár perc, és utána azonnal foglalhatsz bérletet vagy időpontot. Ez nem egy új vizsgálat, csak egy gyors ismerkedő az új rendszeren belül!</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Mi az az "ingyenes felmérő"?</div>
+        <div class="faq-a">Egy rövid, teljesen díjmentes találkozó, ahol megismerkedünk a kutyáddal az új rendszeren belül. Régi ügyfeleknek ez pusztán formalitás  - utána azonnal használhatod az online foglalási rendszert.</div>
+      </div>
+    </div>
+
+    <!-- ── OLTÁSI KÖNYV ── -->
+    <div class="faq-category reveal">
+      <h2 class="faq-category-title">Oltási könyv</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Miért nem tudok foglalni?</div>
+        <div class="faq-a">A leggyakoribb ok, hogy lejárt az oltási könyved a rendszerünkben. Menj a Profilodra (bejelentkezés után jobb felső sarokban a nevedre kattintva), és frissítsd az oltás lejárati dátumát + tölts fel egy aktuális fotót az oltási könyvről.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Hogyan frissítem az oltási könyvet?</div>
+        <div class="faq-a">Bejelentkezés → kattints a nevedre (jobb felső sarok) → Profil → Oltási könyv szekció → "Frissít" gomb → add meg az új lejárati dátumot és töltsd fel a fotót. Ezután azonnal foglalhatsz!</div>
+      </div>
+    </div>
+
+    <!-- ── NAPKÖZI ── -->
+    <div class="faq-category reveal">
+      <h2 class="faq-category-title">Napközi</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Hogyan működik a napközi foglalás?</div>
+        <div class="faq-a">Először válassz egy időpontot a naptárból, utána megjelennek a fizetési lehetőségek: egyszeri alkalom vagy bérlet (4 vagy 8 alkalmas). Ha bérletet veszel, az első alkalom automatikusan lefoglalódik, a továbbiakat pedig a naptárból tudod foglalni.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Van taxi szolgáltatás a napközihez?</div>
+        <div class="faq-a">Igen! Bérletnél választhatsz taxi opcióval is (≤10km vagy 10-25km távolságra). A taxi reggel elhozza és délután 17:00-kor hazaviszi a kutyádat.</div>
+      </div>
+    </div>
+
+    <!-- ── PANZIÓ ── -->
+    <div class="faq-category reveal">
+      <h2 class="faq-category-title">Panzió</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Hogyan számolódik a panzió ára?</div>
+        <div class="faq-a">Az ár a megkezdett napok alapján számolódik - a 11:00 utáni elhozás már megkezdett napnak számít. 8 naptól 10%, 16-tól 20%, 32-től 30% kedvezményt kapsz automatikusan. Az étkezés opcionális (+1 000 Ft/nap/kutya).</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Igényelhetek taxit a panzióhoz?</div>
+        <div class="faq-a">Igen! A panzió foglalás után tudsz taxi kiegészítést hozzáadni az elhozáshoz és/vagy a hazavivéshez.</div>
+      </div>
+    </div>
+
+    <!-- ── EGYÉB ── -->
+    <div class="faq-category reveal">
+      <h2 class="faq-category-title">Egyéb</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Elfelejtettem a jelszavam, mit tegyek?</div>
+        <div class="faq-a">Írj nekünk emailt az info.wanderdogs@gmail.com címre, és segítünk az új jelszó beállításában.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Nem kaptam visszaigazoló emailt, mi a teendő?</div>
+        <div class="faq-a">Először nézd meg a SPAM/Levélszemét mappát  - néha oda kerülhet. Ha ott sem találod, írj nekünk az info.wanderdogs@gmail.com címre.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Több kutyám van, hogyan foglaljak?</div>
+        <div class="faq-a">A profilodon tudsz több kutyát is hozzáadni (név + oltási könyv). Foglaláskor kiválasztod, melyik kutyáddal szeretnél jönni. Csoportos oktatásnál akár 3 kutyát is hozhatsz egyszerre!</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Hogyan mondhatok le egy foglalást?</div>
+        <div class="faq-a">Cal.com-on foglalt időpontokat (egyéni oktatás, viselkedésterápia) a visszaigazoló emailben található linkkel tudod lemondani. Egyéb szolgáltatásoknál kérjük, vedd fel velünk a kapcsolatot telefonon vagy emailben.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="gold-line">
+
+<!-- ══ CONTACT SECTION ══ -->
+<section class="section">
+  <div class="faq-contact reveal">
+    <h3>Nem találtad a választ? <em class="gold">Írj nekünk!</em></h3>
+    <p style="margin-bottom: 20px;">Szívesen segítünk bármilyen kérdésben.</p>
+    <p>📞 <a href="tel:+36705626926">0670/5626926</a></p>
+    <p>✉️ <a href="mailto:info.wanderdogs@gmail.com">info.wanderdogs@gmail.com</a></p>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>🐾 Wanderdogs</h3>
+        <p>Szakmai kutyaoktatás, gondozási tippek és online kurzusok – hogy te és kutyád igazán megértsétek egymást. A harmonikus kapcsolat tanulható.</p>
+        <div class="footer-socials">
+          <a href="https://www.facebook.com/wanderdogskutyakikepzes" target="_blank" aria-label="Facebook">f</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Szolgáltatások</h4>
+        <ul>
+          <li><a href="egyeni-ora.html">Egyéni oktatás</a></li>
+          <li><a href="csoportos.html">Csoportos oktatás</a></li>
+          <li><a href="napkozi.html">Napközi</a></li>
+          <li><a href="panzio.html">Panzió</a></li>
+          <li><a href="kutyataxi.html">Kutya taxi</a></li>
+          <li><a href="kutyatura.html">Wander kutyás túra</a></li>
+          <li><a href="viselkedesterapia.html">Viselkedésterápia</a></li>
+          <li><a href="orzo-vedo.html">Őrző-védő</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Információ</h4>
+        <ul>
+          <li><a href="rolunk.html">Rólunk</a></li>
+          <li><a href="https://wanderdogsworld.com/courses/" target="_blank">Online kurzusok</a></li>
+          <li><a href="gyik.html">GYIK</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Elérhetőség</h4>
+        <p>📍 Rozália sor, Solymár 2085</p>
+        <p>📞 0670/5626926</p>
+        <p>✉️ info.wanderdogs@gmail.com</p>
+        <p style="margin-top:12px; font-size:12px; color:var(--text-faint);">
+          H–P: 8:00–17:00<br>
+          Szombat: 9:00–18:00
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 Wanderdogs. Minden jog fenntartva.</span>
+      <span><a href="aszf.html" style="color:var(--text-faint);">ÁSZF</a> · <a href="adatkezeles.html" style="color:var(--text-faint);">Adatkezelés</a></span>
+      <span>wanderdogsworld.hu</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js?v=20260403"></script>
+<script>
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      const isOpen = item.classList.contains('open');
+      // Close all items in the same category
+      const category = item.closest('.faq-category');
+      if (category) {
+        category.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      }
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>
