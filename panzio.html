@@ -565,6 +565,17 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
   </div>
 </div>
 
+<!-- ── LOADING (foglalas_check alatt) ── -->
+<div id="panzio-loading" class="section-full" style="background: var(--black-2); display:none; padding-top:48px; padding-bottom:48px;">
+  <div class="section" style="text-align:center;">
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:24px 0;">
+      <div style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:panzioSpin .8s linear infinite;"></div>
+      <span style="color:var(--text-dim);font-size:15px;">Foglalási rendszer betöltése...</span>
+    </div>
+    <style>@keyframes panzioSpin{to{transform:rotate(360deg)}}</style>
+  </div>
+</div>
+
 <!-- ── INGYENES FELMÉRŐ (új vendégeknek) ── -->
 <div id="panzio-felmero-szekció" class="section-full" style="background: var(--black-2); display:none; padding-top:48px; padding-bottom:48px;">
   <div class="section">
@@ -1186,20 +1197,13 @@ szamol();
   frissitGomb();
 })();
 
-// ── "Hogyan működik" szekció – visszamutatás ha mégis új ügyfél ──
+// ── Panzió foglalás check (cache-elt, gyors) ──
 (async function panzioHogyanCheck() {
-  const user = wdGetUser();
-  if (!user || !user.registered || !user.email) {
-    var kalcEl = document.getElementById('kalkulalok');
-    if (kalcEl) kalcEl.style.display = '';
-    return;
-  }
-  try {
-    const resp = await fetch(WEBAPP_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'foglalas_check', email: user.email, kutyaNev: user.kutyaNev || '', service: 'Panzió' })
-    });
-    const data = await resp.json();
+  var CACHE_KEY = 'wd_panzio_check';
+  var CACHE_TTL = 5 * 60 * 1000; // 5 perc
+
+  function applyResult(data) {
+    document.getElementById('panzio-loading').style.display = 'none';
     if (data.ujUgyfel) {
       document.getElementById('hogyan').style.display = '';
       var btnH = document.getElementById('btn-hogyan');
@@ -1207,15 +1211,51 @@ szamol();
       var felmeroEl = document.getElementById('panzio-felmero-szekció');
       if (felmeroEl) felmeroEl.style.display = 'block';
     } else {
-      // Visszatérő vendég → kalkulátor megjelenítése
       var kalcEl = document.getElementById('kalkulalok');
       if (kalcEl) kalcEl.style.display = '';
     }
-  } catch (err) {
-    console.log('[WD panzio] hogyan check hiba:', err);
-    // Hiba esetén mutassuk a kalkulátort (ne maradjon rejtve)
+  }
+
+  var user = wdGetUser();
+  if (!user || !user.registered || !user.email) {
     var kalcEl = document.getElementById('kalkulalok');
     if (kalcEl) kalcEl.style.display = '';
+    return;
+  }
+
+  // 1. Cache ellenőrzés
+  var usedCache = false;
+  try {
+    var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if (cached && cached.email === user.email && (Date.now() - cached.ts) < CACHE_TTL) {
+      applyResult(cached.data);
+      usedCache = true;
+    }
+  } catch(e) {}
+
+  // 2. Ha nincs cache, loading spinner
+  if (!usedCache) {
+    document.getElementById('panzio-loading').style.display = '';
+  }
+
+  // 3. Háttérben API hívás (cache frissítés)
+  try {
+    var resp = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'foglalas_check', email: user.email, kutyaNev: user.kutyaNev || '', service: 'Panzió' })
+    });
+    var data = await resp.json();
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), email: user.email, data: data }));
+    if (!usedCache) {
+      applyResult(data);
+    }
+  } catch (err) {
+    console.log('[WD panzio] check hiba:', err);
+    if (!usedCache) {
+      document.getElementById('panzio-loading').style.display = 'none';
+      var kalcEl = document.getElementById('kalkulalok');
+      if (kalcEl) kalcEl.style.display = '';
+    }
   }
 })();
 
