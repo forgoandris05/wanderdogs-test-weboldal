@@ -159,7 +159,23 @@
 
       <div class="login-footer">
         <span>Nincs még fiókod? <a id="reg-link" href="regisztracio.html">Regisztrálj ingyen!</a></span>
-        <span>Elfelejtett jelszó? <a href="mailto:info.wanderdogs@gmail.com">Írj nekünk</a></span>
+        <span>Elfelejtett jelszó? <a href="#" id="forgot-link">Jelszó visszaállítása</a></span>
+      </div>
+
+      <!-- Elfelejtett jelszó szekció -->
+      <div id="forgot-section" style="display:none; margin-top:24px;">
+        <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">Jelszó visszaállítása</h3>
+        <p style="font-size:13px; color:var(--text-dim); margin-bottom:16px;">Add meg az email címed, és küldünk egy visszaállító linket.</p>
+        <div id="forgot-error" class="login-error" style="display:none;"></div>
+        <div id="forgot-success" style="display:none; background:rgba(134,239,172,0.1); border:1px solid rgba(134,239,172,0.3); border-radius:10px; padding:14px; color:#86efac; font-size:13px; margin-bottom:12px;"></div>
+        <form id="forgot-form">
+          <div class="form-group">
+            <label for="forgot-email">Email cím</label>
+            <input type="email" id="forgot-email" placeholder="pl. gazdi@email.com" required>
+          </div>
+          <button type="submit" class="btn-belepes" id="forgot-btn">Visszaállító email küldése</button>
+        </form>
+        <p style="margin-top:12px; text-align:center;"><a href="#" id="back-to-login" style="color:var(--gold); font-size:13px;">Vissza a bejelentkezéshez</a></p>
       </div>
     </div>
   </div>
@@ -242,6 +258,61 @@ function showError(msg) {
 function hideError() {
   document.getElementById('login-error').style.display = 'none';
 }
+
+// ── Elfelejtett jelszó ──
+document.getElementById('forgot-link').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('login-form').parentElement.querySelector('.login-footer').style.display = 'none';
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('forgot-section').style.display = 'block';
+  document.getElementById('forgot-error').style.display = 'none';
+  document.getElementById('forgot-success').style.display = 'none';
+});
+
+document.getElementById('back-to-login').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('login-form').style.display = '';
+  document.getElementById('login-form').parentElement.querySelector('.login-footer').style.display = '';
+  document.getElementById('forgot-section').style.display = 'none';
+});
+
+document.getElementById('forgot-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var email = document.getElementById('forgot-email').value.trim();
+  if (!email) return;
+
+  var btn = document.getElementById('forgot-btn');
+  var errEl = document.getElementById('forgot-error');
+  var successEl = document.getElementById('forgot-success');
+  btn.disabled = true;
+  btn.textContent = 'Küldés...';
+  errEl.style.display = 'none';
+  successEl.style.display = 'none';
+
+  try {
+    var resp = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'jelszo_reset_keres', email: email }),
+    });
+    var data = await resp.json();
+
+    if (data.ok) {
+      successEl.textContent = 'Ha létezik ilyen fiók, emailben küldtük a visszaállító linket. Nézd meg a leveleid (és a SPAM mappát is)!';
+      successEl.style.display = 'block';
+      document.getElementById('forgot-form').style.display = 'none';
+    } else {
+      errEl.textContent = data.error || 'Hiba történt.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Visszaállító email küldése';
+    }
+  } catch (err) {
+    errEl.textContent = 'Hálózati hiba. Próbáld újra.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Visszaállító email küldése';
+  }
+});
 </script>
 </body>
 </html>
