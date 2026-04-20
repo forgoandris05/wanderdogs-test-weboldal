@@ -195,9 +195,71 @@
       display: none;
       border: 1px solid var(--border-dim);
     }
+    /* ── Régi ügyfél toggle ── */
+    .regi-toggle-wrap {
+      max-width: 520px;
+      margin: 28px auto 0;
+      text-align: center;
+    }
+    .regi-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      padding: 14px 24px;
+      background: rgba(255,215,0,0.04);
+      border: 1px solid rgba(255,215,0,0.2);
+      border-radius: 12px;
+      transition: border-color 0.25s, background 0.25s;
+    }
+    .regi-toggle:hover {
+      border-color: rgba(255,215,0,0.45);
+      background: rgba(255,215,0,0.07);
+    }
+    .regi-toggle.active {
+      border-color: var(--gold);
+      background: rgba(255,215,0,0.1);
+    }
+    .regi-toggle input { display: none; }
+    .regi-toggle-slider {
+      width: 44px; height: 24px;
+      background: var(--black-4);
+      border: 1px solid var(--border-dim);
+      border-radius: 12px;
+      position: relative;
+      flex-shrink: 0;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .regi-toggle-slider::after {
+      content: '';
+      width: 18px; height: 18px;
+      background: var(--text-dim);
+      border-radius: 50%;
+      position: absolute;
+      top: 2px; left: 2px;
+      transition: transform 0.25s, background 0.25s;
+    }
+    .regi-toggle input:checked + .regi-toggle-slider {
+      background: rgba(255,215,0,0.2);
+      border-color: var(--gold);
+    }
+    .regi-toggle input:checked + .regi-toggle-slider::after {
+      transform: translateX(20px);
+      background: var(--gold);
+    }
+    .regi-toggle-label {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      text-align: left;
+    }
+    .regi-toggle-hint {
+      font-size: 12px; color: var(--text-faint);
+      margin-top: 10px;
+    }
     @media (max-width: 600px) {
       .reg-card { padding: 28px 20px; }
       .form-row { grid-template-columns: 1fr; }
+      .regi-toggle { padding: 12px 16px; gap: 10px; }
+      .regi-toggle-label { font-size: 13px; }
     }
   </style>
 </head>
@@ -245,10 +307,20 @@
 
     <div class="reg-overline">🐾 Első lépés</div>
     <h1 class="reg-title">Mesélj a <span>kutyádról</span></h1>
-    <p class="reg-sub">
+    <p class="reg-sub" id="regSub">
       Hogy Timi fel tudjon készülni az első találkozóra, kérjük töltsd ki az alábbi rövid formot.
       Ez csak egyszer szükséges – utána azonnal foglalhatsz időpontot.
     </p>
+
+    <!-- Régi ügyfél toggle -->
+    <div class="regi-toggle-wrap">
+      <label class="regi-toggle" id="regiToggleLabel">
+        <input type="checkbox" id="regiUgyfelToggle">
+        <span class="regi-toggle-slider"></span>
+        <span class="regi-toggle-label">Régi ügyfél vagyok: a kutyusom volt már panzióban vagy napköziben</span>
+      </label>
+      <p class="regi-toggle-hint">Kapcsold be, ha korábban jártál nálunk – így nem kell ingyenes felmérőre jönnöd.</p>
+    </div>
 
     <!-- FORM -->
     <div class="reg-card" id="regForm">
@@ -344,7 +416,7 @@
     <div class="reg-success" id="regSuccess">
       <div class="reg-success-icon">✅</div>
       <h3>Sikeresen regisztráltál!</h3>
-      <p>
+      <p id="regSuccessText">
         Köszönjük! Timi értesítést kapott a kutyád adatairól.<br><br>
         Most visszairányítunk a kiválasztott szolgáltatáshoz, ahol időpontot foglalhatsz az ingyenes konzultációra.
       </p>
@@ -352,6 +424,12 @@
     </div>
 
   </div>
+</div>
+
+<!-- ── GYIK BANNER ── -->
+<div style="text-align:center; padding:32px 20px; background:var(--black-2);">
+  <p style="font-size:14px; color:var(--text-dim); margin-bottom:12px;">Van kérdésed?</p>
+  <a href="gyik.html" class="btn btn-outline">Gyakori Kérdések</a>
 </div>
 
 <!-- ── FOOTER ── -->
@@ -412,6 +490,27 @@
     const bl = document.getElementById('belepes-link');
     if (bl) bl.href = 'bejelentkezes.html?return=' + encodeURIComponent(getReturnUrl());
   })();
+
+  // ── Régi ügyfél toggle kezelés ──────────────────────────────
+  const regiToggle = document.getElementById('regiUgyfelToggle');
+  const regiToggleLabel = document.getElementById('regiToggleLabel');
+  const regSub = document.getElementById('regSub');
+  const regSubOriginal = regSub.innerHTML;
+
+  regiToggle.addEventListener('change', function() {
+    const isRegi = this.checked;
+    regiToggleLabel.classList.toggle('active', isRegi);
+
+    if (isRegi) {
+      regSub.innerHTML = 'Örülünk, hogy újra itt vagy! Kérjük töltsd ki az adataidat, hogy beléphess az új rendszerünkbe.';
+      document.getElementById('regProblema').required = false;
+      document.querySelector('label[for="regProblema"]').textContent = 'Probléma, cél, háttér (opcionális)';
+    } else {
+      regSub.innerHTML = regSubOriginal;
+      document.getElementById('regProblema').required = true;
+      document.querySelector('label[for="regProblema"]').textContent = 'Probléma, cél, háttér *';
+    }
+  });
 
   // Több kutya gomb
   document.getElementById('tobbKutyaBtn').addEventListener('click', function() {
@@ -522,7 +621,8 @@
     }
     const elsoKutya = kutyak[0] || {};
 
-    if (!nev || !telefon || !email || !jelszo || !kutyak.length || !elsoKutya.nev || !elsoKutya.fajta || !elsoKutya.kor || !problema) {
+    const isRegi = document.getElementById('regiUgyfelToggle').checked;
+    if (!nev || !telefon || !email || !jelszo || !kutyak.length || !elsoKutya.nev || !elsoKutya.fajta || !elsoKutya.kor || (!problema && !isRegi)) {
       showRegError('Kérjük töltsd ki az összes kötelező mezőt!');
       return;
     }
@@ -574,6 +674,7 @@
           oltasok: JSON.stringify(oltasAdatok),
           problema,
           jelszo_hash: jelszoHash,
+          regi_ugyfel: isRegi,
         })
       });
       clearTimeout(timeoutId);
@@ -613,6 +714,11 @@
 
     document.getElementById('regForm').style.display = 'none';
     document.getElementById('regSuccess').style.display = 'block';
+    if (isRegi) {
+      document.getElementById('regSuccessText').innerHTML =
+        'Köszönjük! Régi ügyfélként regisztráltunk.<br><br>' +
+        'Mostantól közvetlenül foglalhatsz napközit és panziót – nem kell ingyenes felmérőre jönnöd.';
+    }
 
     const returnUrl = getReturnUrl();
     let mp = 4;
