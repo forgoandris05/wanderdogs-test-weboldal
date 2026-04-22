@@ -338,15 +338,27 @@
   <div class="oltas-modal">
     <h3 id="oltas-modal-title">Oltási könyv frissítése</h3>
     <input type="hidden" id="oltas-modal-idx">
+    <div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:8px;">Kombinált oltás</div>
     <div class="form-group">
-      <label>Oltás lejárata *</label>
+      <label>Lejárata *</label>
       <input type="date" id="oltas-modal-lejar" max="9999-12-31">
     </div>
     <div class="form-group">
-      <label>Oltási könyv fotó</label>
+      <label>Fotó (ha nem választasz, a régi marad)</label>
       <input type="file" accept="image/*" id="oltas-modal-kep" style="font-size:12px;color:var(--text-dim);">
-      <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG. Ha nem választasz, a régi marad.</small>
+      <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG.</small>
       <img class="oltas-preview-modal" id="oltas-modal-preview" alt="Előnézet">
+    </div>
+    <div style="font-size:12px;font-weight:600;color:var(--gold);margin:12px 0 8px;">Veszettség oltás</div>
+    <div class="form-group">
+      <label>Lejárata *</label>
+      <input type="date" id="oltas-modal-vesz-lejar" max="9999-12-31">
+    </div>
+    <div class="form-group">
+      <label>Fotó (ha nem választasz, a régi marad)</label>
+      <input type="file" accept="image/*" id="oltas-modal-vesz-kep" style="font-size:12px;color:var(--text-dim);">
+      <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG.</small>
+      <img class="oltas-preview-modal" id="oltas-modal-vesz-preview" alt="Előnézet">
     </div>
     <div class="profil-msg" id="oltas-modal-msg"></div>
     <div class="oltas-modal-btns">
@@ -577,13 +589,17 @@ function oltasModalNyit(idx, kutyaNev) {
   document.getElementById('oltas-modal-lejar').value = '';
   document.getElementById('oltas-modal-kep').value = '';
   document.getElementById('oltas-modal-preview').style.display = 'none';
+  document.getElementById('oltas-modal-vesz-lejar').value = '';
+  document.getElementById('oltas-modal-vesz-kep').value = '';
+  document.getElementById('oltas-modal-vesz-preview').style.display = 'none';
   document.getElementById('oltas-modal-msg').textContent = '';
   document.getElementById('oltas-modal').classList.add('active');
 
   // Ha van lejárat, előre kitölti
   const kutyak = wdKutyak();
-  if (kutyak[idx] && kutyak[idx].oltasLejar) {
-    document.getElementById('oltas-modal-lejar').value = kutyak[idx].oltasLejar;
+  if (kutyak[idx]) {
+    if (kutyak[idx].oltasLejar) document.getElementById('oltas-modal-lejar').value = kutyak[idx].oltasLejar;
+    if (kutyak[idx].veszLejar)  document.getElementById('oltas-modal-vesz-lejar').value = kutyak[idx].veszLejar;
   }
 }
 
@@ -603,14 +619,31 @@ document.getElementById('oltas-modal-kep').addEventListener('change', function()
     preview.style.display = 'none';
   }
 });
+document.getElementById('oltas-modal-vesz-kep').addEventListener('change', function() {
+  const prev = document.getElementById('oltas-modal-vesz-preview');
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => { prev.src = e.target.result; prev.style.display = 'block'; };
+    reader.readAsDataURL(file);
+  } else {
+    prev.style.display = 'none';
+  }
+});
 
 async function oltasMent() {
-  const idx   = parseInt(document.getElementById('oltas-modal-idx').value, 10);
-  const lejar = document.getElementById('oltas-modal-lejar').value.trim();
-  const kepFile = document.getElementById('oltas-modal-kep').files[0] || null;
+  const idx        = parseInt(document.getElementById('oltas-modal-idx').value, 10);
+  const lejar      = document.getElementById('oltas-modal-lejar').value.trim();
+  const veszLejar  = document.getElementById('oltas-modal-vesz-lejar').value.trim();
+  const kepFile    = document.getElementById('oltas-modal-kep').files[0] || null;
+  const veszKepFile = document.getElementById('oltas-modal-vesz-kep').files[0] || null;
   const msgEl = document.getElementById('oltas-modal-msg');
 
-  if (!lejar) { msgEl.textContent = 'Kérlek add meg a lejárati dátumot!'; msgEl.className = 'profil-msg hiba'; return; }
+  if (!lejar || !veszLejar) {
+    msgEl.textContent = 'Kérlek add meg mindkét oltás lejárati dátumát!';
+    msgEl.className = 'profil-msg hiba';
+    return;
+  }
 
   const user = wdGetUser();
   const saveBtn = document.getElementById('oltas-modal-save');
@@ -618,10 +651,12 @@ async function oltasMent() {
   saveBtn.textContent = 'Feltöltés...';
   msgEl.textContent = '';
 
-  let kep64 = '';
-  if (kepFile) {
-    try { kep64 = await resizeImageToBase64(kepFile, 1200); }
-    catch(e) { msgEl.textContent = e.message; msgEl.className = 'profil-msg hiba'; saveBtn.disabled = false; saveBtn.textContent = 'Mentés'; return; }
+  let kep64 = '', veszKep64 = '';
+  try {
+    if (kepFile)     kep64     = await resizeImageToBase64(kepFile, 1200);
+    if (veszKepFile) veszKep64 = await resizeImageToBase64(veszKepFile, 1200);
+  } catch(e) {
+    msgEl.textContent = e.message; msgEl.className = 'profil-msg hiba'; saveBtn.disabled = false; saveBtn.textContent = 'Mentés'; return;
   }
 
   try {
@@ -629,7 +664,8 @@ async function oltasMent() {
       method: 'POST',
       body: JSON.stringify({
         action: 'oltas_frissites', email: user.email, auth_token: user.auth_token || '',
-        kutya_index: idx, oltas_lejar: lejar, oltas_kep_base64: kep64
+        kutya_index: idx, oltas_lejar: lejar, oltas_kep_base64: kep64,
+        vesz_lejar: veszLejar, vesz_kep_base64: veszKep64
       })
     });
     const result = await resp.json();
