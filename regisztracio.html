@@ -372,7 +372,7 @@
             </div>
             <div class="form-row" style="margin-top: 14px;">
               <div class="form-group">
-                <label>Születési dátum *</label>
+                <label>Kutya születési dátuma *</label>
                 <input type="date" class="kutya-szuldat" max="9999-12-31" required>
               </div>
               <div class="form-group">
@@ -382,16 +382,17 @@
             </div>
             <div class="oltas-section">
               <div class="oltas-section-label">Oltási könyv</div>
+              <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">A kutyák biztonsága érdekében csak érvényes oltással rendelkező kutyákat tudunk fogadni.</p>
               <div class="form-row">
                 <div class="form-group">
-                  <label>Oltás lejárata *</label>
-                  <input type="date" class="oltas-lejar" max="9999-12-31" required>
+                  <label>Kombinált oltás fotó *</label>
+                  <input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="font-size:12px;">
+                  <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>
+                  <img class="oltas-kombinalt-preview" alt="Előnézet">
                 </div>
                 <div class="form-group">
-                  <label>Oltási könyv fotó *</label>
-                  <input type="file" accept="image/*" class="oltas-kep" required style="font-size:12px;">
-                  <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>
-                  <img class="oltas-preview" alt="Előnézet">
+                  <label>Kombinált oltás lejárata *</label>
+                  <input type="date" class="oltas-kombinalt-lejar" max="9999-12-31" required>
                 </div>
               </div>
               <div class="form-row">
@@ -402,10 +403,8 @@
                   <img class="oltas-veszettség-preview" alt="Előnézet">
                 </div>
                 <div class="form-group">
-                  <label>Kombinált oltás fotó</label>
-                  <input type="file" accept="image/*" class="oltas-kombinalt-kep" style="font-size:12px;">
-                  <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>
-                  <img class="oltas-kombinalt-preview" alt="Előnézet">
+                  <label>Veszettség oltás lejárata</label>
+                  <input type="date" class="oltas-vesz-lejar" max="9999-12-31">
                 </div>
               </div>
             </div>
@@ -549,18 +548,19 @@
         '<div class="form-group"><label>Fajtája</label><input type="text" class="kutya-fajta" placeholder="pl. Puli"></div>' +
       '</div>' +
       '<div class="form-row" style="margin-top:14px;">' +
-        '<div class="form-group"><label>Születési dátum</label><input type="date" class="kutya-szuldat" max="9999-12-31"></div>' +
+        '<div class="form-group"><label>Kutya születési dátuma</label><input type="date" class="kutya-szuldat" max="9999-12-31"></div>' +
         '<div class="form-group"><label>Chipszám</label><input type="text" class="kutya-chip" placeholder="pl. 900123456789012" maxlength="20"></div>' +
       '</div>' +
       '<div class="oltas-section">' +
         '<div class="oltas-section-label">Oltási könyv</div>' +
+        '<p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">A kutyák biztonsága érdekében csak érvényes oltással rendelkező kutyákat tudunk fogadni.</p>' +
         '<div class="form-row">' +
-          '<div class="form-group"><label>Oltás lejárata *</label><input type="date" class="oltas-lejar" max="9999-12-31" required></div>' +
-          '<div class="form-group"><label>Oltási könyv fotó *</label>' +
-            '<input type="file" accept="image/*" class="oltas-kep" required style="font-size:12px;">' +
+          '<div class="form-group"><label>Kombinált oltás fotó *</label>' +
+            '<input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="font-size:12px;">' +
             '<small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>' +
-            '<img class="oltas-preview" alt="Előnézet">' +
+            '<img class="oltas-kombinalt-preview" alt="Előnézet">' +
           '</div>' +
+          '<div class="form-group"><label>Kombinált oltás lejárata *</label><input type="date" class="oltas-kombinalt-lejar" max="9999-12-31" required></div>' +
         '</div>' +
         '<div class="form-row">' +
           '<div class="form-group"><label>Veszettség oltás fotó</label>' +
@@ -568,11 +568,7 @@
             '<small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>' +
             '<img class="oltas-veszettség-preview" alt="Előnézet">' +
           '</div>' +
-          '<div class="form-group"><label>Kombinált oltás fotó</label>' +
-            '<input type="file" accept="image/*" class="oltas-kombinalt-kep" style="font-size:12px;">' +
-            '<small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>' +
-            '<img class="oltas-kombinalt-preview" alt="Előnézet">' +
-          '</div>' +
+          '<div class="form-group"><label>Veszettség oltás lejárata</label><input type="date" class="oltas-vesz-lejar" max="9999-12-31"></div>' +
         '</div>' +
       '</div>';
     container.appendChild(blokk);
@@ -611,8 +607,8 @@
 
   // ── Kép preview listener ───────────────────────────────────
   document.addEventListener('change', function(e) {
-    const kepClasses = ['oltas-kep', 'oltas-veszettség-kep', 'oltas-kombinalt-kep'];
-    const previewClasses = ['oltas-preview', 'oltas-veszettség-preview', 'oltas-kombinalt-preview'];
+    const kepClasses = ['oltas-kombinalt-kep', 'oltas-veszettség-kep'];
+    const previewClasses = ['oltas-kombinalt-preview', 'oltas-veszettség-preview'];
     const idx = kepClasses.findIndex(cls => e.target.classList.contains(cls));
     if (idx === -1) return;
     const preview = e.target.closest('.form-group').querySelector('.' + previewClasses[idx]);
@@ -652,15 +648,14 @@
       if (!nv) continue;
       kutyak.push({ nev: nv, fajta: fj, szuldat, chip });
 
-      const lejar   = (blokk.querySelector('.oltas-lejar') || {}).value || '';
-      const kepInput = blokk.querySelector('.oltas-kep');
-      const kepFile  = kepInput && kepInput.files[0] ? kepInput.files[0] : null;
+      const kombinalt_lejar = (blokk.querySelector('.oltas-kombinalt-lejar') || {}).value || '';
+      const kombInput  = blokk.querySelector('.oltas-kombinalt-kep');
+      const kombinaltFile  = kombInput && kombInput.files[0] ? kombInput.files[0] : null;
       const veszInput  = blokk.querySelector('.oltas-veszettség-kep');
       const veszFile   = veszInput && veszInput.files[0] ? veszInput.files[0] : null;
-      const kombInput  = blokk.querySelector('.oltas-kombinalt-kep');
-      const kombFile   = kombInput && kombInput.files[0] ? kombInput.files[0] : null;
-      if (!lejar || !kepFile) oltasHiba = true;
-      oltasok.push({ lejar, kepFile, veszFile, kombFile });
+      const vesz_lejar = (blokk.querySelector('.oltas-vesz-lejar') || {}).value || '';
+      if (!kombinalt_lejar || !kombinaltFile) oltasHiba = true;
+      oltasok.push({ kombinalt_lejar, kombinaltFile, vesz_lejar, veszFile });
     }
     const elsoKutya = kutyak[0] || {};
 
@@ -670,7 +665,7 @@
       return;
     }
     if (oltasHiba) {
-      showRegError('Kérjük töltsd ki az oltási könyv adatait (lejárat + fotó) minden kutyához!');
+      showRegError('Kérjük töltsd fel a kombinált oltás fotóját és add meg a lejárati dátumát minden kutyához!');
       return;
     }
     if (jelszo.length < 6) {
@@ -689,10 +684,9 @@
     const oltasAdatok = [];
     try {
       for (const o of oltasok) {
-        const kep64  = o.kepFile  ? await resizeImageToBase64(o.kepFile,  1200) : '';
-        const vesz64 = o.veszFile ? await resizeImageToBase64(o.veszFile, 1200) : '';
-        const komb64 = o.kombFile ? await resizeImageToBase64(o.kombFile, 1200) : '';
-        oltasAdatok.push({ lejar: o.lejar, kep_base64: kep64, veszettség_base64: vesz64, kombinalt_base64: komb64 });
+        const komb64 = o.kombinaltFile ? await resizeImageToBase64(o.kombinaltFile, 1200) : '';
+        const vesz64 = o.veszFile      ? await resizeImageToBase64(o.veszFile,      1200) : '';
+        oltasAdatok.push({ kombinalt_lejar: o.kombinalt_lejar, kombinalt_kep_base64: komb64, vesz_lejar: o.vesz_lejar, vesz_kep_base64: vesz64 });
       }
     } catch(imgErr) {
       showRegError(imgErr.message || 'Hiba a kép feldolgozásakor.');
