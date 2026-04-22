@@ -227,14 +227,17 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBuk
 
       if (data.ok) {
         localStorage.setItem('wd_user', JSON.stringify({
-          nev:        data.nev        || '',
-          email:      email,
-          telefon:    data.telefon    || '',
-          kutyaNev:   data.kutyaNev   || '',
-          kutyak:     data.kutyak     || [],
-          auth_token: data.auth_token || '',
+          nev:           data.nev           || '',
+          email:         email,
+          telefon:       data.telefon       || '',
+          iranyitoszam:  data.iranyitoszam  || '',
+          varos:         data.varos         || '',
+          utca:          data.utca          || '',
+          kutyaNev:      data.kutyaNev      || '',
+          kutyak:        data.kutyak        || [],
+          auth_token:    data.auth_token    || '',
           token_created: Date.now(),
-          registered: true,
+          registered:    true,
         }));
         window.location.href = afterLoginUrl;
       } else {

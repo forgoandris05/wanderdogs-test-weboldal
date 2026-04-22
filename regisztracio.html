@@ -356,6 +356,22 @@
           </div>
         </div>
 
+        <div class="reg-section-label">Számlázási cím</div>
+        <div class="form-row">
+          <div class="form-group" style="max-width: 130px;">
+            <label for="regIranyitoszam">Irányítószám *</label>
+            <input type="text" id="regIranyitoszam" placeholder="pl. 2083" pattern="[0-9]{4}" maxlength="4" inputmode="numeric" required>
+          </div>
+          <div class="form-group">
+            <label for="regVaros">Város *</label>
+            <input type="text" id="regVaros" placeholder="pl. Solymár" required>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 14px;">
+          <label for="regUtca">Utca, házszám *</label>
+          <input type="text" id="regUtca" placeholder="pl. Fő utca 12." required>
+        </div>
+
         <div class="reg-section-label">A kutyád / kutyáid</div>
         <div id="kutyak-container">
           <!-- 1. kutya -->
@@ -633,7 +649,10 @@
     const email      = document.getElementById('regEmail').value.trim();
     const jelszo     = document.getElementById('regJelszo').value;
     const jelszoIsmet = document.getElementById('regJelszoIsmet').value;
-    const problema   = document.getElementById('regProblema').value.trim();
+    const problema     = document.getElementById('regProblema').value.trim();
+    const iranyitoszam = document.getElementById('regIranyitoszam').value.trim();
+    const varos        = document.getElementById('regVaros').value.trim();
+    const utca         = document.getElementById('regUtca').value.trim();
 
     // Kutyák + oltás adatok összegyűjtése
     const kutyak = [];
@@ -660,8 +679,12 @@
     const elsoKutya = kutyak[0] || {};
 
     const isRegi = document.getElementById('regiUgyfelToggle').checked;
-    if (!nev || !telefon || !email || !jelszo || !kutyak.length || !elsoKutya.nev || !elsoKutya.fajta || (!problema && !isRegi)) {
+    if (!nev || !telefon || !email || !jelszo || !iranyitoszam || !varos || !utca || !kutyak.length || !elsoKutya.nev || !elsoKutya.fajta || (!problema && !isRegi)) {
       showRegError('Kérjük töltsd ki az összes kötelező mezőt!');
+      return;
+    }
+    if (!/^[0-9]{4}$/.test(iranyitoszam)) {
+      showRegError('Az irányítószám pontosan 4 számjegyből álljon.');
       return;
     }
     if (oltasHiba) {
@@ -708,6 +731,7 @@
         body: JSON.stringify({
           action: 'regisztracio',
           nev, email, telefon,
+          iranyitoszam, varos, utca,
           kutyaNev: elsoKutya.nev, kutyaFajta: elsoKutya.fajta, kutyaKor: elsoKutya.szuldat,
           kutyak: JSON.stringify(kutyak),
           oltasok: JSON.stringify(oltasAdatok),
@@ -740,6 +764,7 @@
     localStorage.setItem('wd_user', JSON.stringify({
       nev, email,
       telefon: telefon,
+      iranyitoszam, varos, utca,
       kutyaNev: elsoKutya.nev,
       kutyak: kutyak.map((k, idx) => ({
         ...k,
