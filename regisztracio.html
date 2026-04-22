@@ -675,7 +675,7 @@
       const veszInput  = blokk.querySelector('.oltas-veszettség-kep');
       const veszFile   = veszInput && veszInput.files[0] ? veszInput.files[0] : null;
       const vesz_lejar = (blokk.querySelector('.oltas-vesz-lejar') || {}).value || '';
-      if (!kombinalt_lejar || !kombinaltFile) oltasHiba = true;
+      if (!kombinalt_lejar || !kombinaltFile || !vesz_lejar || !veszFile) oltasHiba = true;
       oltasok.push({ kombinalt_lejar, kombinaltFile, vesz_lejar, veszFile });
     }
     const elsoKutya = kutyak[0] || {};
@@ -690,7 +690,7 @@
       return;
     }
     if (oltasHiba) {
-      showRegError('Kérjük töltsd fel a kombinált oltás fotóját és add meg a lejárati dátumát minden kutyához!');
+      showRegError('Kérjük töltsd fel mindkét oltás fotóját és add meg a lejárati dátumokat! (kombinált + veszettség)');
       return;
     }
     if (jelszo.length < 6) {
