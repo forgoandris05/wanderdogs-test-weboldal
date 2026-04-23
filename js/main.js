@@ -228,15 +228,27 @@ function wdOltasCheck() {
   const ma = new Date();
   ma.setHours(0, 0, 0, 0);
   kutyak.forEach(function(k) {
+    // Kombinált oltás
     if (!k.oltasLejar) {
       result.valid = false;
-      result.hianyzik.push(k.nev);
-      return;
+      result.hianyzik.push(k.nev + ' (kombinált oltás hiányzik)');
+    } else {
+      var lejar = new Date(k.oltasLejar);
+      if (isNaN(lejar.getTime()) || lejar < ma) {
+        result.valid = false;
+        result.lejartKutyak.push(k.nev + ' kombinált (' + (isNaN(lejar.getTime()) ? '?' : lejar.toLocaleDateString('hu-HU')) + ')');
+      }
     }
-    var lejar = new Date(k.oltasLejar);
-    if (isNaN(lejar.getTime()) || lejar < ma) {
+    // Veszettség oltás
+    if (!k.veszLejar) {
       result.valid = false;
-      result.lejartKutyak.push(k.nev + ' (' + (isNaN(lejar.getTime()) ? '?' : lejar.toLocaleDateString('hu-HU')) + ')');
+      result.hianyzik.push(k.nev + ' (veszettség oltás hiányzik)');
+    } else {
+      var vLejar = new Date(k.veszLejar);
+      if (isNaN(vLejar.getTime()) || vLejar < ma) {
+        result.valid = false;
+        result.lejartKutyak.push(k.nev + ' veszettség (' + (isNaN(vLejar.getTime()) ? '?' : vLejar.toLocaleDateString('hu-HU')) + ')');
+      }
     }
   });
   return result;
@@ -244,26 +256,25 @@ function wdOltasCheck() {
 
 // ── Oltási blokkoló UI megjelenítés ──────────────────────────
 // Meghívás: wdOltasBlokk('booking-wrapper-id') – elrejti a booking UI-t és mutatja a hibát
-function wdOltasBlokk(wrapperId) {
-  var user = wdGetUser();
-  if (!user || !user.registered) return false; // nem bejelentkezett, nem blokkolunk
-  var check = wdOltasCheck();
-  if (check.valid) return false; // minden rendben
-
+function _wdShowBlokk(wrapperId, uzenetek, tiltott) {
   var wrapper = wrapperId ? document.getElementById(wrapperId) : null;
   if (wrapper) wrapper.style.display = 'none';
 
-  var msgs = [];
-  if (check.hianyzik.length) msgs.push('Hiányzó oltási könyv: ' + check.hianyzik.join(', '));
-  if (check.lejartKutyak.length) msgs.push('Lejárt oltás: ' + check.lejartKutyak.join(', '));
-
   var alertDiv = document.createElement('div');
   alertDiv.style.cssText = 'background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:24px;text-align:center;max-width:500px;margin:24px auto;';
-  alertDiv.innerHTML =
-    '<div style="font-size:24px;margin-bottom:8px;">&#9888;&#65039;</div>' +
-    '<h3 style="font-size:16px;font-weight:700;margin-bottom:8px;color:#fca5a5;">Nincs érvényes oltási könyved!</h3>' +
-    '<p style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;">' + msgs.join('<br>') + '</p>' +
-    '<a href="profil.html" class="btn btn-gold" style="display:inline-block;padding:10px 24px;font-size:14px;text-decoration:none;">Oltási könyv frissítése a Profilban</a>';
+
+  if (tiltott) {
+    alertDiv.innerHTML =
+      '<div style="font-size:24px;margin-bottom:8px;">🚫</div>' +
+      '<h3 style="font-size:16px;font-weight:700;margin-bottom:8px;color:#fca5a5;">A foglalás nem engedélyezett</h3>' +
+      '<p style="font-size:13px;color:var(--text-dim);line-height:1.6;">Kérjük vedd fel velünk a kapcsolatot: <a href="mailto:info.wanderdogs@gmail.com" style="color:var(--gold);">info.wanderdogs@gmail.com</a></p>';
+  } else {
+    alertDiv.innerHTML =
+      '<div style="font-size:24px;margin-bottom:8px;">&#9888;&#65039;</div>' +
+      '<h3 style="font-size:16px;font-weight:700;margin-bottom:8px;color:#fca5a5;">Nincs érvényes oltási könyved!</h3>' +
+      '<p style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;">' + uzenetek.join('<br>') + '</p>' +
+      '<a href="profil.html" class="btn btn-gold" style="display:inline-block;padding:10px 24px;font-size:14px;text-decoration:none;">Oltási könyv frissítése a Profilban</a>';
+  }
 
   if (wrapper && wrapper.parentNode) {
     wrapper.parentNode.insertBefore(alertDiv, wrapper);
@@ -271,5 +282,32 @@ function wdOltasBlokk(wrapperId) {
     var section = document.querySelector('.section-full') || document.querySelector('.section') || document.body;
     section.insertBefore(alertDiv, section.firstChild);
   }
-  return true; // blokkolva
+}
+
+function wdOltasBlokk(wrapperId) {
+  var user = wdGetUser();
+  if (!user || !user.registered) return false;
+
+  // 1. Szinkron oltás check (localStorage alapján – azonnali)
+  var check = wdOltasCheck();
+  if (!check.valid) {
+    var msgs = [];
+    if (check.hianyzik.length) msgs.push('Hiányzó oltás: ' + check.hianyzik.join(', '));
+    if (check.lejartKutyak.length) msgs.push('Lejárt oltás: ' + check.lejartKutyak.join(', '));
+    _wdShowBlokk(wrapperId, msgs, false);
+    return true;
+  }
+
+  // 2. Aszinkron tiltólista check (GAS-tól)
+  var WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+  fetch(WEBAPP_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'tiltolista_check', email: user.email })
+  }).then(function(r) { return r.json(); }).then(function(resp) {
+    if (resp.tiltott) {
+      _wdShowBlokk(wrapperId, [], true);
+    }
+  }).catch(function() { /* hálózati hiba – engedjük tovább */ });
+
+  return false;
 }
