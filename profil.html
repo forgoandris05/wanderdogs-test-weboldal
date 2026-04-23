@@ -313,16 +313,34 @@
         <div class="profil-msg" id="kutya-msg"></div>
 
         <div style="border-top: 1px solid var(--border-dim); padding-top: 20px; margin-top: 4px;">
-          <div class="add-kutya-form">
-            <input type="text" id="uj-kutya-nev" placeholder="Kutya neve *" maxlength="60">
-            <input type="text" id="uj-kutya-fajta" placeholder="Fajta (opcionális)" maxlength="60">
+          <button class="btn-tobb-kutya" id="btn-kutya-expand" onclick="ujKutyaExpand()">+ Kutya hozzáadása</button>
+          <div id="uj-kutya-panel" style="display:none; margin-top:14px;">
+            <div class="add-kutya-form">
+              <input type="text" id="uj-kutya-nev" placeholder="Kutya neve *" maxlength="60">
+              <input type="text" id="uj-kutya-fajta" placeholder="Fajta (opcionális)" maxlength="60">
+            </div>
+            <div class="add-kutya-form" style="margin-top:10px;">
+              <input type="date" id="uj-szuldat" max="9999-12-31" style="flex:1;min-width:140px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;">
+              <input type="text" id="uj-chip" placeholder="Chipszám (opcionális)" maxlength="20" style="flex:1;min-width:140px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;">
+            </div>
+            <div style="font-size:12px;font-weight:600;color:var(--gold);margin:12px 0 6px;">Kombinált oltás *</div>
+            <div class="add-kutya-form">
+              <input type="date" id="uj-oltas-lejar" max="9999-12-31" style="flex:1;min-width:140px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;">
+              <input type="file" accept="image/*" id="uj-oltas-kep" style="flex:1;min-width:140px;font-size:12px;color:var(--text-dim);">
+            </div>
+            <img id="uj-oltas-preview" style="display:none;max-width:120px;max-height:90px;border-radius:6px;margin-top:6px;" alt="Előnézet">
+            <div style="font-size:12px;font-weight:600;color:var(--gold);margin:12px 0 6px;">Veszettség oltás *</div>
+            <div class="add-kutya-form">
+              <input type="date" id="uj-vesz-lejar" max="9999-12-31" style="flex:1;min-width:140px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;">
+              <input type="file" accept="image/*" id="uj-vesz-kep" style="flex:1;min-width:140px;font-size:12px;color:var(--text-dim);">
+            </div>
+            <img id="uj-vesz-preview" style="display:none;max-width:120px;max-height:90px;border-radius:6px;margin-top:6px;" alt="Előnézet">
+            <div style="font-size:11px;color:var(--text-faint);margin-top:8px;">Mindkét oltás lejárata + fotó (JPG/PNG, max 5 MB) szükséges.</div>
+            <div style="display:flex;gap:10px;margin-top:12px;">
+              <button class="btn-hozzaad" id="btn-hozzaad" onclick="kutyaHozzaad()">Mentés</button>
+              <button type="button" onclick="ujKutyaMegse()" style="background:var(--black-4);color:var(--text-dim);border:1px solid var(--border-dim);border-radius:8px;padding:10px 18px;font-size:14px;cursor:pointer;">Mégse</button>
+            </div>
           </div>
-          <div class="add-kutya-form" style="margin-top: 10px;">
-            <input type="date" id="uj-oltas-lejar" max="9999-12-31" style="flex:1;min-width:140px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;" placeholder="Oltás lejárata *">
-            <input type="file" accept="image/*" id="uj-oltas-kep" style="flex:1;min-width:140px;font-size:12px;color:var(--text-dim);">
-            <button class="btn-hozzaad" id="btn-hozzaad" onclick="kutyaHozzaad()">+ Hozzáadás</button>
-          </div>
-          <div style="font-size:11px;color:var(--text-faint);margin-top:4px;">Oltás lejárata + fotó (JPG/PNG, max 5 MB) szükséges a hozzáadáshoz.</div>
         </div>
       </div>
 
@@ -503,22 +521,67 @@ function kutyaListaFrissit() {
 }
 
 // ── Kutya hozzáadás (oltással együtt) ─────────────────────────
+function ujKutyaExpand() {
+  document.getElementById('btn-kutya-expand').style.display = 'none';
+  document.getElementById('uj-kutya-panel').style.display = 'block';
+}
+
+function ujKutyaMegse() {
+  document.getElementById('uj-kutya-panel').style.display = 'none';
+  document.getElementById('btn-kutya-expand').style.display = '';
+  ['uj-kutya-nev','uj-kutya-fajta','uj-szuldat','uj-chip','uj-oltas-lejar','uj-oltas-kep','uj-vesz-lejar','uj-vesz-kep'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+  ['uj-oltas-preview','uj-vesz-preview'].forEach(function(id) {
+    document.getElementById(id).style.display = 'none';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('uj-oltas-kep').addEventListener('change', function() {
+    const prev = document.getElementById('uj-oltas-preview');
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) { prev.src = e.target.result; prev.style.display = 'block'; };
+      reader.readAsDataURL(file);
+    } else { prev.style.display = 'none'; }
+  });
+  document.getElementById('uj-vesz-kep').addEventListener('change', function() {
+    const prev = document.getElementById('uj-vesz-preview');
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) { prev.src = e.target.result; prev.style.display = 'block'; };
+      reader.readAsDataURL(file);
+    } else { prev.style.display = 'none'; }
+  });
+});
+
 async function kutyaHozzaad() {
-  const nev   = document.getElementById('uj-kutya-nev').value.trim();
-  const fajta = document.getElementById('uj-kutya-fajta').value.trim();
-  const lejar = document.getElementById('uj-oltas-lejar').value.trim();
-  const kepFile = document.getElementById('uj-oltas-kep').files[0] || null;
+  const nev       = document.getElementById('uj-kutya-nev').value.trim();
+  const fajta     = document.getElementById('uj-kutya-fajta').value.trim();
+  const chip      = document.getElementById('uj-chip').value.trim();
+  const szuldat   = document.getElementById('uj-szuldat').value.trim();
+  const lejar     = document.getElementById('uj-oltas-lejar').value.trim();
+  const kepFile   = document.getElementById('uj-oltas-kep').files[0] || null;
+  const veszLejar = document.getElementById('uj-vesz-lejar').value.trim();
+  const veszKepFile = document.getElementById('uj-vesz-kep').files[0] || null;
 
   if (!nev) { showMsg('Kérlek add meg a kutya nevét!', 'hiba'); return; }
-  if (!lejar || !kepFile) { showMsg('Kérlek add meg az oltási könyv lejáratát és tölts fel fotót!', 'hiba'); return; }
+  if (!lejar || !kepFile || !veszLejar || !veszKepFile) {
+    showMsg('Kérlek töltsd fel mindkét oltás fotóját és add meg a lejárati dátumokat!', 'hiba');
+    return;
+  }
 
   const user = wdGetUser();
   setButtons(true);
   showMsg('Feltöltés...', '');
 
-  let kep64 = '';
+  let kep64 = '', veszKep64 = '';
   try {
-    kep64 = await resizeImageToBase64(kepFile, 1200);
+    kep64     = await resizeImageToBase64(kepFile, 1200);
+    veszKep64 = await resizeImageToBase64(veszKepFile, 1200);
   } catch(e) {
     showMsg(e.message || 'Kép feldolgozási hiba.', 'hiba');
     setButtons(false);
@@ -530,7 +593,9 @@ async function kutyaHozzaad() {
       method: 'POST',
       body: JSON.stringify({
         action: 'kutya_hozzaad', email: user.email, auth_token: user.auth_token || '',
-        nev, fajta, oltas_lejar: lejar, oltas_kep_base64: kep64
+        nev, fajta, chip, szuldat,
+        oltas_lejar: lejar, oltas_kep_base64: kep64,
+        vesz_lejar: veszLejar, vesz_kep_base64: veszKep64
       })
     });
     const result = await resp.json();
@@ -538,10 +603,7 @@ async function kutyaHozzaad() {
       const u = wdGetUser();
       u.kutyak = result.kutyak;
       localStorage.setItem('wd_user', JSON.stringify(u));
-      document.getElementById('uj-kutya-nev').value   = '';
-      document.getElementById('uj-kutya-fajta').value = '';
-      document.getElementById('uj-oltas-lejar').value = '';
-      document.getElementById('uj-oltas-kep').value   = '';
+      ujKutyaMegse();
       kutyaListaFrissit();
       showMsg('Kutya hozzáadva!', 'ok');
     } else {
