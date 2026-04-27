@@ -1053,8 +1053,9 @@ async function napkoziCheckout(tipus, extraParams) {
   }
 }
 
-let _vanBerlet   = false;
-let _kutya       = '1';
+let _vanBerlet      = false;
+let _kedvezmenyPct  = 0;
+let _kutya          = '1';
 let _taxi        = 'notaxi';
 let _helyszin    = '';
 let _kutya_neve  = '';
@@ -1852,11 +1853,12 @@ function _applyNapkoziData(foglalasData, berletData, user) {
     const kedvData     = await r3.json();
     console.log('[WD napkozi] API válasz →', { foglalasData, berletData, kedvData });
 
-    // Kedvezmény megjelenítés
-    if (kedvData && kedvData.kedvezmeny > 0) {
+    // Kedvezmény tárolás + megjelenítés
+    _kedvezmenyPct = (kedvData && kedvData.kedvezmeny > 0) ? kedvData.kedvezmeny : 0;
+    if (_kedvezmenyPct > 0) {
       const kedvEl = document.getElementById('nk-kedvezmeny-sor');
       if (kedvEl) {
-        kedvEl.textContent = '🏷️ Törzsvásárló kedvezmény: ' + kedvData.kedvezmeny + '% – az árak automatikusan tartalmazzák!';
+        kedvEl.textContent = '🏷️ Törzsvásárló kedvezmény: ' + _kedvezmenyPct + '% – az árak automatikusan tartalmazzák!';
         kedvEl.style.display = 'block';
       }
     }
