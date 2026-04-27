@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
@@ -408,6 +408,9 @@
     <!-- Dinamikus állapot sáv (JS tölti ki) -->
     <div id="wd-status-banner" style="display:none; margin-bottom: 32px;"></div>
 
+    <!-- Oltási könyv figyelmeztetés (JS tölti ki ha oltasHiba) -->
+    <div id="oltas-figyelmeztetes" style="display:none; background:rgba(255,165,0,0.12); border:1px solid rgba(255,165,0,0.4); border-radius:10px; padding:12px 16px; font-size:13px; color:#ffb347; margin-bottom:20px; line-height:1.5;"></div>
+
     <!-- ── KONFIGURÁTOR (visszatérő usernek, JS mutatja) ── -->
     <div id="napkozi-konfigurator" style="display:none; margin-bottom:28px;" class="reveal">
       <div class="konfig-row">
@@ -594,7 +597,23 @@
            background:var(--black-3); border:1px solid var(--border);">
         <span class="siker-icon"></span>
         <h3>Hamarosan érvényes a foglalás!</h3>
-        <p style="margin-bottom:20px;">Fizetés után rögzítjük! Az imént lefoglalt napot automatikusan beleszámítjuk.</p>
+        <p style="margin-bottom:16px;">Fizetés után rögzítjük! Az imént lefoglalt napot automatikusan beleszámítjuk.</p>
+        <!-- Kedvezmény sor (JS tölti ki ha van) -->
+        <div id="nk-kedvezmeny-sor" style="display:none; background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:8px; padding:8px 14px; font-size:13px; color:var(--gold); margin-bottom:12px;"></div>
+        <!-- Fizetési mód -->
+        <div style="margin-bottom:14px;">
+          <label style="display:block; font-size:12px; font-weight:700; color:var(--text-dim); margin-bottom:8px;">Fizetési mód:</label>
+          <div style="display:flex; gap:8px;">
+            <label style="flex:1; display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--black-4); border:1px solid var(--gold); border-radius:10px; cursor:pointer; font-size:13px; color:var(--text);" id="nk-fizmod-online-label">
+              <input type="radio" name="nk-fizmod" value="online" checked style="accent-color:var(--gold);width:16px;height:16px;" onchange="nkFizmodValaszt()">
+              Online fizetés
+            </label>
+            <label style="flex:1; display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--black-4); border:1px solid var(--border-dim); border-radius:10px; cursor:pointer; font-size:13px; color:var(--text);" id="nk-fizmod-kp-label">
+              <input type="radio" name="nk-fizmod" value="kp" style="accent-color:var(--gold);width:16px;height:16px;" onchange="nkFizmodValaszt()">
+              Készpénz a helyszínen
+            </label>
+          </div>
+        </div>
         <div id="berlet-opciok" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;"></div>
         <p style="font-size:13px;color:var(--text-faint);">Bérlet: 5 hetes érvényesség · Automatikus visszaigazoló email</p>
       </div>
@@ -976,7 +995,21 @@ const TAXI_KIEG_LINKS = {
   },
 };
 
-// ── NAPKÖZI CHECKOUT (backend Stripe session) ───────────────────
+// ── Fizetési mód (napközi bérlet) ──────────────────────────────
+function getNkFizmod() {
+  var radios = document.getElementsByName('nk-fizmod');
+  for (var i = 0; i < radios.length; i++) { if (radios[i].checked) return radios[i].value; }
+  return 'online';
+}
+function nkFizmodValaszt() {
+  var mode = getNkFizmod();
+  var onl = document.getElementById('nk-fizmod-online-label');
+  var kp  = document.getElementById('nk-fizmod-kp-label');
+  if (onl) onl.style.borderColor = mode === 'online' ? 'var(--gold)' : 'var(--border-dim)';
+  if (kp)  kp.style.borderColor  = mode === 'kp'     ? 'var(--gold)' : 'var(--border-dim)';
+}
+
+// ── NAPKÖZI CHECKOUT (backend Stripe session / KP) ─────────────
 async function napkoziCheckout(tipus, extraParams) {
   const user = wdGetUser();
   if (!user || !user.email) {
@@ -984,9 +1017,11 @@ async function napkoziCheckout(tipus, extraParams) {
     return;
   }
   localStorage.setItem('wd_pending_tipus', tipus);
+  const fizmod = getNkFizmod();
   const payload = {
     action: 'napkozi_checkout',
     tipus: tipus,
+    fizetes: fizmod,
     email: user.email,
     auth_token: user.auth_token || '',
     nev: user.nev || '',
@@ -999,11 +1034,13 @@ async function napkoziCheckout(tipus, extraParams) {
   const btns = document.querySelectorAll('.napkozi-pay-btn');
   btns.forEach(function(b) { b.disabled = true; b.style.opacity = '0.5'; });
   const clickedBtn = event && event.target ? event.target.closest('.napkozi-pay-btn') : null;
-  if (clickedBtn) clickedBtn.textContent = 'Csatlakozás Stripe-hoz...';
+  if (clickedBtn) clickedBtn.textContent = fizmod === 'kp' ? 'Foglalás rögzítése...' : 'Csatlakozás Stripe-hoz...';
   try {
     const resp = await fetch(WEBAPP_URL, { method: 'POST', body: JSON.stringify(payload) });
     const result = await resp.json();
-    if (result.ok && result.checkout_url) {
+    if (fizmod === 'kp' && result.ok) {
+      window.location.href = 'napkozi-koszonjuk.html?kp=1';
+    } else if (result.ok && result.checkout_url) {
       window.location.href = result.checkout_url;
     } else {
       alert('Hiba: ' + (result.error || 'Ismeretlen hiba') + '\n\nKérlek próbáld újra, vagy hívj: 0670/5626926');
@@ -1571,6 +1608,15 @@ function _applyNapkoziData(foglalasData, berletData, user) {
   const savedPrefs = prefsLoad();
   _vanBerlet = berletData.vanBerlet;
 
+  // Oltási könyv figyelmeztetés (régi ügyfeleknek hiányzó veszettség oltás)
+  if (berletData.oltasHiba && berletData.oltasUzenet) {
+    const oltasWarnEl = document.getElementById('oltas-figyelmeztetes');
+    if (oltasWarnEl) {
+      oltasWarnEl.textContent = '⚠️ ' + berletData.oltasUzenet + ' – Kérlek töltsd fel a profil oldalon!';
+      oltasWarnEl.style.display = 'block';
+    }
+  }
+
   if (_vanBerlet) {
     document.getElementById('napkozi-konfigurator').style.display = 'none';
     var sectionHeader = document.querySelector('#berletek .section-header');
@@ -1788,14 +1834,25 @@ function _applyNapkoziData(foglalasData, berletData, user) {
 
   // 3. API hívás háttérben (mindig, cache mellett is)
   try {
-    const [r1, r2] = await Promise.all([
+    const [r1, r2, r3] = await Promise.all([
       fetch(WEBAPP_URL, { method:'POST', body: JSON.stringify({action:'foglalas_check', email:user.email, kutyaNev:user.kutyaNev, service:'Napközi'}) }),
       fetch(WEBAPP_URL, { method:'POST', body: JSON.stringify({action:'berlet_check', email:user.email, kutyaNev:user.kutyaNev, auth_token:user.auth_token||''}) }),
+      fetch(WEBAPP_URL, { method:'POST', body: JSON.stringify({action:'napkozi_kedvezmeny_check', email:user.email}) }),
     ]);
     if (!r1.ok) throw new Error('HTTP ' + r1.status);
     const foglalasData = await r1.json();
     const berletData   = await r2.json();
-    console.log('[WD napkozi] API válasz →', { foglalasData, berletData });
+    const kedvData     = await r3.json();
+    console.log('[WD napkozi] API válasz →', { foglalasData, berletData, kedvData });
+
+    // Kedvezmény megjelenítés
+    if (kedvData && kedvData.kedvezmeny > 0) {
+      const kedvEl = document.getElementById('nk-kedvezmeny-sor');
+      if (kedvEl) {
+        kedvEl.textContent = '🏷️ Törzsvásárló kedvezmény: ' + kedvData.kedvezmeny + '% – az árak automatikusan tartalmazzák!';
+        kedvEl.style.display = 'block';
+      }
+    }
 
     // Cache mentés
     localStorage.setItem(BERLET_CACHE_KEY, JSON.stringify({
