@@ -1303,6 +1303,13 @@ function napkoziFoglalas() {
     return;
   }
 
+  // Validáció: kutya kiválasztva?
+  if (!_kutya_neve || !_kutya_neve.trim()) {
+    const errEl = document.getElementById('napkozi-foglal-error');
+    if (errEl) { errEl.textContent = 'Kérlek válaszd ki, melyik kutyádat hozod!'; errEl.style.display = 'block'; }
+    return;
+  }
+
   // Taxi validáció: helyszín kötelező
   const isTaxiBooking = _taxi && _taxi !== 'notaxi';
   if (isTaxiBooking && !_helyszin.trim()) {
