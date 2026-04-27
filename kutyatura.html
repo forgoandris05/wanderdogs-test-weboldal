@@ -166,12 +166,46 @@
       <p style="font-size: 12px; color: var(--text-faint); margin-top: 12px;">3+ kutyával? Írj emailt: <a href="mailto:info.wanderdogs@gmail.com" style="color:var(--gold);">info.wanderdogs@gmail.com</a></p>
     </div>
 
-    <!-- Jelentkezés Facebook közösségen keresztül -->
-    <div id="tura-foglalas" class="tura-foglalas-box reveal" style="background: var(--black-3); border: 1px solid var(--border); border-radius: 16px; padding: 48px 32px; text-align: center; max-width: 680px; margin: 32px auto 0;">
-      <div style="font-size: 48px; margin-bottom: 20px;">🥾</div>
-      <h3 style="font-size: 22px; margin-bottom: 12px;">Jelentkezés a Facebook közösségünkön keresztül</h3>
-      <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 28px;">A túrák időpontjait és részleteit a Facebook csoportunkban hirdetjük meg. Csatlakozz, hogy értesülj elsőként!</p>
-      <a href="https://www.facebook.com/groups/956709845427195" target="_blank" rel="noopener" class="btn btn-gold btn-lg">Facebook közösség</a>
+    <!-- Közelgő túrák (dinamikus) -->
+    <div id="tura-foglalas" style="margin-top:32px; max-width:800px; margin-left:auto; margin-right:auto;">
+      <div id="tura-loading" style="text-align:center; padding:32px 0; color:var(--text-dim);">Betöltés...</div>
+      <div id="tura-nincs" style="display:none; text-align:center; padding:32px 0;">
+        <p style="color:var(--text-dim); margin-bottom:20px;">Jelenleg nincs meghirdetett túra. Kövess minket Facebookon!</p>
+        <a href="https://www.facebook.com/groups/956709845427195" target="_blank" rel="noopener" class="btn btn-gold">Facebook csoport</a>
+      </div>
+      <div id="tura-kartyak" style="display:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;"></div>
+      <!-- Foglalás form -->
+      <div id="tura-form-wrapper" style="display:none; max-width:520px; margin:32px auto 0;">
+        <div style="background:var(--black-3); border:1px solid var(--border); border-radius:16px; padding:28px 24px;">
+          <h3 id="tura-form-cim" style="font-size:18px; margin-bottom:20px;"></h3>
+          <div id="tura-auth-prompt" style="display:none; text-align:center; padding:16px 0;">
+            <p style="color:var(--text-dim); margin-bottom:16px;">Foglaláshoz be kell jelentkezni.</p>
+            <a href="bejelentkezes.html?return=kutyatura.html" class="btn btn-gold">Bejelentkezés</a>
+          </div>
+          <div id="tura-form-belso" style="display:none;">
+            <div style="margin-bottom:16px;">
+              <label style="display:block; font-size:13px; font-weight:700; color:var(--text-dim); margin-bottom:8px;">Kutyák (max 2):</label>
+              <div id="tura-kutyak-list"></div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <label style="display:block; font-size:13px; font-weight:700; color:var(--text-dim); margin-bottom:8px;">Fizetési mód:</label>
+              <div style="display:flex; gap:10px;">
+                <label style="flex:1; display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--black-4); border:1px solid var(--gold); border-radius:10px; cursor:pointer; font-size:14px;" id="tura-fizmod-online-label">
+                  <input type="radio" name="tura-fizmod" value="online" checked style="accent-color:var(--gold);width:18px;height:18px;" onchange="turaFizmodValaszt()">
+                  Online fizetés
+                </label>
+                <label style="flex:1; display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--black-4); border:1px solid var(--border-dim); border-radius:10px; cursor:pointer; font-size:14px;" id="tura-fizmod-kp-label">
+                  <input type="radio" name="tura-fizmod" value="kp" style="accent-color:var(--gold);width:18px;height:18px;" onchange="turaFizmodValaszt()">
+                  Készpénz a helyszínen
+                </label>
+              </div>
+            </div>
+            <div id="tura-ar-display" style="text-align:center; font-size:20px; font-weight:700; color:var(--gold); margin-bottom:16px;"></div>
+            <div id="tura-hiba" style="display:none; background:rgba(255,60,60,0.1); border:1px solid rgba(255,60,60,0.3); border-radius:10px; padding:12px; color:#ff6b6b; font-size:13px; text-align:center; margin-bottom:16px;"></div>
+            <button id="tura-fizet-btn" class="btn btn-gold btn-lg" style="width:100%;" onclick="turaFizet()">Foglalok →</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -224,212 +258,144 @@
 </footer>
 <script src="js/main.js?v=20260403"></script>
 <script>
-// ── Oltási könyv ellenőrzés ──────────────────────────────────
-if (wdOltasBlokk('tura-foglalas')) { /* blokkolva */ }
-
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
-const TURA_AR = { 1: { online: 5000, kp: 6000 }, 2: { online: 8000, kp: 9000 } };
-
-var _turaDatum = null;
-var _turaHelyszin = '';
+const WEBAPP_URL_TURA = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+var _turaKivalasztott = null;
+if (wdOltasBlokk('tura-foglalas')) { /* blokkolva – nincs érvényes oltási könyv */ }
+function _escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 (function() {
-  var user = wdGetUser();
-
-  // Túra dátum betöltése
-  fetch(WEBAPP_URL, { method: 'POST', body: JSON.stringify({ action: 'kutyatura_check' }) })
+  fetch(WEBAPP_URL_TURA, { method:'POST', body: JSON.stringify({ action:'tura_check' }) })
   .then(function(r) { return r.json(); })
   .then(function(resp) {
     document.getElementById('tura-loading').style.display = 'none';
-
-    if (!resp.ok || !resp.datum) {
+    if (!resp.ok || !resp.esemenyek || resp.esemenyek.length === 0) {
       document.getElementById('tura-nincs').style.display = 'block';
       return;
     }
-
-    _turaDatum = resp.datum;
-    _turaHelyszin = resp.helyszin || '';
-
-    // Dátum szép formázás
-    var d = new Date(resp.datum + 'T00:00:00');
-    var honapNevek = ['január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'];
-    var napNevek = ['vasárnap', 'hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat'];
-    document.getElementById('tura-datum-display').textContent = d.getFullYear() + '. ' + honapNevek[d.getMonth()] + ' ' + d.getDate() + '. (' + napNevek[d.getDay()] + ')';
-    document.getElementById('tura-helyszin-display').textContent = resp.helyszin || '';
-    document.getElementById('tura-szabad-display').textContent = resp.szabad + ' szabad hely';
-    document.getElementById('tura-info').style.display = 'block';
-
-    if (resp.szabad <= 0) {
-      document.getElementById('tura-nincs').style.display = 'block';
-      document.getElementById('tura-nincs').innerHTML = '<p style="font-size:16px; color:var(--text-dim);">Ez a túra sajnos betelt. Kövesd a Facebook csoportot a következő alkalomért!</p>' +
-        '<a href="https://www.facebook.com/groups/956709845427195" target="_blank" rel="noopener" class="btn btn-outline" style="margin-top:16px;">Facebook csoport</a>';
-      return;
-    }
-
-    // Auth check
-    if (!user || !user.registered) {
-      document.getElementById('tura-auth-buttons').style.display = 'flex';
-      return;
-    }
-
-    // Belépett → form megjelenítése
-    document.getElementById('tura-booking-form').style.display = 'block';
-    initTuraKutyak();
+    var grid = document.getElementById('tura-kartyak');
+    grid.style.display = 'grid';
+    resp.esemenyek.forEach(function(e) {
+      var card = document.createElement('div');
+      card.style.cssText = 'background:var(--black-3);border:1px solid var(--border-dim);border-radius:14px;padding:24px;cursor:pointer;transition:border-color .2s;';
+      card.onmouseover = function() { card.style.borderColor='var(--gold)'; };
+      card.onmouseout  = function() { card.style.borderColor='var(--border-dim)'; };
+      var badge = e.szabad<=0 ? '<span style="background:rgba(255,60,60,0.15);color:#ff6b6b;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;">BETELT</span>'
+        : e.szabad<=3 ? '<span style="background:rgba(255,165,0,0.15);color:#ffb347;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;">Csak '+e.szabad+' hely!</span>'
+        : '<span style="background:rgba(50,205,50,0.12);color:#5fce5f;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;">'+e.szabad+' hely</span>';
+      card.innerHTML =
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;"><h4 style="font-size:16px;font-weight:700;margin:0;">'+_escHtml(e.nev)+'</h4>'+badge+'</div>'+
+        '<p style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">📅 '+_escHtml(e.datum)+'</p>'+
+        (e.gyuleKezes ? '<p style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">🕐 Gyülekezés: '+_escHtml(e.gyuleKezes)+'</p>' : '')+
+        (e.helyszin ? '<p style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">📍 '+_escHtml(e.helyszin)+'</p>' : '')+
+        '<p style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">Online: <strong style="color:var(--text);">'+((e.ar||0).toLocaleString('hu-HU'))+' Ft</strong> &nbsp;·&nbsp; KP: <strong style="color:var(--text);">'+Math.round((e.ar||0)*1.2).toLocaleString('hu-HU')+' Ft</strong></p>';
+      if (e.szabad<=0) { card.style.opacity='0.5'; card.style.cursor='default'; }
+      else { card.onclick = function() { turaKartvaKivalaszt(e); }; }
+      grid.appendChild(card);
+    });
   })
-  .catch(function(err) {
-    document.getElementById('tura-loading').textContent = 'Hiba a betöltésnél. Próbáld újra!';
-  });
+  .catch(function() { document.getElementById('tura-loading').textContent='Hiba. Próbáld újra!'; });
 })();
 
-function initTuraKutyak() {
-  var kutyakLista = wdKutyak();
-  var kutyakDiv = document.getElementById('tura-kutyak-list');
-
-  if (kutyakLista.length === 0) {
-    kutyakDiv.innerHTML =
-      '<input type="text" id="tura-kutya-input" placeholder="Kutya neve" ' +
-      'style="width:100%;padding:12px 16px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:10px;color:var(--text);font-size:15px;">';
-  } else if (kutyakLista.length === 1) {
-    kutyakDiv.innerHTML =
-      '<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:10px;font-size:14px;color:var(--text);">' +
-      '<input type="checkbox" checked disabled style="width:18px;height:18px;accent-color:var(--gold);">' +
-      '<span>' + kutyakLista[0].nev + (kutyakLista[0].fajta ? ' <span style="color:var(--text-dim);font-size:12px;">(' + kutyakLista[0].fajta + ')</span>' : '') + '</span>' +
-      '</label>';
+function turaKartvaKivalaszt(e) {
+  _turaKivalasztott = e;
+  document.getElementById('tura-form-cim').textContent = e.nev + ' – ' + e.datum;
+  var user = wdGetUser();
+  if (!user || !user.registered) {
+    document.getElementById('tura-auth-prompt').style.display = 'block';
+    document.getElementById('tura-form-belso').style.display = 'none';
   } else {
-    kutyakLista.forEach(function(k) {
-      var label = document.createElement('label');
-      label.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:6px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:10px;cursor:pointer;font-size:14px;color:var(--text);';
-      var cb = document.createElement('input');
-      cb.type = 'checkbox'; cb.className = 'tura-kutya-cb'; cb.value = k.nev;
-      cb.style.cssText = 'width:18px;height:18px;accent-color:var(--gold);';
-      cb.addEventListener('change', turaUpdateAr);
-      label.appendChild(cb);
-      var span = document.createElement('span');
-      span.innerHTML = k.nev + (k.fajta ? ' <span style="color:var(--text-dim);font-size:12px;">(' + k.fajta + ')</span>' : '');
-      label.appendChild(span);
-      kutyakDiv.appendChild(label);
-    });
+    document.getElementById('tura-auth-prompt').style.display = 'none';
+    document.getElementById('tura-form-belso').style.display = 'block';
+    turaInitKutyak();
+    turaFizmodValaszt();
   }
-  turaUpdateAr();
+  var wrapper = document.getElementById('tura-form-wrapper');
+  wrapper.style.display = 'block';
+  wrapper.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function turaInitKutyak() {
+  var kutyakDiv = document.getElementById('tura-kutyak-list');
+  kutyakDiv.innerHTML = '';
+  var kutyakLista = wdKutyak();
+  if (kutyakLista.length > 0) {
+    kutyakLista.forEach(function(k, idx) {
+      var lbl = document.createElement('label');
+      lbl.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:6px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:10px;cursor:pointer;font-size:14px;color:var(--text);';
+      var cb = document.createElement('input');
+      cb.type='checkbox'; cb.className='tura-kutya-cb'; cb.value=k.nev; cb.checked=(idx===0);
+      cb.style.cssText='width:18px;height:18px;accent-color:var(--gold);';
+      cb.addEventListener('change', function() {
+        var checked = document.querySelectorAll('.tura-kutya-cb:checked');
+        if (checked.length>=2) { document.querySelectorAll('.tura-kutya-cb:not(:checked)').forEach(function(c){c.disabled=true;}); }
+        else { document.querySelectorAll('.tura-kutya-cb').forEach(function(c){c.disabled=false;}); }
+        turaFizmodValaszt();
+      });
+      lbl.appendChild(cb); lbl.appendChild(document.createTextNode(k.nev));
+      kutyakDiv.appendChild(lbl);
+    });
+  } else {
+    kutyakDiv.innerHTML = '<input type="text" id="tura-kutya-input" placeholder="Kutya neve" style="width:100%;padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;">';
+  }
 }
 
 function turaGetFizmod() {
   var radios = document.getElementsByName('tura-fizmod');
-  for (var i = 0; i < radios.length; i++) {
-    if (radios[i].checked) return radios[i].value;
-  }
+  for (var i=0;i<radios.length;i++) { if(radios[i].checked) return radios[i].value; }
   return 'online';
 }
 
-function turaUpdateFizmod() {
+function turaFizmodValaszt() {
   var mode = turaGetFizmod();
-  document.getElementById('tura-fizmod-online-label').style.borderColor = mode === 'online' ? 'var(--gold)' : 'var(--border-dim)';
-  document.getElementById('tura-fizmod-kp-label').style.borderColor = mode === 'kp' ? 'var(--gold)' : 'var(--border-dim)';
-  turaUpdateAr();
-}
-
-function turaUpdateAr() {
+  var onlEl = document.getElementById('tura-fizmod-online-label');
+  var kpEl  = document.getElementById('tura-fizmod-kp-label');
+  if (onlEl) onlEl.style.borderColor = mode==='online' ? 'var(--gold)' : 'var(--border-dim)';
+  if (kpEl)  kpEl.style.borderColor  = mode==='kp'    ? 'var(--gold)' : 'var(--border-dim)';
   var checked = document.querySelectorAll('.tura-kutya-cb:checked');
   var db = Math.max(checked.length, 1);
-  var mode = turaGetFizmod();
-  var ar = TURA_AR[db] ? TURA_AR[db][mode === 'kp' ? 'kp' : 'online'] : TURA_AR[2][mode === 'kp' ? 'kp' : 'online'];
-  var formatted = ar.toLocaleString('hu-HU');
-
-  document.getElementById('tura-ar').textContent = formatted + ' Ft';
-
-  if (mode === 'kp') {
-    document.getElementById('tura-fizet-btn').textContent = 'Foglalok – készpénz a helyszínen';
-  } else {
-    document.getElementById('tura-fizet-btn').textContent = 'Foglalj és fizess – ' + formatted + ' Ft';
-  }
-
-  // Max 2 kutya enforce
-  if (checked.length >= 2) {
-    document.querySelectorAll('.tura-kutya-cb:not(:checked)').forEach(function(cb) { cb.disabled = true; });
-  } else {
-    document.querySelectorAll('.tura-kutya-cb').forEach(function(cb) { cb.disabled = false; });
-  }
-}
-
-function turaCheckout() {
-  var user = wdGetUser();
-  if (!user) return;
-  if (!_turaDatum) { showTuraError('Nincs aktív túra!'); return; }
-
-  // Kutyák összegyűjtése
-  var kutyakNevek = [];
-  var kutyaDb = 0;
-
-  var checkboxes = document.querySelectorAll('.tura-kutya-cb:checked');
-  var kutyaInput = document.getElementById('tura-kutya-input');
-
-  if (checkboxes.length > 0) {
-    checkboxes.forEach(function(cb) { kutyakNevek.push(cb.value); });
-    kutyaDb = kutyakNevek.length;
-  } else if (document.querySelectorAll('.tura-kutya-cb').length > 0) {
-    showTuraError('Válaszd ki, melyik kutyádat hozod!'); return;
-  } else if (kutyaInput) {
-    var nev = kutyaInput.value.trim();
-    if (!nev) { showTuraError('Add meg a kutya nevét!'); return; }
-    kutyakNevek.push(nev);
-    kutyaDb = 1;
-  } else {
-    var kutyakLista = wdKutyak();
-    if (kutyakLista.length) {
-      kutyakNevek.push(kutyakLista[0].nev);
-      kutyaDb = 1;
-    }
-  }
-
-  if (kutyaDb === 0) { showTuraError('Válassz legalább egy kutyát!'); return; }
-  if (kutyaDb > 2) { showTuraError('Online maximum 2 kutyával lehet jelentkezni!'); return; }
-
-  var fizmod = turaGetFizmod();
+  var arOnline = _turaKivalasztott ? (_turaKivalasztott.ar || 0) : 5000;
+  var arKp     = Math.round(arOnline * 1.2);
+  var ar = mode==='kp' ? arKp : arOnline;
+  var arEl = document.getElementById('tura-ar-display');
+  if (arEl) arEl.textContent = ar.toLocaleString('hu-HU') + ' Ft (' + db + ' kutya)';
   var btn = document.getElementById('tura-fizet-btn');
-  btn.disabled = true;
-  btn.textContent = fizmod === 'kp' ? 'Foglalás rögzítése...' : 'Átirányítás a fizetéshez...';
-  hideTuraError();
-
-  fetch(WEBAPP_URL, {
-    method: 'POST',
-    body: JSON.stringify({
-      action: 'kutyatura_checkout',
-      email: user.email,
-      nev: user.nev,
-      auth_token: user.auth_token || '',
-      datum: _turaDatum,
-      kutyak: kutyakNevek.join(','),
-      kutya_db: kutyaDb,
-      fizetes: fizmod,
-      helyszin: _turaHelyszin,
-    }),
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(resp) {
-    if (fizmod === 'kp' && resp.ok) {
-      window.location.href = 'kutyatura-koszonjuk.html?tipus=kutyatura_kp&datum=' + encodeURIComponent(_turaDatum);
-    } else if (resp.ok && resp.checkout_url) {
-      window.location.href = resp.checkout_url;
-    } else {
-      showTuraError(resp.error || 'Hiba történt a foglalás során.');
-      btn.disabled = false;
-      turaUpdateAr();
-    }
-  })
-  .catch(function(err) {
-    showTuraError('Hálózati hiba. Próbáld újra!');
-    btn.disabled = false;
-    turaUpdateAr();
-  });
+  if (btn) btn.textContent = mode==='kp' ? 'Foglalok – készpénz a helyszínen' : 'Foglalok és fizetek →';
 }
 
-function showTuraError(msg) {
-  var el = document.getElementById('tura-error');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-function hideTuraError() {
-  document.getElementById('tura-error').style.display = 'none';
+async function turaFizet() {
+  var user = wdGetUser();
+  if (!user||!user.registered) { window.location.href='bejelentkezes.html?return=kutyatura.html'; return; }
+  if (!wdOltasCheck().valid) { wdOltasBlokk('tura-foglalas'); return; }
+  if (!_turaKivalasztott) { alert('Válassz túrát!'); return; }
+  var fizmod = turaGetFizmod();
+  var kutyakDiv = document.getElementById('tura-kutyak-list');
+  var hibaEl = document.getElementById('tura-hiba');
+  var btn = document.getElementById('tura-fizet-btn');
+  var kutyak = '';
+  var cbList = kutyakDiv.querySelectorAll('input.tura-kutya-cb:checked');
+  if (cbList.length>0) kutyak = Array.from(cbList).map(function(c){return c.value;}).join(', ');
+  else { var inp=document.getElementById('tura-kutya-input'); if(inp) kutyak=inp.value.trim(); }
+  if (!kutyak) { hibaEl.textContent='Add meg a kutyád nevét!'; hibaEl.style.display='block'; return; }
+  hibaEl.style.display='none';
+  btn.disabled=true; btn.textContent=fizmod==='kp'?'Foglalás rögzítése...':'Átirányítás...';
+  var kutyaDb = kutyak.split(',').length;
+  var arOnline = _turaKivalasztott.ar || 5000;
+  var osszeg = fizmod==='kp' ? Math.round(arOnline*1.2) : arOnline;
+  try {
+    var payload = {
+      action:'tura_checkout', email:user.email, auth_token:user.auth_token||'', nev:user.nev||'',
+      esemeny_id:_turaKivalasztott.id, esemeny_nev:_turaKivalasztott.nev,
+      kutyak:kutyak, kutya_db:String(kutyaDb), fizetes:fizmod, osszeg:osszeg,
+      datum:_turaKivalasztott.datum||'', ido_cimke:_turaKivalasztott.idoCimke||'', helyszin:_turaKivalasztott.helyszin||'',
+    };
+    var resp = await fetch(WEBAPP_URL_TURA, {method:'POST', body:JSON.stringify(payload)});
+    var result = await resp.json();
+    if (fizmod==='kp' && result.ok) { window.location.href='esemeny-koszonjuk.html?tipus=tura&kp=1'; }
+    else if (result.ok && result.checkout_url) { window.location.href=result.checkout_url; }
+    else { hibaEl.textContent=result.error||'Ismeretlen hiba'; hibaEl.style.display='block'; btn.disabled=false; turaFizmodValaszt(); }
+  } catch(err) {
+    hibaEl.textContent='Hálózati hiba. Próbáld újra!'; hibaEl.style.display='block'; btn.disabled=false; turaFizmodValaszt();
+  }
 }
 </script>
 </body>

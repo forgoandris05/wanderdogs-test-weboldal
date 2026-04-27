@@ -737,10 +737,24 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
           <p style="font-size: 11px; color: var(--text-faint); margin-top: 14px; line-height: 1.6;" id="calc-info">
             Teljes összeg, bankkártyával előre.
           </p>
+          <!-- Fizetési mód -->
+          <div style="margin-top:16px; margin-bottom:4px;">
+            <label style="display:block; font-size:13px; font-weight:700; color:var(--text-dim); margin-bottom:8px;">Fizetési mód:</label>
+            <div style="display:flex; gap:10px;">
+              <label style="flex:1; display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--black-4); border:1px solid var(--gold); border-radius:10px; cursor:pointer; font-size:14px; color:var(--text);" id="panzio-fizmod-online-label">
+                <input type="radio" name="panzio-fizmod" value="online" checked style="accent-color:var(--gold);width:18px;height:18px;" onchange="panziofizmodValaszt()">
+                Online fizetés
+              </label>
+              <label style="flex:1; display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--black-4); border:1px solid var(--border-dim); border-radius:10px; cursor:pointer; font-size:14px; color:var(--text);" id="panzio-fizmod-kp-label">
+                <input type="radio" name="panzio-fizmod" value="kp" style="accent-color:var(--gold);width:18px;height:18px;" onchange="panziofizmodValaszt()">
+                Készpénz a helyszínen
+              </label>
+            </div>
+          </div>
           <button type="button" class="pay-btn" id="pay-btn" disabled onclick="fizetesIndit()" style="margin-top:16px;">
             Fizetek →
           </button>
-          <div class="stripe-note" style="margin-top:8px;">
+          <div class="stripe-note" id="panzio-stripe-note" style="margin-top:8px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Biztonságos fizetés – Stripe
           </div>
@@ -1034,6 +1048,21 @@ function fmt(n) {
   return n.toLocaleString('hu-HU');
 }
 
+function getPanzioFizmod() {
+  var radios = document.getElementsByName('panzio-fizmod');
+  for (var i = 0; i < radios.length; i++) { if (radios[i].checked) return radios[i].value; }
+  return 'online';
+}
+
+function panziofizmodValaszt() {
+  var mode = getPanzioFizmod();
+  document.getElementById('panzio-fizmod-online-label').style.borderColor = mode === 'online' ? 'var(--gold)' : 'var(--border-dim)';
+  document.getElementById('panzio-fizmod-kp-label').style.borderColor     = mode === 'kp'     ? 'var(--gold)' : 'var(--border-dim)';
+  document.getElementById('pay-btn').textContent = mode === 'kp' ? 'Foglalok – készpénz a helyszínen' : 'Fizetek →';
+  document.getElementById('panzio-stripe-note').style.display = mode === 'kp' ? 'none' : 'block';
+  document.getElementById('calc-info').textContent = mode === 'kp' ? 'Az összeget a helyszínen, készpénzben fizeted.' : 'Teljes összeg, bankkártyával előre.';
+}
+
 // ── Fizetés indítása ──────────────────────────────────────────
 async function fizetesIndit() {
   // Auth check
@@ -1067,9 +1096,10 @@ async function fizetesIndit() {
   // Előző hiba elrejtése
   document.getElementById('panzio-tele-hiba').style.display = 'none';
 
+  const fizmod = getPanzioFizmod();
   const btn = document.getElementById('pay-btn');
   btn.disabled = true;
-  btn.textContent = 'Csatlakozás Stripe-hoz...';
+  btn.textContent = fizmod === 'kp' ? 'Foglalás rögzítése...' : 'Csatlakozás Stripe-hoz...';
 
   const payload = {
     action:    'panzio_checkout',
@@ -1078,6 +1108,7 @@ async function fizetesIndit() {
     auth_token: (wdGetUser() || {}).auth_token || '',
     telefon,
     kutyaNev,
+    fizetes:   fizmod,
     erkezes:   panzioCalc.be,
     tavozas:   panzioCalc.ki,
     bekoltozesOra: panzioCalc.beOra,
@@ -1096,11 +1127,13 @@ async function fizetesIndit() {
     });
     const result = await resp.json();
 
-    if (result.ok && result.checkout_url) {
+    if (fizmod === 'kp' && result.ok) {
+      window.location.href = 'panzio-koszonjuk.html?kp=1';
+    } else if (result.ok && result.checkout_url) {
       window.location.href = result.checkout_url;
     } else if (result.tele) {
       btn.disabled = false;
-      btn.textContent = 'Fizetek →';
+      btn.textContent = fizmod === 'kp' ? 'Foglalok – készpénz a helyszínen' : 'Fizetek →';
       const hibaEl = document.getElementById('panzio-tele-hiba');
       document.getElementById('panzio-tele-uzenet').textContent = result.error;
       hibaEl.style.display = 'block';
@@ -1110,7 +1143,7 @@ async function fizetesIndit() {
     }
   } catch (err) {
     btn.disabled = false;
-    btn.textContent = 'Fizetek →';
+    btn.textContent = fizmod === 'kp' ? 'Foglalok – készpénz a helyszínen' : 'Fizetek →';
     alert('Hiba: ' + err.message + '\n\nKérlek próbáld újra, vagy hívj fel minket: 0670/5626926');
   }
 }
