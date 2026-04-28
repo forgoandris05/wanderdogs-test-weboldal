@@ -132,6 +132,11 @@ async function megerosit() {
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get('session_id');
 
+  if (params.get('kp') === '1') {
+    showSuccess({ ok: true, nev: '', kp: true });
+    return;
+  }
+
   if (!sessionId) {
     showError('Hiányzó session azonosító. Ha fizettél, ellenőrizd az emailed.');
     return;
@@ -156,9 +161,10 @@ async function megerosit() {
 
 function showSuccess(result) {
   document.getElementById('page-icon').textContent    = '✅';
-  document.getElementById('page-title').textContent   = 'Foglalás megerősítve!';
-  document.getElementById('page-subtitle').innerHTML  =
-    'Köszönjük, <strong>' + _escHtml(result.nev) + '</strong>! Visszaigazolást emailben elküldtük.';
+  document.getElementById('page-title').textContent   = result.kp ? 'Foglalás rögzítve!' : 'Foglalás megerősítve!';
+  document.getElementById('page-subtitle').innerHTML  = result.kp
+    ? 'Köszönjük! A foglalás rögzítve, visszaigazolást emailben elküldtük. <strong>Fizetés a beköltözéskor, helyszínen.</strong>'
+    : 'Köszönjük, <strong>' + _escHtml(result.nev) + '</strong>! Visszaigazolást emailben elküldtük.';
 
   if (result.reszletek) {
     const r = result.reszletek;
