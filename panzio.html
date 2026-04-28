@@ -169,6 +169,19 @@
       line-height: 1.5;
     }
 
+    /* ── TAXI OPCIÓ GOMBOK ── */
+    .taxi-opt-btn {
+      padding: 10px 16px; border-radius: 8px;
+      border: 1px solid var(--border-dim);
+      background: var(--black-4); color: var(--text);
+      cursor: pointer; font-family: inherit; font-size: 14px;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .taxi-opt-btn.active {
+      border-color: var(--gold); color: var(--gold);
+      background: var(--gold-faint);
+    }
+
     /* ── RESULT PANEL ── */
     #calc-result {
       background: var(--black-3);
@@ -652,7 +665,7 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
 
         <div class="form-group">
           <label>Időpontok</label>
-          <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">A legjobb ha 8–11 között tudod hozni és 16–17 között elvinni. A pontos időpont e-mailben még egyeztetésre kerülhet.</p>
+          <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Kedd–pénteken bármikor 8–17 között. Szombaton, vasárnap és hétfőn kizárólag reggeli (8–11) vagy délutáni (15–17) sávban.</p>
           <div style="display:flex;gap:16px;flex-wrap:wrap;">
             <div style="flex:1;min-width:180px;">
               <label for="calc-be-h" style="font-size:12px;color:var(--text-dim);display:block;margin-bottom:4px;">Beköltözés időpontja</label>
@@ -676,6 +689,32 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
             </div>
           </div>
           <p id="tizenegy-info" style="font-size:12px;margin-top:8px;color:var(--gold);display:none;">✓ Kiköltözés 11:00 előtt → az utolsó nap nem számít megkezdettnek</p>
+        </div>
+
+        <div class="form-group">
+          <label>Kutyataxi (opcionális)</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+            <button type="button" class="taxi-opt-btn active" data-km="0">Nem kell taxi</button>
+            <button type="button" class="taxi-opt-btn" data-km="10">≤10 km – 3 300 Ft/út</button>
+            <button type="button" class="taxi-opt-btn" data-km="25">10–25 km – 5 500 Ft/út</button>
+          </div>
+          <div id="taxi-foglalas-wrap" style="display:none;padding:14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:10px;">
+            <div style="font-size:12px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Melyik irányba kéred?</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-3);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
+                <input type="checkbox" id="taxi-foglalas-hozas" style="accent-color:var(--gold);width:16px;height:16px;" onchange="taxiFoglalasFrissit()">
+                <span>Hozáshoz <span style="font-size:12px;color:var(--text-faint);">(beköltözés napján)</span></span>
+              </label>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-3);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
+                <input type="checkbox" id="taxi-foglalas-vives" style="accent-color:var(--gold);width:16px;height:16px;" onchange="taxiFoglalasFrissit()">
+                <span>Vivéshez <span style="font-size:12px;color:var(--text-faint);">(kiköltözés napján)</span></span>
+              </label>
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">Felvételi / szállítási cím</label>
+              <input type="text" id="taxi-foglalas-cim" placeholder="pl. Budapest, Petőfi u. 12." style="width:100%;padding:10px 14px;background:var(--black-3);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;box-sizing:border-box;" oninput="frissitGomb()">
+            </div>
+          </div>
         </div>
 
         <hr class="form-section-divider">
@@ -732,6 +771,7 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
             <div class="calc-row"><span id="r-napidij-label">Napidíj</span><span id="r-napidij">–</span></div>
             <div class="calc-row discount" id="r-kedv-row" style="display:none;"><span>Kedvezmény</span><span id="r-kedvezmeny">–</span></div>
             <div class="calc-row" id="r-etel-row" style="display:none;"><span>Étel biztosítás</span><span id="r-etel">–</span></div>
+            <div class="calc-row" id="r-taxi-row" style="display:none;"><span>Kutyataxi</span><span id="r-taxi">–</span></div>
             <div class="calc-row total"><span>Fizetendő összeg</span><span id="r-vegosszeg">–</span></div>
           </div>
           <p style="font-size: 11px; color: var(--text-faint); margin-top: 14px; line-height: 1.6;" id="calc-info">
@@ -886,6 +926,29 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBuk
 // ── Állapot ──────────────────────────────────────────────────
 let panzioCalc = null; // aktuális kalkuláció eredménye
 let selectedKutya = 1;
+let taxiKm = 0; // 0 = nem kell, 10 = 10km, 25 = 25km
+
+const TAXI_ARAK = { 10: 3300, 25: 5500 };
+
+// ── Taxi opció gombok ────────────────────────────────────────
+document.querySelectorAll('.taxi-opt-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.taxi-opt-btn').forEach(function(b) { b.classList.remove('active'); });
+    this.classList.add('active');
+    taxiKm = parseInt(this.dataset.km) || 0;
+    var wrap = document.getElementById('taxi-foglalas-wrap');
+    if (wrap) wrap.style.display = taxiKm > 0 ? 'block' : 'none';
+    if (taxiKm === 0) {
+      document.getElementById('taxi-foglalas-hozas').checked = false;
+      document.getElementById('taxi-foglalas-vives').checked = false;
+      document.getElementById('taxi-foglalas-cim').value = '';
+    }
+    szamol();
+    frissitGomb();
+  });
+});
+
+function taxiFoglalasFrissit() { szamol(); frissitGomb(); }
 
 // ── Kutya gombok ─────────────────────────────────────────────
 document.querySelectorAll('.dog-btn').forEach(btn => {
@@ -915,21 +978,72 @@ document.querySelectorAll('.dog-btn').forEach(btn => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('change', szamol);
 });
-// Időpont selectek feltöltése (óra: 7–18, perc: 00/15/30/45)
-(function() {
-  ['calc-be-h','calc-ki-h'].forEach(function(id) {
-    var sel = document.getElementById(id);
-    if (!sel) return;
-    var placeholder = document.createElement('option');
-    placeholder.value = ''; placeholder.textContent = '–'; placeholder.selected = true; placeholder.disabled = true;
-    sel.appendChild(placeholder);
-    for (var h = 7; h <= 18; h++) {
+// Időpont selectek kezdeti feltöltése (8-17, sávos mód nélkül)
+updateTimeUI('be', '');
+updateTimeUI('ki', '');
+
+// ── Sávos óra dropdown újratöltése dátum alapján ─────────────
+// Kedd-Péntek: 8-17 mind. Szo/Vas/Hét: csak 8-11 és 15-17 (12-14 kihagyva).
+function updateMinuteSelect(which, hourVal, isSavos) {
+  var sel = document.getElementById('calc-' + which + '-m');
+  if (!sel) return;
+  var prev = sel.value;
+  var mins = ['00','15','30','45'];
+  if (hourVal === '11' && isSavos) mins = ['00'];
+  if (hourVal === '17') mins = ['00'];
+  sel.innerHTML = '';
+  mins.forEach(function(m) {
+    var o = document.createElement('option');
+    o.value = m; o.textContent = m;
+    sel.appendChild(o);
+  });
+  sel.value = mins.indexOf(prev) !== -1 ? prev : mins[0];
+}
+
+function updateTimeUI(which, dateStr) {
+  var dow = dateStr ? new Date(dateStr + 'T12:00:00').getDay() : -1;
+  var savos = (dow === 0 || dow === 1 || dow === 6);
+  var hSel = document.getElementById('calc-' + which + '-h');
+  if (!hSel) return;
+  var prevVal = hSel.value;
+  hSel.innerHTML = '';
+  var placeholder = document.createElement('option');
+  placeholder.value = ''; placeholder.textContent = '–'; placeholder.selected = true; placeholder.disabled = true;
+  hSel.appendChild(placeholder);
+  var hours = savos ? [8,9,10,11,15,16,17] : [];
+  if (savos) {
+    hours.forEach(function(h) {
       var opt = document.createElement('option');
       opt.value = ('0'+h).slice(-2); opt.textContent = ('0'+h).slice(-2);
-      sel.appendChild(opt);
+      hSel.appendChild(opt);
+    });
+  } else {
+    for (var h = 8; h <= 17; h++) {
+      var opt = document.createElement('option');
+      opt.value = ('0'+h).slice(-2); opt.textContent = ('0'+h).slice(-2);
+      hSel.appendChild(opt);
     }
+  }
+  // Megtartja a korábbi értéket ha az érvényes az új listában
+  if (prevVal && hSel.querySelector('option[value="' + prevVal + '"]')) {
+    hSel.value = prevVal;
+  }
+  updateMinuteSelect(which, hSel.value, savos);
+  szamol();
+  frissitGomb();
+}
+
+document.getElementById('calc-be').addEventListener('change', function() { updateTimeUI('be', this.value); });
+document.getElementById('calc-ki').addEventListener('change', function() { updateTimeUI('ki', this.value); });
+
+// Perc frissítés ha a user manuálisan vált órát
+['be','ki'].forEach(function(w) {
+  document.getElementById('calc-' + w + '-h').addEventListener('change', function() {
+    var dateEl = document.getElementById(w === 'be' ? 'calc-be' : 'calc-ki');
+    var dow = dateEl && dateEl.value ? new Date(dateEl.value + 'T12:00:00').getDay() : -1;
+    updateMinuteSelect(w, this.value, dow === 0 || dow === 1 || dow === 6);
   });
-})();
+});
 
 // ── Fizetés gomb aktiválása ───────────────────────────────────
 ['f-nev','f-kutya','f-email','elfogadom','calc-be-h','calc-be-m','calc-ki-h','calc-ki-m'].forEach(id => {
@@ -982,9 +1096,15 @@ function szamol() {
   const alap     = napok * napidij;
   const kedv     = Math.round(alap * kedvPct / 100);
   const etelDij  = etel ? napok * 1000 * selectedKutya : 0;
-  const vegosszeg = alap - kedv + etelDij;
 
-  panzioCalc = { napok, napidij, kedvPct, kedv, etelDij, vegosszeg, kutya: selectedKutya, be, ki, beOra, kiOra, etel, tizenegy };
+  const taxiHozas = taxiKm > 0 && document.getElementById('taxi-foglalas-hozas').checked;
+  const taxiVives = taxiKm > 0 && document.getElementById('taxi-foglalas-vives').checked;
+  const taxiIranyok = (taxiHozas ? 1 : 0) + (taxiVives ? 1 : 0);
+  const taxiDij = taxiKm > 0 ? (TAXI_ARAK[taxiKm] || 0) * taxiIranyok : 0;
+
+  const vegosszeg = alap - kedv + etelDij + taxiDij;
+
+  panzioCalc = { napok, napidij, kedvPct, kedv, etelDij, taxiDij, taxiKm, taxiHozas, taxiVives, vegosszeg, kutya: selectedKutya, be, ki, beOra, kiOra, etel, tizenegy };
 
   // Frissíti a UI-t
   document.getElementById('calc-empty-state').style.display = 'none';
@@ -1010,6 +1130,15 @@ function szamol() {
     document.getElementById('r-etel').textContent = '+' + fmt(etelDij) + ' Ft';
   } else {
     etelRow.style.display = 'none';
+  }
+
+  const taxiRow = document.getElementById('r-taxi-row');
+  if (taxiDij > 0) {
+    const iranyLabel = taxiHozas && taxiVives ? 'oda+vissza' : (taxiHozas ? 'hozás' : 'vivés');
+    taxiRow.style.display = 'flex';
+    document.getElementById('r-taxi').textContent = '+' + fmt(taxiDij) + ' Ft (' + iranyLabel + ')';
+  } else {
+    taxiRow.style.display = 'none';
   }
 
   document.getElementById('r-vegosszeg').textContent      = fmt(vegosszeg) + ' Ft';
@@ -1040,7 +1169,16 @@ function frissitGomb() {
 
   const beH     = document.getElementById('calc-be-h').value;
   const kiH     = document.getElementById('calc-ki-h').value;
-  const minden = panzioCalc && nev && kutyaOk && email && elfog && beH && kiH;
+
+  let taxiOk = true;
+  if (taxiKm > 0) {
+    const tHozas = document.getElementById('taxi-foglalas-hozas').checked;
+    const tVives = document.getElementById('taxi-foglalas-vives').checked;
+    const tCim   = (document.getElementById('taxi-foglalas-cim').value || '').trim();
+    taxiOk = (tHozas || tVives) && tCim.length > 0;
+  }
+
+  const minden = panzioCalc && nev && kutyaOk && email && elfog && beH && kiH && taxiOk;
   document.getElementById('pay-btn').disabled = !minden;
 }
 
@@ -1118,6 +1256,11 @@ async function fizetesIndit() {
     tizenegy:  panzioCalc.tizenegy,
     napok:     panzioCalc.napok,
     vegosszeg: panzioCalc.vegosszeg,
+    taxi_km:    panzioCalc.taxiKm || 0,
+    taxi_hozas: panzioCalc.taxiHozas || false,
+    taxi_vives: panzioCalc.taxiVives || false,
+    taxi_cim:   taxiKm > 0 ? (document.getElementById('taxi-foglalas-cim').value || '').trim() : '',
+    taxi_dij:   panzioCalc.taxiDij || 0,
   };
 
   try {
@@ -1382,6 +1525,17 @@ function panzioTaxiFoglalasValaszt() {
   const f = _ptFoglalasok[idx];
   hozasDatum.textContent  = '(hozás – ' + f.erkezes + ')';
   elvitelDatum.textContent = '(hazavivés – ' + f.tavozas + ')';
+
+  // Tiltás ha az irány már foglalt a panzió foglalásnál
+  const hozasCb   = document.getElementById('panzio-taxi-hozas');
+  const elvitelCb = document.getElementById('panzio-taxi-elvitel');
+  hozasCb.disabled   = !!f.taxi_hozas;
+  elvitelCb.disabled = !!f.taxi_vives;
+  if (f.taxi_hozas)  { hozasCb.checked = false; }
+  if (f.taxi_vives)  { elvitelCb.checked = false; }
+  hozasCb.closest('label').title   = f.taxi_hozas ? 'Hozás már foglalt a panzió foglalásnál' : '';
+  elvitelCb.closest('label').title = f.taxi_vives  ? 'Vivés már foglalt a panzió foglalásnál' : '';
+  panzioTaxiFrissit();
 }
 
 async function panzioTaxiFizet() {
@@ -1472,6 +1626,8 @@ async function panzioTaxiFizet() {
     _ptFoglalasok = result.foglalasok;
     const sel = document.getElementById('panzio-taxi-foglalas');
     result.foglalasok.forEach((f, i) => {
+      // Backend már kiszűri a teljesen foglaltakat, de ha mégis mindkettő → skip
+      if (f.taxi_hozas && f.taxi_vives) return;
       const opt = document.createElement('option');
       opt.value = i;
       opt.textContent = f.erkezes + ' → ' + f.tavozas + (f.kutya ? ' (' + f.kutya + ')' : '');

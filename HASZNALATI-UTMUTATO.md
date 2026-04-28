@@ -40,8 +40,9 @@ Minden reggel egy gyors ellenorzest kell vegezni a Google Sheets CRM-ben. A szin
 2. Nezd at a **zold** sorokat -- ezek a mai foglalasok
 3. Nezd at a **sarga** sorokat -- ezekre keszulj
 4. Ellenorizd a **Taxi Menetrend** tabot -- kik jonnek taxival, milyen cimet kell felvenni
-5. Pald at az info.wanderdogs@gmail.com email fiokot -- uj foglalasok, erdeklodok
+5. Nezd at az info.wanderdogs@gmail.com email fiokot -- uj foglalasok, erdeklodok
 6. Ha Cal.com foglalasod is van (egyeni ora, viselkedesterapia): nezd meg a Cal.com dashboard-ot
+7. De naptarba, crm be mindent látsz.
 
 A szinezest a rendszer automatikusan frissiti minden uj foglalas utan. Ha valami nem stimmel, kézzel futtathatod: Apps Script editor > `crmSzinezesfrissites()`.
 
@@ -456,9 +457,9 @@ A rendszer **Stripe** fizetesi kaput hasznal. Jelenleg **sandbox (teszt) modban*
 
 | Fiok | Szolgaltatasok |
 |------|---------------|
-| **David fiokja** (STRIPE_SECRET_KEY) | Csoportos + Kutyatura fizetesek |
+| **David fiokja** (STRIPE_SECRET_KEY) | Csoportos + Wander Kutyas Tura fizetesek (jovoben) |
 | **Timi fiokja** (STRIPE_KEY_PANZIO) | Panzio fizetesek |
-| **Viki fiokja** (STRIPE_KEY_NAPKOZI) | Napkozi berletek + Panzio taxi |
+| **Viki fiokja** (STRIPE_KEY_NAPKOZI) | Napkozi berletek, napkozi foglalasok + taxik |
 
 ### Hogyan mukodik:
 
