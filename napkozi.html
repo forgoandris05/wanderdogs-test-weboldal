@@ -1018,9 +1018,9 @@ async function napkoziCheckout(tipus, extraParams) {
   }
   localStorage.setItem('wd_pending_tipus', tipus);
   const fizmod = getNkFizmod();
-  const kutyaNeve = _kutya_neve || user.kutyaNev || '';
+  const kutyaNeve = _kutya_neve || '';
   if (!kutyaNeve.trim()) {
-    alert('Kérlek add meg a kutyád nevét a foglalás előtt!');
+    alert('Kérlek válaszd ki, melyik kutyádat hozod!');
     return;
   }
   const isEgyszeriTipus = tipus && (tipus.startsWith('egyszeri') || tipus === 'egyszeri');
