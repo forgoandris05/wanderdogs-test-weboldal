@@ -1326,7 +1326,7 @@ szamol();
   // Checkboxok létrehozása #kutya-checkboxok-ban (gombok felett)
   const kutyaInput = document.getElementById('f-kutya');
   kutyaInput.type  = 'hidden';
-  kutyaInput.value = kutyak.length === 1 ? kutyak[0].nev : '';
+  kutyaInput.value = kutyak.map(k => k.nev).join(', ');
 
   const lista = document.createElement('div');
   lista.id = 'kutya-valaszto';
