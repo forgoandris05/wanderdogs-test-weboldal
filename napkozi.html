@@ -1018,6 +1018,19 @@ async function napkoziCheckout(tipus, extraParams) {
   }
   localStorage.setItem('wd_pending_tipus', tipus);
   const fizmod = getNkFizmod();
+  const kutyaNeve = _kutya_neve || user.kutyaNev || '';
+  if (!kutyaNeve.trim()) {
+    alert('Kérlek add meg a kutyád nevét a foglalás előtt!');
+    return;
+  }
+  const isEgyszeriTipus = tipus && (tipus.startsWith('egyszeri') || tipus === 'egyszeri');
+  let pendingBookingTime = '';
+  if (fizmod === 'kp' && isEgyszeriTipus) {
+    try {
+      const pb = JSON.parse(localStorage.getItem('wd_pending_booking') || '{}');
+      pendingBookingTime = pb.startTime || '';
+    } catch(e) {}
+  }
   const payload = {
     action: 'napkozi_checkout',
     tipus: tipus,
@@ -1026,8 +1039,9 @@ async function napkoziCheckout(tipus, extraParams) {
     auth_token: user.auth_token || '',
     nev: user.nev || '',
     telefon: user.telefon || '',
-    kutya_neve: _kutya_neve || user.kutyaNev || '',
+    kutya_neve: kutyaNeve,
     helyszin: _helyszin || '',
+    pending_booking_time: pendingBookingTime,
   };
   if (extraParams) Object.assign(payload, extraParams);
   // Loading state

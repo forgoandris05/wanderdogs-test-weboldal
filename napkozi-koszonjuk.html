@@ -179,7 +179,18 @@ const TAXI_KIEG_INFO = {
 async function megerosit() {
   const params    = new URLSearchParams(window.location.search);
   const sessionId = params.get('session_id');
+  const kp        = params.get('kp');
   const tipus     = params.get('tipus') || localStorage.getItem('wd_pending_tipus') || '';
+
+  // KP foglalás – nincs Stripe session, egyből siker
+  if (kp === '1') {
+    document.getElementById('page-icon').textContent    = '✅';
+    document.getElementById('page-title').textContent   = 'Foglalás rögzítve!';
+    document.getElementById('page-subtitle').innerHTML  =
+      'A helyed foglalt! <strong>Készpénzben a helyszínen fizetsz.</strong><br>Hamarosan emailben megküldjük a részleteket.';
+    document.getElementById('success-actions').style.display = 'flex';
+    return;
+  }
 
   if (!sessionId) {
     showError('Hiányzó session azonosító. Ha fizettél, ellenőrizd az emailed – a visszaigazolás ott megjelenik.');
