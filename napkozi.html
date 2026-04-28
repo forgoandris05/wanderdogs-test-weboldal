@@ -1018,6 +1018,12 @@ async function napkoziCheckout(tipus, extraParams) {
   }
   localStorage.setItem('wd_pending_tipus', tipus);
   const fizmod = getNkFizmod();
+  // DOM-ból frissítjük, hogy ne a cached savedPrefs érték menjen át
+  const kutyaSel = document.getElementById('napkozi-kutya-valaszto');
+  if (kutyaSel) {
+    const checked = [...kutyaSel.querySelectorAll('input[type=checkbox]:checked')].map(cb => cb.value);
+    if (checked.length > 0) _kutya_neve = checked.join(', ');
+  }
   const kutyaNeve = _kutya_neve || '';
   if (!kutyaNeve.trim()) {
     alert('Kérlek válaszd ki, melyik kutyádat hozod!');
@@ -1318,7 +1324,14 @@ function napkoziFoglalas() {
     return;
   }
 
-  // Validáció: kutya kiválasztva?
+  // Validáció: kutya kiválasztva? (DOM-ból olvassuk, nem a cached _kutya_neve-ből)
+  const kutyaSelector = document.getElementById('napkozi-kutya-valaszto');
+  if (kutyaSelector) {
+    const checked = [...kutyaSelector.querySelectorAll('input[type=checkbox]:checked')].map(cb => cb.value);
+    _kutya_neve = checked.join(', ');
+    const kutyaInput = document.getElementById('kutya-neve-input');
+    if (kutyaInput) kutyaInput.value = _kutya_neve;
+  }
   if (!_kutya_neve || !_kutya_neve.trim()) {
     const errEl = document.getElementById('napkozi-foglal-error');
     if (errEl) { errEl.textContent = 'Kérlek válaszd ki, melyik kutyádat hozod!'; errEl.style.display = 'block'; }
