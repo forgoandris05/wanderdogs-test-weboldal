@@ -1652,6 +1652,23 @@ function _applyNapkoziData(foglalasData, berletData, user) {
     }
   }
 
+  if (berletData.kp_fuggo) {
+    document.getElementById('napkozi-konfigurator').style.display = 'none';
+    showBanner(
+      '<p style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">Készpénzes bérlet – fizetés függőben</p>' +
+      '<p style="font-size:22px;font-weight:800;color:var(--text);line-height:1.2;margin-bottom:6px;">Fizess a helyszínen, és Timi visszaigazolása után tudsz napot foglalni.</p>' +
+      '<p style="font-size:13px;color:var(--text-faint);">' + _escHtml(String(berletData.maradek)) + ' alkalom marad · lejár: ' + _escHtml(berletData.lejar) + '</p>',
+      'dim'
+    );
+    renderNapkoziCalendar();
+    var calGrid = document.getElementById('napkozi-cal-grid');
+    if (calGrid) {
+      calGrid.style.opacity = '0.3';
+      calGrid.style.pointerEvents = 'none';
+    }
+    return;
+  }
+
   if (_vanBerlet) {
     document.getElementById('napkozi-konfigurator').style.display = 'none';
     var sectionHeader = document.querySelector('#berletek .section-header');
