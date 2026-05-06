@@ -521,6 +521,24 @@
         </div>
       </div>
 
+      <!-- Megjegyzés -->
+      <div id="berlet-megjegyzes-wrap" style="display:none; margin-top:20px; max-width:560px; margin-left:auto; margin-right:auto;">
+        <div class="konfig-row" style="margin-bottom:0;">
+          <span class="konfig-label">💬 Megjegyzés</span>
+          <div style="flex:1;max-width:380px;">
+            <textarea id="berlet-megjegyzes"
+              placeholder="Étkezés, ételallergia, speciális igény..."
+              style="width:100%;padding:12px 14px;background:var(--black-3);
+                     border:1px solid var(--border);border-radius:10px;
+                     color:var(--white);font-family:inherit;font-size:14px;
+                     min-height:80px;resize:vertical;box-sizing:border-box;outline:none;
+                     transition:border-color 0.2s;"
+              onfocus="this.style.borderColor='var(--gold)'"
+              onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+        </div>
+      </div>
+
       <!-- Foglalás gomb -->
       <div id="napkozi-foglal-btn-wrapper" style="display:none; margin-top:24px; text-align:center;">
         <div id="napkozi-foglal-error" style="display:none;color:#ff6b6b;font-size:13px;margin-bottom:12px;font-weight:600;"></div>
@@ -583,24 +601,6 @@
             Taxi megrendelése – <strong id="taxi-kieg-ar">–</strong>
           </button>
           <p id="taxi-kieg-placeholder" style="color:var(--text-faint);font-size:13px;">Válaszd ki az irányt a gomb megjelenítéséhez</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── BÉRLET FLOW MEGJEGYZÉS ── -->
-    <div id="berlet-megjegyzes-wrap" style="display:none; max-width:640px; margin:0 auto 24px;">
-      <div class="konfig-row">
-        <span class="konfig-label">💬 Megjegyzés</span>
-        <div style="flex:1;max-width:480px;">
-          <textarea id="berlet-megjegyzes"
-            placeholder="Étkezés, ételallergia, speciális igény..."
-            style="width:100%;padding:12px 14px;background:var(--black-3);
-                   border:1px solid var(--border);border-radius:10px;
-                   color:var(--white);font-family:inherit;font-size:14px;
-                   min-height:80px;resize:vertical;box-sizing:border-box;outline:none;
-                   transition:border-color 0.2s;"
-            onfocus="this.style.borderColor='var(--gold)'"
-            onblur="this.style.borderColor='var(--border)'"></textarea>
         </div>
       </div>
     </div>
@@ -1318,9 +1318,11 @@ function nkCalSelect(datumStr, el) {
   const idoValaszto = document.getElementById('napkozi-ido-valaszto');
   if (idoValaszto) idoValaszto.style.display = isTaxi ? 'none' : 'block';
 
-  // Foglalás gomb megjelenítése
+  // Foglalás gomb + megjegyzés megjelenítése
   const btnWrapper = document.getElementById('napkozi-foglal-btn-wrapper');
   if (btnWrapper) btnWrapper.style.display = 'block';
+  const mejWrap = document.getElementById('berlet-megjegyzes-wrap');
+  if (mejWrap) mejWrap.style.display = 'block';
 
   // Dátum formázva a gombon
   const d = new Date(datumStr + 'T00:00:00');
@@ -1340,6 +1342,8 @@ function _napkoziResetSzekciok() {
   document.getElementById('napkozi-cal-section').style.display = 'block';
   document.getElementById('napkozi-konfigurator').style.display = _vanBerlet ? 'none' : 'block';
   document.getElementById('napkozi-foglal-btn-wrapper').style.display = 'none';
+  var mejWrapReset = document.getElementById('berlet-megjegyzes-wrap');
+  if (mejWrapReset) mejWrapReset.style.display = 'none';
   var idoV = document.getElementById('napkozi-ido-valaszto');
   if (idoV) idoV.style.display = 'none';
   loadNapkoziNapok();
@@ -1705,7 +1709,6 @@ function _applyNapkoziData(foglalasData, berletData, user) {
 
   if (_vanBerlet) {
     document.getElementById('napkozi-konfigurator').style.display = 'none';
-    document.getElementById('berlet-megjegyzes-wrap').style.display = 'block';
     var sectionHeader = document.querySelector('#berletek .section-header');
     if (sectionHeader) sectionHeader.style.display = 'none';
     if (berletData.kutya_neve) _kutya_neve = berletData.kutya_neve;
