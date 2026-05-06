@@ -587,6 +587,24 @@
       </div>
     </div>
 
+    <!-- ── BÉRLET FLOW MEGJEGYZÉS ── -->
+    <div id="berlet-megjegyzes-wrap" style="display:none; max-width:640px; margin:0 auto 24px;">
+      <div class="konfig-row">
+        <span class="konfig-label">💬 Megjegyzés</span>
+        <div style="flex:1;max-width:480px;">
+          <textarea id="berlet-megjegyzes"
+            placeholder="Étkezés, ételallergia, speciális igény..."
+            style="width:100%;padding:12px 14px;background:var(--black-3);
+                   border:1px solid var(--border);border-radius:10px;
+                   color:var(--white);font-family:inherit;font-size:14px;
+                   min-height:80px;resize:vertical;box-sizing:border-box;outline:none;
+                   transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--gold)'"
+            onblur="this.style.borderColor='var(--border)'"></textarea>
+        </div>
+      </div>
+    </div>
+
     <!-- ── 3+ KUTYA EGYEDI (JS mutatja ha 3+ kutya pipálva) ── -->
     <div id="napkozi-3kutya-box" class="arak-egyedi-box" style="display:none; margin-bottom:36px;">
       <p>3 vagy több kutyára egyedi árazás érvényes – vedd fel velünk a kapcsolatot!</p>
@@ -1062,7 +1080,7 @@ async function napkoziCheckout(tipus, extraParams) {
     kutya_neve: kutyaNeve,
     helyszin: _helyszin || '',
     pending_booking_time: pendingBookingTime,
-    megjegyzes: (document.getElementById('nk-megjegyzes') ? document.getElementById('nk-megjegyzes').value.trim() : ''),
+    megjegyzes: (document.getElementById('berlet-megjegyzes-wrap') && document.getElementById('berlet-megjegyzes-wrap').style.display !== 'none' ? document.getElementById('berlet-megjegyzes').value.trim() : (document.getElementById('nk-megjegyzes') ? document.getElementById('nk-megjegyzes').value.trim() : '')),
   };
   if (extraParams) Object.assign(payload, extraParams);
   // Loading state
@@ -1424,7 +1442,7 @@ function napkoziFoglalas() {
     kutyaNev:   _kutya_neve || (_user && _user.kutyaNev) || '',
     startTime: startTime,
     helyszin:  _helyszin || '',
-    megjegyzes: (document.getElementById('nk-megjegyzes') ? document.getElementById('nk-megjegyzes').value.trim() : ''),
+    megjegyzes: (document.getElementById('berlet-megjegyzes-wrap') && document.getElementById('berlet-megjegyzes-wrap').style.display !== 'none' ? document.getElementById('berlet-megjegyzes').value.trim() : (document.getElementById('nk-megjegyzes') ? document.getElementById('nk-megjegyzes').value.trim() : '')),
   })})
   .then(r => r.json())
   .then(result => {
@@ -1687,6 +1705,7 @@ function _applyNapkoziData(foglalasData, berletData, user) {
 
   if (_vanBerlet) {
     document.getElementById('napkozi-konfigurator').style.display = 'none';
+    document.getElementById('berlet-megjegyzes-wrap').style.display = 'block';
     var sectionHeader = document.querySelector('#berletek .section-header');
     if (sectionHeader) sectionHeader.style.display = 'none';
     if (berletData.kutya_neve) _kutya_neve = berletData.kutya_neve;
