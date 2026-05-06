@@ -263,6 +263,92 @@
       .regi-toggle { padding: 12px 16px; gap: 10px; }
       .regi-toggle-label { font-size: 13px; }
     }
+    /* ── WIZARD ── */
+    .wizard-progress {
+      display: flex;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .wizard-step-ind {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .wpi-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--black-4);
+      border: 2px solid var(--border-dim);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      color: var(--text-faint);
+      transition: all 0.25s;
+    }
+    .wpi-label {
+      font-size: 10px; font-weight: 600;
+      color: var(--text-faint);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      transition: color 0.25s;
+      text-align: center;
+    }
+    .wizard-step-ind.active .wpi-num { background: var(--gold); border-color: var(--gold); color: var(--black); }
+    .wizard-step-ind.active .wpi-label { color: var(--gold); }
+    .wizard-step-ind.done .wpi-num { background: transparent; border-color: var(--text-dim); color: var(--text-dim); }
+    .wizard-step-ind.done .wpi-label { color: var(--text-dim); }
+    .wizard-step-sep {
+      flex: 0 0 32px;
+      height: 1px;
+      background: var(--border-dim);
+      margin-bottom: 14px;
+    }
+    .wizard-panel { display: none; }
+    .wizard-panel.active { display: block; animation: wizardIn 0.28s ease; }
+    @keyframes wizardIn { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+    .wizard-nav {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .wizard-back-btn {
+      flex: 0 0 auto;
+      padding: 13px 18px;
+      background: transparent;
+      border: 1px solid var(--border-dim);
+      border-radius: 10px;
+      color: var(--text-dim);
+      font-weight: 600; font-size: 14px;
+      cursor: pointer; font-family: inherit;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .wizard-back-btn:hover { border-color: var(--text); color: var(--text); }
+    .wizard-next-btn {
+      flex: 1;
+      padding: 14px 20px;
+      background: var(--gold);
+      border: none; border-radius: 10px;
+      color: var(--black);
+      font-weight: 700; font-size: 15px;
+      cursor: pointer; font-family: inherit;
+      transition: opacity 0.2s;
+    }
+    .wizard-next-btn:hover { opacity: 0.88; }
+    .wizard-next-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .wizard-summary-section { margin-bottom: 18px; }
+    .wizard-summary-label {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 8px;
+    }
+    .wizard-summary-row {
+      display: flex; gap: 8px;
+      font-size: 13px; color: var(--text);
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .wizard-summary-row:last-child { border-bottom: none; }
+    .wizard-summary-key { color: var(--text-dim); min-width: 130px; flex-shrink: 0; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -317,131 +403,176 @@
     <!-- FORM -->
     <div class="reg-card" id="regForm">
 
-      <!-- Régi ügyfél toggle -->
-      <div class="regi-toggle-wrap" style="margin-top:0; margin-bottom:24px;">
-        <label class="regi-toggle" id="regiToggleLabel">
-          <input type="checkbox" id="regiUgyfelToggle">
-          <span class="regi-toggle-slider"></span>
-          <span class="regi-toggle-label">Régi ügyfél vagyok: a kutyusom volt már panzióban vagy napköziben</span>
-        </label>
-        <p class="regi-toggle-hint">Kapcsold be, ha korábban jártál nálunk – így nem kell ingyenes felmérőre jönnöd.</p>
+      <!-- Progress bar -->
+      <div class="wizard-progress">
+        <div class="wizard-step-ind active" id="wpi-1">
+          <div class="wpi-num">1</div>
+          <div class="wpi-label">Gazdi adatai</div>
+        </div>
+        <div class="wizard-step-sep"></div>
+        <div class="wizard-step-ind" id="wpi-2">
+          <div class="wpi-num">2</div>
+          <div class="wpi-label">Kutyák</div>
+        </div>
+        <div class="wizard-step-sep"></div>
+        <div class="wizard-step-ind" id="wpi-3">
+          <div class="wpi-num">3</div>
+          <div class="wpi-label">Összefoglaló</div>
+        </div>
       </div>
 
       <div class="reg-error" id="reg-error"></div>
+
       <form id="regisztracio" novalidate>
 
-        <div class="reg-section-label">Gazdi adataid</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="regNev">Teljes neved *</label>
-            <input type="text" id="regNev" placeholder="pl. Kovács Anna" required>
-          </div>
-          <div class="form-group">
-            <label for="regTelefon">Telefonszámod *</label>
-            <input type="tel" id="regTelefon" placeholder="pl. +36 30 123 4567" required>
-          </div>
-        </div>
-        <div class="form-group" style="margin-top: 14px;">
-          <label for="regEmail">Email cím *</label>
-          <input type="email" id="regEmail" placeholder="pl. anna@email.com" required>
-        </div>
+        <!-- ── LÉPÉS 1: Gazdi adatai ── -->
+        <div class="wizard-panel active" id="wp-1">
 
-        <div class="reg-section-label">Jelszó</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="regJelszo">Jelszó *</label>
-            <input type="password" id="regJelszo" placeholder="Min. 6 karakter" required>
+          <!-- Régi ügyfél toggle -->
+          <div class="regi-toggle-wrap" style="margin-top:0; margin-bottom:24px;">
+            <label class="regi-toggle" id="regiToggleLabel">
+              <input type="checkbox" id="regiUgyfelToggle">
+              <span class="regi-toggle-slider"></span>
+              <span class="regi-toggle-label">Régi ügyfél vagyok: a kutyusom volt már panzióban vagy napköziben</span>
+            </label>
+            <p class="regi-toggle-hint">Kapcsold be, ha korábban jártál nálunk – így nem kell ingyenes felmérőre jönnöd.</p>
           </div>
-          <div class="form-group">
-            <label for="regJelszoIsmet">Jelszó mégegyszer *</label>
-            <input type="password" id="regJelszoIsmet" placeholder="Ugyanaz a jelszó" required>
-          </div>
-        </div>
 
-        <div class="reg-section-label">Számlázási cím</div>
-        <div class="form-row">
-          <div class="form-group" style="max-width: 130px;">
-            <label for="regIranyitoszam">Irányítószám *</label>
-            <input type="text" id="regIranyitoszam" placeholder="pl. 2083" pattern="[0-9]{4}" maxlength="4" inputmode="numeric" required>
-          </div>
-          <div class="form-group">
-            <label for="regVaros">Város *</label>
-            <input type="text" id="regVaros" placeholder="pl. Solymár" required>
-          </div>
-        </div>
-        <div class="form-group" style="margin-top: 14px;">
-          <label for="regUtca">Utca, házszám *</label>
-          <input type="text" id="regUtca" placeholder="pl. Fő utca 12." required>
-        </div>
-
-        <div class="reg-section-label">A kutyád / kutyáid</div>
-        <div id="kutyak-container">
-          <!-- 1. kutya -->
-          <div class="kutya-blokk" data-index="0">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Kutya neve *</label>
-                <input type="text" class="kutya-nev" placeholder="pl. Bodri" required>
-              </div>
-              <div class="form-group">
-                <label>Fajtája *</label>
-                <input type="text" class="kutya-fajta" placeholder="pl. Labrador keverék" required>
-              </div>
+          <div class="reg-section-label">Gazdi adataid</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="regNev">Teljes neved *</label>
+              <input type="text" id="regNev" placeholder="pl. Kovács Anna" required>
             </div>
-            <div class="form-row" style="margin-top: 14px;">
-              <div class="form-group">
-                <label>Kutya születési dátuma *</label>
-                <input type="date" class="kutya-szuldat" max="9999-12-31" required>
-              </div>
-              <div class="form-group">
-                <label>Chipszám</label>
-                <input type="text" class="kutya-chip" placeholder="pl. 900123456789012" maxlength="20">
-              </div>
+            <div class="form-group">
+              <label for="regTelefon">Telefonszámod *</label>
+              <input type="tel" id="regTelefon" placeholder="pl. +36 30 123 4567" required>
             </div>
-            <div class="oltas-section">
-              <div class="oltas-section-label">Oltási könyv</div>
-              <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">A kutyák biztonsága érdekében csak érvényes oltással rendelkező kutyákat tudunk fogadni.</p>
+          </div>
+          <div class="form-group" style="margin-top: 14px;">
+            <label for="regEmail">Email cím *</label>
+            <input type="email" id="regEmail" placeholder="pl. anna@email.com" required>
+          </div>
+
+          <div class="reg-section-label">Jelszó</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="regJelszo">Jelszó *</label>
+              <input type="password" id="regJelszo" placeholder="Min. 6 karakter" required>
+            </div>
+            <div class="form-group">
+              <label for="regJelszoIsmet">Jelszó mégegyszer *</label>
+              <input type="password" id="regJelszoIsmet" placeholder="Ugyanaz a jelszó" required>
+            </div>
+          </div>
+
+          <div class="reg-section-label">Számlázási cím</div>
+          <div class="form-row">
+            <div class="form-group" style="max-width: 130px;">
+              <label for="regIranyitoszam">Irányítószám *</label>
+              <input type="text" id="regIranyitoszam" placeholder="pl. 2083" pattern="[0-9]{4}" maxlength="4" inputmode="numeric" required>
+            </div>
+            <div class="form-group">
+              <label for="regVaros">Város *</label>
+              <input type="text" id="regVaros" placeholder="pl. Solymár" required>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 14px;">
+            <label for="regUtca">Utca, házszám *</label>
+            <input type="text" id="regUtca" placeholder="pl. Fő utca 12." required>
+          </div>
+
+          <div class="wizard-nav">
+            <button type="button" class="wizard-next-btn" onclick="wizardNext(1)">Következő →</button>
+          </div>
+        </div>
+
+        <!-- ── LÉPÉS 2: Kutyák + oltások + probléma ── -->
+        <div class="wizard-panel" id="wp-2">
+
+          <div class="reg-section-label" style="margin-top:0;">A kutyád / kutyáid</div>
+          <div id="kutyak-container">
+            <!-- 1. kutya -->
+            <div class="kutya-blokk" data-index="0">
               <div class="form-row">
                 <div class="form-group">
-                  <label>Kombinált oltás fotó *</label>
-                  <input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="font-size:12px;">
-                  <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>
-                  <img class="oltas-kombinalt-preview" alt="Előnézet">
+                  <label>Kutya neve *</label>
+                  <input type="text" class="kutya-nev" placeholder="pl. Bodri" required>
                 </div>
                 <div class="form-group">
-                  <label>Kombinált oltás lejárata *</label>
-                  <input type="date" class="oltas-kombinalt-lejar" max="9999-12-31" required>
+                  <label>Fajtája *</label>
+                  <input type="text" class="kutya-fajta" placeholder="pl. Labrador keverék" required>
                 </div>
               </div>
-              <div class="form-row">
+              <div class="form-row" style="margin-top: 14px;">
                 <div class="form-group">
-                  <label>Veszettség oltás fotó</label>
-                  <input type="file" accept="image/*" class="oltas-veszettség-kep" style="font-size:12px;">
-                  <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>
-                  <img class="oltas-veszettség-preview" alt="Előnézet">
+                  <label>Kutya születési dátuma *</label>
+                  <input type="date" class="kutya-szuldat" max="9999-12-31" required>
                 </div>
                 <div class="form-group">
-                  <label>Veszettség oltás lejárata</label>
-                  <input type="date" class="oltas-vesz-lejar" max="9999-12-31">
+                  <label>Chipszám</label>
+                  <input type="text" class="kutya-chip" placeholder="pl. 900123456789012" maxlength="20">
+                </div>
+              </div>
+              <div class="oltas-section">
+                <div class="oltas-section-label">Oltási könyv</div>
+                <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">A kutyák biztonsága érdekében csak érvényes oltással rendelkező kutyákat tudunk fogadni.</p>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Kombinált oltás fotó *</label>
+                    <input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="font-size:12px;">
+                    <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>
+                    <img class="oltas-kombinalt-preview" alt="Előnézet">
+                  </div>
+                  <div class="form-group">
+                    <label>Kombinált oltás lejárata *</label>
+                    <input type="date" class="oltas-kombinalt-lejar" max="9999-12-31" required>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Veszettség oltás fotó</label>
+                    <input type="file" accept="image/*" class="oltas-veszettség-kep" style="font-size:12px;">
+                    <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>
+                    <img class="oltas-veszettség-preview" alt="Előnézet">
+                  </div>
+                  <div class="form-group">
+                    <label>Veszettség oltás lejárata</label>
+                    <input type="date" class="oltas-vesz-lejar" max="9999-12-31">
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <button type="button" id="tobbKutyaBtn" class="btn-tobb-kutya" style="margin-top:14px;">
-          + Még egy kutyát is hozok
-        </button>
+          <button type="button" id="tobbKutyaBtn" class="btn-tobb-kutya" style="margin-top:14px;">
+            + Még egy kutyát is hozok
+          </button>
 
-        <div class="reg-section-label" style="margin-top:28px;">Miben segíthetünk?</div>
-        <div class="form-group">
-          <label for="regProblema">Probléma, cél, háttér *</label>
-          <textarea id="regProblema" placeholder="pl. Húz a pórázon, ugál az emberekre, nagyon félénk... Bármit leírhatsz, amit fontosnak tartasz." required></textarea>
+          <div class="reg-section-label" style="margin-top:28px;">Miben segíthetünk?</div>
+          <div class="form-group">
+            <label for="regProblema">Probléma, cél, háttér *</label>
+            <textarea id="regProblema" placeholder="pl. Húz a pórázon, ugál az emberekre, nagyon félénk... Bármit leírhatsz, amit fontosnak tartasz." required></textarea>
+          </div>
+
+          <div class="wizard-nav">
+            <button type="button" class="wizard-back-btn" onclick="wizardBack(2)">← Vissza</button>
+            <button type="button" class="wizard-next-btn" onclick="wizardNext(2)">Következő →</button>
+          </div>
         </div>
 
-        <p style="font-size:12px;color:var(--text-faint);text-align:center;margin-bottom:16px;">A regisztrációval elfogadom az <a href="aszf.html" target="_blank" style="color:var(--gold);">ÁSZF</a>-et és az <a href="adatkezeles.html" target="_blank" style="color:var(--gold);">Adatkezelési tájékoztatót</a>.</p>
-        <button type="submit" class="btn btn-gold btn-lg reg-submit" id="regSubmitBtn">
-          Regisztrálok →
-        </button>
+        <!-- ── LÉPÉS 3: Összefoglaló + submit ── -->
+        <div class="wizard-panel" id="wp-3">
+
+          <div class="reg-section-label" style="margin-top:0;">Összefoglaló – ellenőrizd az adataid</div>
+          <div id="wizard-summary"></div>
+
+          <p style="font-size:12px;color:var(--text-faint);text-align:center;margin: 20px 0 16px;">A regisztrációval elfogadom az <a href="aszf.html" target="_blank" style="color:var(--gold);">ÁSZF</a>-et és az <a href="adatkezeles.html" target="_blank" style="color:var(--gold);">Adatkezelési tájékoztatót</a>.</p>
+
+          <div class="wizard-nav">
+            <button type="button" class="wizard-back-btn" onclick="wizardBack(3)">← Vissza</button>
+            <button type="submit" class="wizard-next-btn" id="regSubmitBtn">Fiók létrehozása →</button>
+          </div>
+        </div>
 
       </form>
 
@@ -528,6 +659,131 @@
     const bl = document.getElementById('belepes-link');
     if (bl) bl.href = 'bejelentkezes.html?return=' + encodeURIComponent(getReturnUrl());
   })();
+
+  // ── Wizard navigáció ────────────────────────────────────────
+
+  function row(key, value) {
+    if (!value) return '';
+    return `<div class="wizard-summary-row"><span class="wizard-summary-key">${key}</span><span>${value}</span></div>`;
+  }
+
+  function goToStep(step) {
+    document.querySelectorAll('.wizard-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('wp-' + step).classList.add('active');
+    document.querySelectorAll('.wizard-step-ind').forEach(function(ind, i) {
+      const n = i + 1;
+      ind.classList.toggle('active', n === step);
+      ind.classList.toggle('done', n < step);
+    });
+    window.scrollTo(0, 0);
+  }
+
+  function wizardNext(fromStep) {
+    if (fromStep === 1) {
+      const nev = document.getElementById('regNev').value.trim();
+      const telefon = document.getElementById('regTelefon').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const jelszo = document.getElementById('regJelszo').value;
+      const jelszoIsmet = document.getElementById('regJelszoIsmet').value;
+      const iranyitoszam = document.getElementById('regIranyitoszam').value.trim();
+      const varos = document.getElementById('regVaros').value.trim();
+      const utca = document.getElementById('regUtca').value.trim();
+      if (!nev || !telefon || !email || !jelszo || !jelszoIsmet || !iranyitoszam || !varos || !utca) {
+        return showRegError('Kérjük töltsd ki az összes kötelező mezőt.');
+      }
+      if (jelszo.length < 6) {
+        return showRegError('A jelszónak legalább 6 karakternek kell lennie.');
+      }
+      if (jelszo !== jelszoIsmet) {
+        return showRegError('A két jelszó nem egyezik meg.');
+      }
+      if (!/^\d{4}$/.test(iranyitoszam)) {
+        return showRegError('Az irányítószámnak 4 számjegyből kell állnia.');
+      }
+      goToStep(2);
+    } else if (fromStep === 2) {
+      const kutyak = document.querySelectorAll('.kutya-blokk');
+      for (let i = 0; i < kutyak.length; i++) {
+        const b = kutyak[i];
+        const knev = b.querySelector('.kutya-nev').value.trim();
+        const fajta = b.querySelector('.kutya-fajta').value.trim();
+        const szuldat = b.querySelector('.kutya-szuldat').value;
+        const oltasKep = b.querySelector('.oltas-kombinalt-kep').files;
+        const oltasLejar = b.querySelector('.oltas-kombinalt-lejar').value;
+        const sorsz = i + 1;
+        if (!knev || !fajta || !szuldat) {
+          return showRegError((kutyak.length > 1 ? sorsz + '. ' : '') + 'Kutya neve, fajtája és születési dátuma kötelező.');
+        }
+        if (!oltasKep || oltasKep.length === 0) {
+          return showRegError((kutyak.length > 1 ? sorsz + '. kutya: ' : '') + 'A kombinált oltás fotója kötelező.');
+        }
+        if (!oltasLejar) {
+          return showRegError((kutyak.length > 1 ? sorsz + '. kutya: ' : '') + 'A kombinált oltás lejárati dátuma kötelező.');
+        }
+      }
+      const problema = document.getElementById('regProblema').value.trim();
+      const isRegi = document.getElementById('regiUgyfelToggle').checked;
+      if (!isRegi && !problema) {
+        return showRegError('Kérjük írd le, miben segíthetünk (Probléma, cél, háttér mező).');
+      }
+      renderWizardSummary();
+      goToStep(3);
+    }
+  }
+
+  function wizardBack(fromStep) {
+    goToStep(fromStep - 1);
+  }
+
+  function renderWizardSummary() {
+    const isRegi = document.getElementById('regiUgyfelToggle').checked;
+    const nev = document.getElementById('regNev').value.trim();
+    const telefon = document.getElementById('regTelefon').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const iranyitoszam = document.getElementById('regIranyitoszam').value.trim();
+    const varos = document.getElementById('regVaros').value.trim();
+    const utca = document.getElementById('regUtca').value.trim();
+    const problema = document.getElementById('regProblema').value.trim();
+
+    let html = '';
+
+    html += '<div class="wizard-summary-section">';
+    html += '<div class="wizard-summary-label">Gazdi adatai</div>';
+    html += row('Név', nev);
+    html += row('Telefon', telefon);
+    html += row('Email', email);
+    html += row('Cím', iranyitoszam + ' ' + varos + ', ' + utca);
+    if (isRegi) html += row('Státusz', 'Régi ügyfél');
+    html += '</div>';
+
+    const kutyak = document.querySelectorAll('.kutya-blokk');
+    kutyak.forEach(function(b, i) {
+      const knev = b.querySelector('.kutya-nev').value.trim();
+      const fajta = b.querySelector('.kutya-fajta').value.trim();
+      const szuldat = b.querySelector('.kutya-szuldat').value;
+      const chip = b.querySelector('.kutya-chip').value.trim();
+      const kombLejar = b.querySelector('.oltas-kombinalt-lejar').value;
+      const veszLejar = b.querySelector('.oltas-vesz-lejar').value;
+      html += '<div class="wizard-summary-section">';
+      html += '<div class="wizard-summary-label">' + (kutyak.length > 1 ? (i + 1) + '. kutya' : 'A kutyád') + '</div>';
+      html += row('Név', knev);
+      html += row('Fajta', fajta);
+      html += row('Születési dátum', szuldat);
+      html += row('Chipszám', chip);
+      html += row('Kombinált oltás lejár', kombLejar);
+      html += row('Veszettség oltás lejár', veszLejar);
+      html += '</div>';
+    });
+
+    if (problema) {
+      html += '<div class="wizard-summary-section">';
+      html += '<div class="wizard-summary-label">Megjegyzés</div>';
+      html += '<div class="wizard-summary-row" style="display:block;color:var(--text);font-size:13px;">' + problema + '</div>';
+      html += '</div>';
+    }
+
+    document.getElementById('wizard-summary').innerHTML = html;
+  }
 
   // ── Régi ügyfél toggle kezelés ──────────────────────────────
   const regiToggle = document.getElementById('regiUgyfelToggle');

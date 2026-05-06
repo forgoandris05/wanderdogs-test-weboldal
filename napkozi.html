@@ -449,6 +449,20 @@
           </div>
         </div>
       </div>
+      <div class="konfig-row">
+        <span class="konfig-label">💬 Megjegyzés</span>
+        <div style="flex:1;max-width:480px;">
+          <textarea id="nk-megjegyzes"
+            placeholder="Pl. ételallergia, különleges igény..."
+            style="width:100%;padding:12px 14px;background:var(--black-3);
+                   border:1px solid var(--border-dim);border-radius:10px;
+                   color:var(--white);font-family:inherit;font-size:14px;
+                   min-height:80px;resize:vertical;box-sizing:border-box;outline:none;
+                   transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--gold)'"
+            onblur="this.style.borderColor='var(--border-dim)'"></textarea>
+        </div>
+      </div>
     </div>
 
     <!-- ── CAL.COM INLINE EMBED (visszatérő, JS mutatja) ── -->
@@ -1048,6 +1062,7 @@ async function napkoziCheckout(tipus, extraParams) {
     kutya_neve: kutyaNeve,
     helyszin: _helyszin || '',
     pending_booking_time: pendingBookingTime,
+    megjegyzes: (document.getElementById('nk-megjegyzes') ? document.getElementById('nk-megjegyzes').value.trim() : ''),
   };
   if (extraParams) Object.assign(payload, extraParams);
   // Loading state
@@ -1409,6 +1424,7 @@ function napkoziFoglalas() {
     kutyaNev:   _kutya_neve || (_user && _user.kutyaNev) || '',
     startTime: startTime,
     helyszin:  _helyszin || '',
+    megjegyzes: (document.getElementById('nk-megjegyzes') ? document.getElementById('nk-megjegyzes').value.trim() : ''),
   })})
   .then(r => r.json())
   .then(result => {

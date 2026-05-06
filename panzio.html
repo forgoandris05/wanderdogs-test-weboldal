@@ -733,6 +733,17 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
           <input type="hidden" id="f-nev">
           <input type="hidden" id="f-kutya">
           <input type="hidden" id="f-email">
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Megjegyzés (opcionális)</label>
+            <textarea id="f-megjegyzes" placeholder="Pl. ételallergia, speciális igény, kérdés..."
+              style="width:100%;padding:12px 16px;background:var(--black-3);border:1px solid var(--border-dim);
+                     border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;
+                     min-height:90px;resize:vertical;box-sizing:border-box;outline:none;
+                     transition:border-color 0.2s;"
+              onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border-dim)'"></textarea>
+          </div>
+
           <h3>⚠️ Lemondási feltételek</h3>
           <div class="no-refund-box">
             <p>
@@ -1261,6 +1272,7 @@ async function fizetesIndit() {
     taxi_vives: panzioCalc.taxiVives || false,
     taxi_cim:   taxiKm > 0 ? (document.getElementById('taxi-foglalas-cim').value || '').trim() : '',
     taxi_dij:   panzioCalc.taxiDij || 0,
+    megjegyzes: (document.getElementById('f-megjegyzes').value || '').trim(),
   };
 
   try {
