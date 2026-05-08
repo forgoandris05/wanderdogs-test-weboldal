@@ -868,7 +868,7 @@
           }
           canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.60);
           resolve(dataUrl.split(',')[1]); // pure base64
         };
         img.onerror = () => reject(new Error('Hibás képfájl.'));
@@ -965,8 +965,8 @@
     const oltasAdatok = [];
     try {
       for (const o of oltasok) {
-        const komb64 = o.kombinaltFile ? await resizeImageToBase64(o.kombinaltFile, 1200) : '';
-        const vesz64 = o.veszFile      ? await resizeImageToBase64(o.veszFile,      1200) : '';
+        const komb64 = o.kombinaltFile ? await resizeImageToBase64(o.kombinaltFile, 800) : '';
+        const vesz64 = o.veszFile      ? await resizeImageToBase64(o.veszFile,      800) : '';
         oltasAdatok.push({ kombinalt_lejar: o.kombinalt_lejar, kombinalt_kep_base64: komb64, vesz_lejar: o.vesz_lejar, vesz_kep_base64: vesz64 });
       }
     } catch(imgErr) {
