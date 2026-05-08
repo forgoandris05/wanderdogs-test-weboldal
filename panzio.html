@@ -718,6 +718,20 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
           </div>
         </div>
 
+        <!-- Pót elérhetőség – első foglalásnál kötelező, visszatérő usernél rejtett -->
+        <div id="pot-elerhetoseg-wrap" style="margin-top:18px; display:none;">
+          <label style="display:block;font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px;">🆘 Pót elérhetőség <span style="font-weight:400;color:var(--text-dim);font-size:12px;">(kötelező)</span></label>
+          <p style="font-size:12px;color:var(--text-faint);margin-bottom:8px;line-height:1.5;">Kit hívjunk, ha veled nem tudunk kapcsolatba lépni? (pl. Anyuka – 06301234567)</p>
+          <input type="text" id="f-pot-elerhetoseg"
+            placeholder="Név – telefonszám"
+            style="width:100%;padding:10px 16px;background:var(--black-3);border:1px solid var(--border);
+                   border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;
+                   box-sizing:border-box;outline:none;transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"
+            oninput="frissitGomb()">
+        </div>
+        <input type="hidden" id="f-pot-elerhetoseg-hidden">
+
         <hr class="form-section-divider">
 
         <!-- Személyes adatok – elrejtve ha 3+ kutya -->
@@ -1190,7 +1204,11 @@ function frissitGomb() {
     taxiOk = (tHozas || tVives) && tCim.length > 0;
   }
 
-  const minden = panzioCalc && nev && kutyaOk && email && elfog && beH && kiH && taxiOk;
+  const potWrapEl  = document.getElementById('pot-elerhetoseg-wrap');
+  const potVisible = potWrapEl && potWrapEl.style.display !== 'none';
+  const potOk      = !potVisible || ((document.getElementById('f-pot-elerhetoseg').value || '').trim().length > 0);
+
+  const minden = panzioCalc && nev && kutyaOk && email && elfog && beH && kiH && taxiOk && potOk;
   document.getElementById('pay-btn').disabled = !minden;
 }
 
@@ -1274,7 +1292,13 @@ async function fizetesIndit() {
     taxi_cim:   taxiKm > 0 ? (document.getElementById('taxi-foglalas-cim').value || '').trim() : '',
     taxi_dij:   panzioCalc.taxiDij || 0,
     megjegyzes: (document.getElementById('f-megjegyzes').value || '').trim(),
+    pot_elerhetoseg: ((document.getElementById('f-pot-elerhetoseg').value || '').trim() ||
+                      (document.getElementById('f-pot-elerhetoseg-hidden').value || '').trim()),
   };
+
+  // localStorage mentés Stripe redirect előtt (visszatérő usernél ne kérje újra)
+  const _potVal = payload.pot_elerhetoseg;
+  if (_potVal) localStorage.setItem('wd_pot_elerhetoseg', _potVal);
 
   try {
     const resp = await fetch(WEBAPP_URL, {
@@ -1325,6 +1349,17 @@ szamol();
   const emailEl   = document.getElementById('f-email');
   if (nevEl)   nevEl.value   = user.nev   || '';
   if (emailEl) emailEl.value = user.email || '';
+
+  // Pót elérhetőség: ha localStorage-ban van, hidden field-be töltjük, wrap rejtve
+  const savedPot  = localStorage.getItem('wd_pot_elerhetoseg');
+  const potWrap   = document.getElementById('pot-elerhetoseg-wrap');
+  const potHidden = document.getElementById('f-pot-elerhetoseg-hidden');
+  if (savedPot) {
+    if (potHidden) potHidden.value = savedPot;
+    // wrap marad display:none
+  } else {
+    if (potWrap) potWrap.style.display = 'block';
+  }
 
   const kutyak = wdKutyak();
 
@@ -1407,6 +1442,15 @@ szamol();
       if (btnH) btnH.style.display = '';
       var felmeroEl = document.getElementById('panzio-felmero-szekció');
       if (felmeroEl) felmeroEl.style.display = 'block';
+    }
+    // Pót elérhetőség: ha CRM-ben már van, rejtjük a mezőt és hidden-be töltjük
+    if (data.pot_elerhetoseg) {
+      localStorage.setItem('wd_pot_elerhetoseg', data.pot_elerhetoseg);
+      var potWrapEl   = document.getElementById('pot-elerhetoseg-wrap');
+      var potHiddenEl = document.getElementById('f-pot-elerhetoseg-hidden');
+      if (potWrapEl)   potWrapEl.style.display = 'none';
+      if (potHiddenEl) potHiddenEl.value = data.pot_elerhetoseg;
+      frissitGomb();
     }
   }
 
