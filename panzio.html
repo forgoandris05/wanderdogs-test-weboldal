@@ -646,7 +646,7 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
           <div class="dog-btns">
             <button type="button" class="dog-btn active" data-kutya="1">🐕 1 kutya<br><small style="font-weight:400;font-size:11px">8 000 Ft/nap</small></button>
             <button type="button" class="dog-btn" data-kutya="2">🐕🐕 2 kutya<br><small style="font-weight:400;font-size:11px">13 500 Ft/nap</small></button>
-            <button type="button" class="dog-btn phone-btn" data-kutya="3">🐕🐕🐕 3+ kutya<br><small style="font-weight:400;font-size:11px">Egyeztetés szükséges</small></button>
+            <button type="button" class="dog-btn" data-kutya="3">🐕🐕🐕 3 kutya<br><small style="font-weight:400;font-size:11px">15 000 Ft/nap</small></button>
           </div>
         </div>
 
@@ -984,10 +984,7 @@ document.querySelectorAll('.dog-btn').forEach(btn => {
     btn.classList.add('active');
     selectedKutya = parseInt(btn.dataset.kutya);
 
-    const is3plus = selectedKutya >= 3;
-    document.getElementById('calc-result').style.display    = is3plus ? 'none' : '';
-    document.getElementById('panel-haromkutya').style.display = is3plus ? 'block' : 'none';
-    document.getElementById('szemelyes-adatok').style.display = is3plus ? 'none' : '';
+    document.getElementById('panel-haromkutya').style.display = 'none';
     szamol();
   });
 });
@@ -1094,8 +1091,6 @@ function szamol() {
   var infoEl = document.getElementById('tizenegy-info');
   if (infoEl) infoEl.style.display = (kiOra && tizenegy) ? 'block' : 'none';
 
-  if (selectedKutya >= 3) return;
-
   if (!be || !ki) {
     showEmpty();
     return;
@@ -1111,7 +1106,7 @@ function szamol() {
     return;
   }
 
-  const NAPIDIJ = { 1: 8000, 2: 13500 };
+  const NAPIDIJ = { 1: 8000, 2: 13500, 3: 15000 };
   const napidij = NAPIDIJ[selectedKutya] || 8000;
 
   let kedvPct = 0;
@@ -1398,10 +1393,7 @@ szamol();
         b.classList.toggle('active', parseInt(b.dataset.kutya) === checkedCount);
       });
       selectedKutya = checkedCount || 1;
-      const is3plus = selectedKutya >= 3;
-      document.getElementById('calc-result').style.display    = is3plus ? 'none' : '';
-      document.getElementById('panel-haromkutya').style.display = is3plus ? 'block' : 'none';
-      document.getElementById('szemelyes-adatok').style.display = is3plus ? 'none' : '';
+      document.getElementById('panel-haromkutya').style.display = 'none';
       szamol();
       frissitGomb();
     });
