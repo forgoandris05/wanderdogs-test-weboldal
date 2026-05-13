@@ -569,6 +569,10 @@
       <input type="text" id="kutya-modal-nev" maxlength="60" placeholder="pl. Bodri">
     </div>
     <div class="form-group">
+      <label>Fajta</label>
+      <input type="text" id="kutya-modal-fajta" maxlength="60" placeholder="pl. Labrador keverék">
+    </div>
+    <div class="form-group">
       <label>Chipszám</label>
       <input type="text" id="kutya-modal-chip" maxlength="20" placeholder="opcionális">
     </div>
@@ -1075,6 +1079,7 @@ function kutyaAdatokModalNyit(idx) {
   document.getElementById('kutya-modal-title').textContent = 'Kutya adatai – ' + k.nev;
   document.getElementById('kutya-modal-idx').value         = idx;
   document.getElementById('kutya-modal-nev').value         = k.nev    || '';
+  document.getElementById('kutya-modal-fajta').value       = k.fajta  || '';
   document.getElementById('kutya-modal-chip').value        = k.chip   || '';
   document.getElementById('kutya-modal-szuldat').value     = k.szuldat || '';
   document.getElementById('kutya-modal-msg').textContent   = '';
@@ -1088,6 +1093,7 @@ function kutyaAdatokModalBezar() {
 async function kutyaAdatokMent() {
   const idx     = parseInt(document.getElementById('kutya-modal-idx').value, 10);
   const nev     = document.getElementById('kutya-modal-nev').value.trim();
+  const fajta   = document.getElementById('kutya-modal-fajta').value.trim();
   const chip    = document.getElementById('kutya-modal-chip').value.trim();
   const szuldat = document.getElementById('kutya-modal-szuldat').value.trim();
   const msgEl   = document.getElementById('kutya-modal-msg');
@@ -1105,7 +1111,7 @@ async function kutyaAdatokMent() {
       method: 'POST',
       body: JSON.stringify({
         action: 'kutya_adatok_frissites', email: user.email, auth_token: user.auth_token || '',
-        kutya_index: idx, nev, chip, szuldat
+        kutya_index: idx, nev, fajta, chip, szuldat
       })
     });
     const result = await resp.json();
