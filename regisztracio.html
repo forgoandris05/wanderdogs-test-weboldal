@@ -531,14 +531,14 @@
                 </div>
                 <div class="form-row">
                   <div class="form-group">
-                    <label>Veszettség oltás fotó</label>
-                    <input type="file" accept="image/*" class="oltas-veszettség-kep" style="font-size:12px;">
+                    <label>Veszettség oltás fotó *</label>
+                    <input type="file" accept="image/*" class="oltas-veszettség-kep" required style="font-size:12px;">
                     <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>
                     <img class="oltas-veszettség-preview" alt="Előnézet">
                   </div>
                   <div class="form-group">
-                    <label>Veszettség oltás lejárata</label>
-                    <input type="date" class="oltas-vesz-lejar" max="9999-12-31">
+                    <label>Veszettség oltás lejárata *</label>
+                    <input type="date" class="oltas-vesz-lejar" max="9999-12-31" required>
                   </div>
                 </div>
               </div>
@@ -837,12 +837,12 @@
           '<div class="form-group"><label>Kombinált oltás lejárata *</label><input type="date" class="oltas-kombinalt-lejar" max="9999-12-31" required></div>' +
         '</div>' +
         '<div class="form-row">' +
-          '<div class="form-group"><label>Veszettség oltás fotó</label>' +
-            '<input type="file" accept="image/*" class="oltas-veszettség-kep" style="font-size:12px;">' +
+          '<div class="form-group"><label>Veszettség oltás fotó *</label>' +
+            '<input type="file" accept="image/*" class="oltas-veszettség-kep" required style="font-size:12px;">' +
             '<small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>' +
             '<img class="oltas-veszettség-preview" alt="Előnézet">' +
           '</div>' +
-          '<div class="form-group"><label>Veszettség oltás lejárata</label><input type="date" class="oltas-vesz-lejar" max="9999-12-31"></div>' +
+          '<div class="form-group"><label>Veszettség oltás lejárata *</label><input type="date" class="oltas-vesz-lejar" max="9999-12-31" required></div>' +
         '</div>' +
       '</div>';
     container.appendChild(blokk);
