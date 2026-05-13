@@ -242,6 +242,160 @@
       margin-top: 8px;
     }
     .btn-kilepes:hover { border-color: var(--text-dim); color: var(--text); }
+
+    .profil-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .profil-card-header h2 { margin-bottom: 0; }
+    .btn-szerkeszt {
+      background: none;
+      border: 1px solid rgba(255,215,0,0.4);
+      color: var(--gold);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-szerkeszt:hover { background: rgba(255,215,0,0.08); }
+
+    .gazdi-edit-form { display: none; margin-top: 8px; }
+    .gazdi-edit-form.aktiv { display: block; }
+    .gazdi-edit-row {
+      margin-bottom: 12px;
+    }
+    .gazdi-edit-row label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 5px;
+    }
+    .gazdi-edit-row input {
+      width: 100%;
+      box-sizing: border-box;
+      background: var(--black-4);
+      border: 1px solid var(--border-dim);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .gazdi-edit-row input:focus { border-color: var(--gold); }
+    .gazdi-edit-row-half {
+      display: flex;
+      gap: 10px;
+    }
+    .gazdi-edit-row-half .gazdi-edit-row { flex: 1; margin-bottom: 12px; }
+    .gazdi-edit-btns {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .gazdi-edit-btns button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+    .gazdi-edit-btns .btn-save { background: var(--gold); color: var(--black); }
+    .gazdi-edit-btns .btn-cancel { background: var(--black-4); color: var(--text-dim); border: 1px solid var(--border-dim); }
+    .profil-msg-gazdi { font-size: 13px; margin-top: 10px; min-height: 18px; }
+    .profil-msg-gazdi.ok   { color: #86efac; }
+    .profil-msg-gazdi.hiba { color: #fca5a5; }
+
+    .kutya-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .kutya-modal-overlay.active { display: flex; }
+    .kutya-modal {
+      background: var(--black-3);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+    }
+    .kutya-modal h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .kutya-modal .form-group { margin-bottom: 14px; }
+    .kutya-modal .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .kutya-modal .form-group input {
+      background: var(--black-4);
+      border: 1px solid var(--border-dim);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .kutya-modal .form-group input:focus { outline: none; border-color: var(--gold); }
+    .kutya-modal-btns {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .kutya-modal-btns button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+    .kutya-modal-btns .btn-save   { background: var(--gold); color: var(--black); }
+    .kutya-modal-btns .btn-cancel { background: var(--black-4); color: var(--text-dim); border: 1px solid var(--border-dim); }
+    .profil-msg-kutya-modal { font-size: 13px; margin-top: 10px; min-height: 18px; }
+    .profil-msg-kutya-modal.ok   { color: #86efac; }
+    .profil-msg-kutya-modal.hiba { color: #fca5a5; }
+
+    .btn-kutya-szerkeszt {
+      background: none;
+      border: 1px solid rgba(255,215,0,0.3);
+      color: var(--gold);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-right: 6px;
+    }
+    .btn-kutya-szerkeszt:hover { background: rgba(255,215,0,0.08); }
   </style>
 </head>
 <body>
@@ -295,14 +449,68 @@
 
       <!-- Személyes adatok -->
       <div class="profil-card">
-        <h2>👤 Személyes adatok</h2>
-        <div class="profil-info-row">
-          <span class="profil-info-label">Név</span>
-          <span class="profil-info-val" id="p-nev">–</span>
+        <div class="profil-card-header">
+          <h2>👤 Személyes adatok</h2>
+          <button class="btn-szerkeszt" id="btn-gazdi-szerkeszt" onclick="gazdiFrissitesInditas()">✏️ Szerkesztés</button>
         </div>
-        <div class="profil-info-row">
-          <span class="profil-info-label">Email</span>
-          <span class="profil-info-val" id="p-email">–</span>
+
+        <!-- Olvasható nézet -->
+        <div id="gazdi-nezet">
+          <div class="profil-info-row">
+            <span class="profil-info-label">Név</span>
+            <span class="profil-info-val" id="p-nev">–</span>
+          </div>
+          <div class="profil-info-row">
+            <span class="profil-info-label">Email</span>
+            <span class="profil-info-val" id="p-email">–</span>
+          </div>
+          <div class="profil-info-row">
+            <span class="profil-info-label">Telefon</span>
+            <span class="profil-info-val" id="p-telefon">–</span>
+          </div>
+          <div class="profil-info-row">
+            <span class="profil-info-label">Cím</span>
+            <span class="profil-info-val" id="p-cim">–</span>
+          </div>
+          <div class="profil-info-row">
+            <span class="profil-info-label">Pót elérhetőség</span>
+            <span class="profil-info-val" id="p-pot">–</span>
+          </div>
+        </div>
+
+        <!-- Szerkesztő form -->
+        <div class="gazdi-edit-form" id="gazdi-edit-form">
+          <div class="gazdi-edit-row">
+            <label>Teljes név *</label>
+            <input type="text" id="edit-nev" maxlength="100" placeholder="pl. Kovács Anna">
+          </div>
+          <div class="gazdi-edit-row">
+            <label>Telefonszám</label>
+            <input type="tel" id="edit-telefon" maxlength="30" placeholder="pl. +36 30 123 4567">
+          </div>
+          <div class="gazdi-edit-row-half">
+            <div class="gazdi-edit-row">
+              <label>Irányítószám</label>
+              <input type="text" id="edit-iranyitoszam" maxlength="10" placeholder="pl. 2083">
+            </div>
+            <div class="gazdi-edit-row">
+              <label>Város</label>
+              <input type="text" id="edit-varos" maxlength="60" placeholder="pl. Solymár">
+            </div>
+          </div>
+          <div class="gazdi-edit-row">
+            <label>Utca, házszám</label>
+            <input type="text" id="edit-utca" maxlength="100" placeholder="pl. Fő utca 12.">
+          </div>
+          <div class="gazdi-edit-row">
+            <label>Pót elérhetőség (opcionális)</label>
+            <input type="text" id="edit-pot" maxlength="100" placeholder="pl. Molnár Béla: +36 20 987 6543">
+          </div>
+          <div class="profil-msg-gazdi" id="gazdi-msg"></div>
+          <div class="gazdi-edit-btns">
+            <button class="btn-cancel" onclick="gazdiFrissitesMegse()">Mégse</button>
+            <button class="btn-save" id="gazdi-save-btn" onclick="gazdiFrissitesMent()">Mentés</button>
+          </div>
         </div>
       </div>
 
@@ -350,6 +558,31 @@
         <button class="btn-kilepes" onclick="wdKilepes()">Kilépés a fiókból</button>
         <a href="#" onclick="fiokTorles(event)" style="font-size:13px;color:#ef4444;margin-top:12px;text-decoration:none;opacity:0.7;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">Fiók törlése</a>
       </div>
+
+<!-- Kutya adatok szerkesztés modal -->
+<div class="kutya-modal-overlay" id="kutya-adatok-modal">
+  <div class="kutya-modal">
+    <h3 id="kutya-modal-title">Kutya adatai</h3>
+    <input type="hidden" id="kutya-modal-idx">
+    <div class="form-group">
+      <label>Kutya neve *</label>
+      <input type="text" id="kutya-modal-nev" maxlength="60" placeholder="pl. Bodri">
+    </div>
+    <div class="form-group">
+      <label>Chipszám</label>
+      <input type="text" id="kutya-modal-chip" maxlength="20" placeholder="opcionális">
+    </div>
+    <div class="form-group">
+      <label>Születési dátum</label>
+      <input type="date" id="kutya-modal-szuldat" max="9999-12-31">
+    </div>
+    <div class="profil-msg-kutya-modal" id="kutya-modal-msg"></div>
+    <div class="kutya-modal-btns">
+      <button class="btn-cancel" onclick="kutyaAdatokModalBezar()">Mégse</button>
+      <button class="btn-save" id="kutya-modal-save" onclick="kutyaAdatokMent()">Mentés</button>
+    </div>
+  </div>
+</div>
 
 <!-- Oltás frissítés modal -->
 <div class="oltas-modal-overlay" id="oltas-modal">
@@ -489,10 +722,90 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'bejelentkezes.html?return=profil.html';
     return;
   }
-  document.getElementById('p-nev').textContent   = user.nev   || '–';
-  document.getElementById('p-email').textContent = user.email || '–';
+  gazdinezetFrissit(user);
   kutyaListaFrissit();
 });
+
+function gazdinezetFrissit(user) {
+  document.getElementById('p-nev').textContent   = user.nev   || '–';
+  document.getElementById('p-email').textContent = user.email || '–';
+  document.getElementById('p-telefon').textContent = user.telefon || '–';
+  const cim = [user.iranyitoszam, user.varos, user.utca].filter(Boolean).join(', ');
+  document.getElementById('p-cim').textContent = cim || '–';
+  document.getElementById('p-pot').textContent = user.pot_elerhetoseg || '–';
+}
+
+// ── Gazdi adatok szerkesztés ──────────────────────────────────
+function gazdiFrissitesInditas() {
+  const user = wdGetUser();
+  document.getElementById('edit-nev').value          = user.nev           || '';
+  document.getElementById('edit-telefon').value      = user.telefon       || '';
+  document.getElementById('edit-iranyitoszam').value = user.iranyitoszam  || '';
+  document.getElementById('edit-varos').value        = user.varos         || '';
+  document.getElementById('edit-utca').value         = user.utca          || '';
+  document.getElementById('edit-pot').value          = user.pot_elerhetoseg || '';
+  document.getElementById('gazdi-msg').textContent   = '';
+  document.getElementById('gazdi-nezet').style.display    = 'none';
+  document.getElementById('btn-gazdi-szerkeszt').style.display = 'none';
+  document.getElementById('gazdi-edit-form').classList.add('aktiv');
+}
+
+function gazdiFrissitesMegse() {
+  document.getElementById('gazdi-edit-form').classList.remove('aktiv');
+  document.getElementById('gazdi-nezet').style.display    = '';
+  document.getElementById('btn-gazdi-szerkeszt').style.display = '';
+}
+
+async function gazdiFrissitesMent() {
+  const nev          = document.getElementById('edit-nev').value.trim();
+  const telefon      = document.getElementById('edit-telefon').value.trim();
+  const iranyitoszam = document.getElementById('edit-iranyitoszam').value.trim();
+  const varos        = document.getElementById('edit-varos').value.trim();
+  const utca         = document.getElementById('edit-utca').value.trim();
+  const pot          = document.getElementById('edit-pot').value.trim();
+  const msgEl        = document.getElementById('gazdi-msg');
+  const saveBtn      = document.getElementById('gazdi-save-btn');
+
+  if (!nev) { msgEl.textContent = 'A név megadása kötelező!'; msgEl.className = 'profil-msg-gazdi hiba'; return; }
+
+  const user = wdGetUser();
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Mentés...';
+  msgEl.textContent = '';
+
+  try {
+    const resp = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'gazdi_frissites', email: user.email, auth_token: user.auth_token || '',
+        nev, telefon, iranyitoszam, varos, utca, pot_elerhetoseg: pot
+      })
+    });
+    const result = await resp.json();
+    if (result.ok) {
+      const u = wdGetUser();
+      u.nev           = result.nev;
+      u.telefon       = result.telefon;
+      u.iranyitoszam  = result.iranyitoszam;
+      u.varos         = result.varos;
+      u.utca          = result.utca;
+      u.pot_elerhetoseg = result.pot_elerhetoseg;
+      localStorage.setItem('wd_user', JSON.stringify(u));
+      gazdinezetFrissit(u);
+      gazdiFrissitesMegse();
+      showMsg('Adatok mentve!', 'ok');
+    } else {
+      msgEl.textContent = result.error || 'Hiba történt.';
+      msgEl.className = 'profil-msg-gazdi hiba';
+    }
+  } catch(e) {
+    msgEl.textContent = 'Hálózati hiba. Próbáld újra!';
+    msgEl.className = 'profil-msg-gazdi hiba';
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Mentés';
+  }
+}
 
 // ── Kutya lista megjelenítés (oltás státusszal) ───────────────
 function kutyaListaFrissit() {
@@ -512,10 +825,13 @@ function kutyaListaFrissit() {
         '<div class="oltas-info">' +
           '<span class="oltas-badge ' + st.class + '">' + st.icon + ' ' + st.text + '</span>' +
           kepLink +
-          ' <button class="btn-oltas-frissit" onclick="oltasModalNyit(' + idx + ', \'' + k.nev.replace(/'/g, "\\'") + '\')">Frissítés</button>' +
+          ' <button class="btn-oltas-frissit" onclick="oltasModalNyit(' + idx + ', \'' + k.nev.replace(/'/g, "\\'") + '\')">Oltás</button>' +
         '</div>' +
       '</div>' +
-      '<button class="btn-torol" onclick="kutyaTorol(\'' + k.nev.replace(/'/g, "\\'") + '\')">Törlés</button>' +
+      '<div style="display:flex;gap:6px;align-items:center;">' +
+        '<button class="btn-kutya-szerkeszt" onclick="kutyaAdatokModalNyit(' + idx + ')">✏️</button>' +
+        '<button class="btn-torol" onclick="kutyaTorol(\'' + k.nev.replace(/'/g, "\\'") + '\')">Törlés</button>' +
+      '</div>' +
     '</div>';
   }).join('');
 }
@@ -745,6 +1061,68 @@ async function oltasMent() {
   } catch(e) {
     msgEl.textContent = 'Hálózati hiba.';
     msgEl.className = 'profil-msg hiba';
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Mentés';
+  }
+}
+
+// ── Kutya adatok szerkesztés modal ────────────────────────────
+function kutyaAdatokModalNyit(idx) {
+  const kutyak = wdKutyak();
+  const k = kutyak[idx];
+  if (!k) return;
+  document.getElementById('kutya-modal-title').textContent = 'Kutya adatai – ' + k.nev;
+  document.getElementById('kutya-modal-idx').value         = idx;
+  document.getElementById('kutya-modal-nev').value         = k.nev    || '';
+  document.getElementById('kutya-modal-chip').value        = k.chip   || '';
+  document.getElementById('kutya-modal-szuldat').value     = k.szuldat || '';
+  document.getElementById('kutya-modal-msg').textContent   = '';
+  document.getElementById('kutya-adatok-modal').classList.add('active');
+}
+
+function kutyaAdatokModalBezar() {
+  document.getElementById('kutya-adatok-modal').classList.remove('active');
+}
+
+async function kutyaAdatokMent() {
+  const idx     = parseInt(document.getElementById('kutya-modal-idx').value, 10);
+  const nev     = document.getElementById('kutya-modal-nev').value.trim();
+  const chip    = document.getElementById('kutya-modal-chip').value.trim();
+  const szuldat = document.getElementById('kutya-modal-szuldat').value.trim();
+  const msgEl   = document.getElementById('kutya-modal-msg');
+  const saveBtn = document.getElementById('kutya-modal-save');
+
+  if (!nev) { msgEl.textContent = 'A kutya neve kötelező!'; msgEl.className = 'profil-msg-kutya-modal hiba'; return; }
+
+  const user = wdGetUser();
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Mentés...';
+  msgEl.textContent = '';
+
+  try {
+    const resp = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'kutya_adatok_frissites', email: user.email, auth_token: user.auth_token || '',
+        kutya_index: idx, nev, chip, szuldat
+      })
+    });
+    const result = await resp.json();
+    if (result.ok) {
+      const u = wdGetUser();
+      u.kutyak = result.kutyak;
+      localStorage.setItem('wd_user', JSON.stringify(u));
+      kutyaListaFrissit();
+      kutyaAdatokModalBezar();
+      showMsg('Kutya adatai mentve!', 'ok');
+    } else {
+      msgEl.textContent = result.error || 'Hiba történt.';
+      msgEl.className = 'profil-msg-kutya-modal hiba';
+    }
+  } catch(e) {
+    msgEl.textContent = 'Hálózati hiba. Próbáld újra!';
+    msgEl.className = 'profil-msg-kutya-modal hiba';
   } finally {
     saveBtn.disabled = false;
     saveBtn.textContent = 'Mentés';
