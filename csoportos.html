@@ -345,6 +345,9 @@
           </div>
         </div>
 
+        <!-- Törzsvásárló kedvezmény szöveg -->
+        <div id="csoportos-kedvezmeny-sor" style="display:none; background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:8px; padding:8px 14px; font-size:13px; color:var(--gold); margin-bottom:12px; text-align:center;"></div>
+
         <!-- Ár display -->
         <div id="csoportos-ar" style="text-align:center; font-size:20px; font-weight:700; color:var(--gold); margin-bottom:20px;">
           7 000 Ft
@@ -496,6 +499,28 @@ const AR_PER_KUTYA = 7000;
 
   // Szombatok betöltése
   loadSzombatok();
+
+  // Törzsvásárló kedvezmény check (csoportos oszlop)
+  if (user.email) {
+    fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'kedvezmeny_check', email: user.email, szolgaltatas: 'csoportos' })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      const pct = (data && data.kedvezmeny > 0) ? data.kedvezmeny : 0;
+      window._csoportosTorzsKedvPct = pct;
+      if (pct > 0) {
+        const el = document.getElementById('csoportos-kedvezmeny-sor');
+        if (el) {
+          el.textContent = '🏷️ Törzsvásárló kedvezmény: ' + pct + '% – az ár automatikusan tartalmazza!';
+          el.style.display = 'block';
+        }
+        updateAr();
+      }
+    })
+    .catch(function(e) { console.log('[WD csoportos] kedvezmény check hiba:', e); });
+  }
 })();
 
 function getSelectedFizmod() {
@@ -523,8 +548,11 @@ function updateFizmod() {
 function updateAr() {
   const checked = document.querySelectorAll('.csoportos-kutya-cb:checked');
   const db = Math.max(checked.length, 1);
-  const osszeg = db * AR_PER_KUTYA;
-  const formatted = osszeg.toLocaleString('hu-HU');
+  const arEredeti  = db * AR_PER_KUTYA;
+  const torzsPct   = window._csoportosTorzsKedvPct || 0;
+  const torzsKedv  = Math.round(arEredeti * torzsPct / 100);
+  const osszeg     = arEredeti - torzsKedv;
+  const formatted  = osszeg.toLocaleString('hu-HU');
   document.getElementById('csoportos-ar').textContent = formatted + ' Ft';
 
   var mode = getSelectedFizmod();

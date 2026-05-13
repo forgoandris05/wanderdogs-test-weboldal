@@ -792,10 +792,12 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
               Add meg a dátumokat az összeg kiszámításához
             </p>
           </div>
+          <div id="p-kedvezmeny-sor" style="display:none; background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:8px; padding:8px 14px; font-size:13px; color:var(--gold); margin-bottom:12px;"></div>
           <div class="calc-breakdown" id="calc-breakdown" style="display:none;">
             <div class="calc-row"><span id="r-ejszakak-label">Megkezdett napok</span><span id="r-ejszakak">–</span></div>
             <div class="calc-row"><span id="r-napidij-label">Napidíj</span><span id="r-napidij">–</span></div>
-            <div class="calc-row discount" id="r-kedv-row" style="display:none;"><span>Kedvezmény</span><span id="r-kedvezmeny">–</span></div>
+            <div class="calc-row discount" id="r-kedv-row" style="display:none;"><span>Hosszú tartózkodás kedvezmény</span><span id="r-kedvezmeny">–</span></div>
+            <div class="calc-row discount" id="r-torzs-row" style="display:none;"><span>Törzsvásárló kedvezmény</span><span id="r-torzs-kedv">–</span></div>
             <div class="calc-row" id="r-etel-row" style="display:none;"><span>Étel biztosítás</span><span id="r-etel">–</span></div>
             <div class="calc-row" id="r-taxi-row" style="display:none;"><span>Kutyataxi</span><span id="r-taxi">–</span></div>
             <div class="calc-row total"><span>Fizetendő összeg</span><span id="r-vegosszeg">–</span></div>
@@ -1114,8 +1116,11 @@ function szamol() {
   else if (napok >= 16) kedvPct = 20;
   else if (napok >= 8)  kedvPct = 10;
 
-  const alap     = napok * napidij;
-  const kedv     = Math.round(alap * kedvPct / 100);
+  const alap         = napok * napidij;
+  const kedv         = Math.round(alap * kedvPct / 100);
+  const arAutoUtan   = alap - kedv;
+  const torzsKedv    = Math.round(arAutoUtan * (window._panzioTorzsKedvPct || 0) / 100);
+  const arSzallasOnly = arAutoUtan - torzsKedv;
   const etelDij  = etel ? napok * 1000 * selectedKutya : 0;
 
   const taxiHozas = taxiKm > 0 && document.getElementById('taxi-foglalas-hozas').checked;
@@ -1123,9 +1128,9 @@ function szamol() {
   const taxiIranyok = (taxiHozas ? 1 : 0) + (taxiVives ? 1 : 0);
   const taxiDij = taxiKm > 0 ? (TAXI_ARAK[taxiKm] || 0) * taxiIranyok : 0;
 
-  const vegosszeg = alap - kedv + etelDij + taxiDij;
+  const vegosszeg = arSzallasOnly + etelDij + taxiDij;
 
-  panzioCalc = { napok, napidij, kedvPct, kedv, etelDij, taxiDij, taxiKm, taxiHozas, taxiVives, vegosszeg, kutya: selectedKutya, be, ki, beOra, kiOra, etel, tizenegy };
+  panzioCalc = { napok, napidij, kedvPct, kedv, torzsKedvPct: (window._panzioTorzsKedvPct || 0), torzsKedv, etelDij, taxiDij, taxiKm, taxiHozas, taxiVives, vegosszeg, kutya: selectedKutya, be, ki, beOra, kiOra, etel, tizenegy };
 
   // Frissíti a UI-t
   document.getElementById('calc-empty-state').style.display = 'none';
@@ -1143,6 +1148,14 @@ function szamol() {
     document.getElementById('r-kedvezmeny').textContent = '−' + kedvPct + '% (−' + fmt(kedv) + ' Ft)';
   } else {
     kedvRow.style.display = 'none';
+  }
+
+  const torzsRow = document.getElementById('r-torzs-row');
+  if ((window._panzioTorzsKedvPct || 0) > 0 && torzsKedv > 0) {
+    torzsRow.style.display = 'flex';
+    document.getElementById('r-torzs-kedv').textContent = '−' + window._panzioTorzsKedvPct + '% (−' + fmt(torzsKedv) + ' Ft)';
+  } else {
+    torzsRow.style.display = 'none';
   }
 
   const etelRow = document.getElementById('r-etel-row');
@@ -1417,6 +1430,31 @@ szamol();
   });
 
   frissitGomb();
+})();
+
+// ── Panzió törzsvásárló kedvezmény check ──
+(async function panzioKedvezmenyCheck() {
+  const user = wdGetUser();
+  if (!user || !user.registered || !user.email) return;
+  try {
+    const r = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'kedvezmeny_check', email: user.email, szolgaltatas: 'panzio' })
+    });
+    const data = await r.json();
+    const pct = (data && data.kedvezmeny > 0) ? data.kedvezmeny : 0;
+    window._panzioTorzsKedvPct = pct;
+    if (pct > 0) {
+      const el = document.getElementById('p-kedvezmeny-sor');
+      if (el) {
+        el.textContent = '🏷️ Törzsvásárló kedvezmény: ' + pct + '% – az árak automatikusan tartalmazzák! (a hossz alapú kedvezmény után)';
+        el.style.display = 'block';
+      }
+      szamol(); // újraszámol az új kedvezménnyel
+    }
+  } catch(e) {
+    console.log('[WD panzio] kedvezmény check hiba:', e);
+  }
 })();
 
 // ── Panzió foglalás check (cache-elt, gyors) ──
