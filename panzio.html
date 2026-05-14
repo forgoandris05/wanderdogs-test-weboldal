@@ -1188,7 +1188,7 @@ function showEmpty(msg) {
   document.getElementById('calc-info').style.display        = 'none';
   document.getElementById('pay-btn').disabled               = true;
   // Napidíj frissítése az aktuális kutyaszám alapján
-  const napidij = ({1: 8000, 2: 13500})[selectedKutya] || 8000;
+  const napidij = ({1: 8000, 2: 13500, 3: 15000})[selectedKutya] || 8000;
   document.getElementById('r-napidij-static').textContent   = fmt(napidij);
   if (msg) document.getElementById('calc-empty-state').querySelector('p').textContent = msg;
 }
