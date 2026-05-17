@@ -521,7 +521,7 @@
                   <div class="form-group">
                     <label>Kombinált oltás fotó *</label>
                     <input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="font-size:12px;">
-                    <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>
+                    <small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>
                     <img class="oltas-kombinalt-preview" alt="Előnézet">
                   </div>
                   <div class="form-group">
@@ -533,7 +533,7 @@
                   <div class="form-group">
                     <label>Veszettség oltás fotó *</label>
                     <input type="file" accept="image/*" class="oltas-veszettség-kep" required style="font-size:12px;">
-                    <small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>
+                    <small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>
                     <img class="oltas-veszettség-preview" alt="Előnézet">
                   </div>
                   <div class="form-group">
@@ -710,6 +710,8 @@
         const szuldat = b.querySelector('.kutya-szuldat').value;
         const oltasKep = b.querySelector('.oltas-kombinalt-kep').files;
         const oltasLejar = b.querySelector('.oltas-kombinalt-lejar').value;
+        const veszKep = b.querySelector('.oltas-veszettség-kep').files;
+        const veszLejar = b.querySelector('.oltas-vesz-lejar').value;
         const sorsz = i + 1;
         if (!knev || !fajta || !szuldat) {
           return showRegError((kutyak.length > 1 ? sorsz + '. ' : '') + 'Kutya neve, fajtája és születési dátuma kötelező.');
@@ -719,6 +721,12 @@
         }
         if (!oltasLejar) {
           return showRegError((kutyak.length > 1 ? sorsz + '. kutya: ' : '') + 'A kombinált oltás lejárati dátuma kötelező.');
+        }
+        if (!veszKep || veszKep.length === 0) {
+          return showRegError((kutyak.length > 1 ? sorsz + '. kutya: ' : '') + 'A veszettség oltás fotója kötelező.');
+        }
+        if (!veszLejar) {
+          return showRegError((kutyak.length > 1 ? sorsz + '. kutya: ' : '') + 'A veszettség oltás lejárati dátuma kötelező.');
         }
       }
       const problema = document.getElementById('regProblema').value.trim();
@@ -831,7 +839,7 @@
         '<div class="form-row">' +
           '<div class="form-group"><label>Kombinált oltás fotó *</label>' +
             '<input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="font-size:12px;">' +
-            '<small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>' +
+            '<small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>' +
             '<img class="oltas-kombinalt-preview" alt="Előnézet">' +
           '</div>' +
           '<div class="form-group"><label>Kombinált oltás lejárata *</label><input type="date" class="oltas-kombinalt-lejar" max="9999-12-31" required></div>' +
@@ -839,7 +847,7 @@
         '<div class="form-row">' +
           '<div class="form-group"><label>Veszettség oltás fotó *</label>' +
             '<input type="file" accept="image/*" class="oltas-veszettség-kep" required style="font-size:12px;">' +
-            '<small style="color:var(--text-faint);font-size:11px;">Max 5 MB, JPG/PNG</small>' +
+            '<small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>' +
             '<img class="oltas-veszettség-preview" alt="Előnézet">' +
           '</div>' +
           '<div class="form-group"><label>Veszettség oltás lejárata *</label><input type="date" class="oltas-vesz-lejar" max="9999-12-31" required></div>' +
@@ -855,7 +863,7 @@
   function resizeImageToBase64(file, maxSize) {
     return new Promise((resolve, reject) => {
       if (!file) { resolve(''); return; }
-      if (file.size > 5 * 1024 * 1024) { reject(new Error('A kép túl nagy (max 5 MB).')); return; }
+      if (file.size > 15 * 1024 * 1024) { reject(new Error('A kép túl nagy (max 15 MB).')); return; }
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
@@ -883,11 +891,24 @@
   document.addEventListener('change', function(e) {
     const kepClasses = ['oltas-kombinalt-kep', 'oltas-veszettség-kep'];
     const previewClasses = ['oltas-kombinalt-preview', 'oltas-veszettség-preview'];
+    const kepNevek = ['kombinált oltás', 'veszettség oltás'];
     const idx = kepClasses.findIndex(cls => e.target.classList.contains(cls));
     if (idx === -1) return;
     const preview = e.target.closest('.form-group').querySelector('.' + previewClasses[idx]);
-    if (!preview) return;
     const file = e.target.files[0];
+
+    if (file && file.size > 15 * 1024 * 1024) {
+      const blokkok = Array.from(document.querySelectorAll('#kutyak-container .kutya-blokk'));
+      const blokk = e.target.closest('.kutya-blokk');
+      const sorsz = blokkok.indexOf(blokk) + 1;
+      const prefix = blokkok.length > 1 ? sorsz + '. kutya ' : 'A ';
+      showRegError(prefix + kepNevek[idx] + ' fotó túl nagy (max 15 MB). Kérlek válassz kisebb képet.');
+      e.target.value = '';
+      if (preview) preview.style.display = 'none';
+      return;
+    }
+
+    if (!preview) return;
     if (file) {
       const reader = new FileReader();
       reader.onload = function(ev) { preview.src = ev.target.result; preview.style.display = 'block'; };
@@ -964,10 +985,18 @@
     // Képek base64 konvertálás
     const oltasAdatok = [];
     try {
-      for (const o of oltasok) {
-        const komb64 = o.kombinaltFile ? await resizeImageToBase64(o.kombinaltFile, 800) : '';
-        const vesz64 = o.veszFile      ? await resizeImageToBase64(o.veszFile,      800) : '';
-        oltasAdatok.push({ kombinalt_lejar: o.kombinalt_lejar, kombinalt_kep_base64: komb64, vesz_lejar: o.vesz_lejar, vesz_kep_base64: vesz64 });
+      for (let i = 0; i < oltasok.length; i++) {
+        const o = oltasok[i];
+        const sorsz = i + 1;
+        const prefix = oltasok.length > 1 ? sorsz + '. kutya ' : '';
+        try {
+          const komb64 = o.kombinaltFile ? await resizeImageToBase64(o.kombinaltFile, 800) : '';
+          const vesz64 = o.veszFile      ? await resizeImageToBase64(o.veszFile,      800) : '';
+          oltasAdatok.push({ kombinalt_lejar: o.kombinalt_lejar, kombinalt_kep_base64: komb64, vesz_lejar: o.vesz_lejar, vesz_kep_base64: vesz64 });
+        } catch (innerErr) {
+          const which = (o.kombinaltFile && o.kombinaltFile.size > 15*1024*1024) ? 'kombinált oltás' : 'veszettség oltás';
+          throw new Error(prefix + which + ' fotó hiba: ' + (innerErr.message || innerErr));
+        }
       }
     } catch(imgErr) {
       showRegError(imgErr.message || 'Hiba a kép feldolgozásakor.');
