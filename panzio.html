@@ -333,6 +333,29 @@
       #hogyan { padding: 24px 20px !important; }
       .panzio-hogyan-grid { grid-template-columns: 1fr !important; }
     }
+    /* ── Panzió inline naptár ── */
+    .pz-cal-wrap { background:var(--black-3); border:1px solid var(--border-dim); border-radius:14px; padding:16px; margin-bottom:12px; }
+    .pz-cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .pz-cal-nav button { background:none; border:1px solid var(--border-dim); color:var(--gold); font-size:18px; width:36px; height:36px; border-radius:8px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+    .pz-cal-nav button:hover { border-color:var(--gold); background:rgba(255,215,0,0.08); }
+    .pz-cal-nav .pz-cal-month { font-size:16px; font-weight:800; color:var(--text); }
+    .pz-cal-header { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:4px; }
+    .pz-cal-header span { text-align:center; font-size:11px; font-weight:700; color:var(--text-dim); text-transform:uppercase; padding:6px 0; }
+    .pz-cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+    .pz-cal-cell { aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:10px; font-size:14px; font-weight:700; cursor:default; border:2px solid transparent; transition:all 0.2s; min-height:44px; user-select:none; }
+    .pz-cal-cell.empty { visibility:hidden; }
+    .pz-cal-cell.disabled { opacity:0.2; pointer-events:none; }
+    .pz-cal-cell.zarva { opacity:0.4; pointer-events:none; background:rgba(244,67,54,0.08); border-color:rgba(244,67,54,0.2); }
+    .pz-cal-cell.zarva .pz-zarva-label { display:block; color:var(--text-dim); font-size:9px; font-weight:600; margin-top:1px; }
+    .pz-cal-cell.available { background:rgba(76,175,80,0.1); border-color:rgba(76,175,80,0.3); color:var(--text); cursor:pointer; }
+    .pz-cal-cell.available:hover { border-color:var(--gold); transform:scale(1.05); }
+    .pz-cal-cell.in-range { background:rgba(255,215,0,0.18); border-color:rgba(255,215,0,0.3); color:var(--text); }
+    .pz-cal-cell.selected-start, .pz-cal-cell.selected-end { background:var(--gold) !important; color:var(--black) !important; border-color:var(--gold) !important; }
+    .pz-cal-cell .pz-zarva-label { display:none; }
+    .pz-cal-selected { margin-top:10px; padding:10px 14px; background:rgba(255,215,0,0.06); border:1px solid rgba(255,215,0,0.2); border-radius:10px; font-size:13px; color:var(--text); }
+    .pz-cal-selected .pz-cal-clear { float:right; background:none; border:none; color:var(--gold); font-size:12px; font-weight:700; cursor:pointer; text-decoration:underline; padding:0; }
+    .pz-cal-error { margin-top:10px; padding:10px 14px; background:rgba(244,67,54,0.08); border:1px solid rgba(244,67,54,0.3); border-radius:10px; font-size:13px; color:#f59292; }
+    .pz-cal-loading { text-align:center; padding:30px; color:var(--text-dim); font-size:13px; }
   </style>
 </head>
 <body>
@@ -629,15 +652,15 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
       <form id="panzio-calc" novalidate>
 
         <h3>📅 Dátumok</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="calc-be">Beköltözés</label>
-            <input type="date" id="calc-be" required>
+        <input type="date" id="calc-be" required style="display:none;">
+        <input type="date" id="calc-ki" required style="display:none;">
+        <div id="panzio-cal-section">
+          <div class="pz-cal-wrap">
+            <div id="panzio-cal-loading" class="pz-cal-loading">Naptár betöltése...</div>
+            <div id="panzio-cal-grid" style="display:none;"></div>
           </div>
-          <div class="form-group">
-            <label for="calc-ki">Kiköltözés</label>
-            <input type="date" id="calc-ki" required>
-          </div>
+          <div id="panzio-cal-selected" class="pz-cal-selected" style="display:none;"></div>
+          <div id="panzio-cal-error" class="pz-cal-error" style="display:none;"></div>
         </div>
 
         <div class="form-group">
@@ -1695,6 +1718,220 @@ async function panzioTaxiFizet() {
     hiba.style.display = 'block';
   }
 }
+
+// ── Panzió inline naptár (zárt napok kezelése) ──────────────
+let _pzZarvaIntervallumok = [];
+let _pzSelectedBe = '';
+let _pzSelectedKi = '';
+let _pzViewMonth = new Date().getMonth();
+let _pzViewYear  = new Date().getFullYear();
+
+function loadPanzioCal() {
+  const loadingEl = document.getElementById('panzio-cal-loading');
+  const gridEl    = document.getElementById('panzio-cal-grid');
+  if (gridEl)    gridEl.style.display = 'none';
+  if (loadingEl) loadingEl.style.display = 'block';
+
+  fetch(WEBAPP_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'zarva_check', szolgaltatas: 'panzio' })
+  })
+    .then(r => r.json())
+    .then(resp => {
+      if (resp && resp.ok) _pzZarvaIntervallumok = resp.intervallumok || [];
+      renderPanzioCal();
+    })
+    .catch(() => { renderPanzioCal(); });
+}
+
+function pzMinDate() {
+  const m = new Date();
+  m.setHours(0, 0, 0, 0);
+  m.setDate(m.getDate() + 2);
+  return m;
+}
+
+function pzDateStr(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+
+function pzIsZarva(datumStr) {
+  for (let i = 0; i < _pzZarvaIntervallumok.length; i++) {
+    if (datumStr >= _pzZarvaIntervallumok[i][0] && datumStr <= _pzZarvaIntervallumok[i][1]) return true;
+  }
+  return false;
+}
+
+function renderPanzioCal() {
+  const gridEl    = document.getElementById('panzio-cal-grid');
+  const loadingEl = document.getElementById('panzio-cal-loading');
+  if (!gridEl) return;
+  if (loadingEl) loadingEl.style.display = 'none';
+  gridEl.style.display = 'block';
+
+  const honapNevek = ['Január','Február','Március','Április','Május','Június','Július','Augusztus','Szeptember','Október','November','December'];
+  const napNevek = ['H','K','Sz','Cs','P','Sz','V'];
+  const year = _pzViewYear;
+  const month = _pzViewMonth;
+
+  let html = '<div class="pz-cal-nav">';
+  html += '<button type="button" onclick="pzCalPrev()" aria-label="Előző hónap">&lsaquo;</button>';
+  html += '<span class="pz-cal-month">' + honapNevek[month] + ' ' + year + '</span>';
+  html += '<button type="button" onclick="pzCalNext()" aria-label="Következő hónap">&rsaquo;</button>';
+  html += '</div>';
+
+  html += '<div class="pz-cal-header">';
+  napNevek.forEach(n => { html += '<span>' + n + '</span>'; });
+  html += '</div>';
+
+  html += '<div class="pz-cal-grid">';
+
+  const elsoNap = new Date(year, month, 1);
+  let elsoNapIndex = elsoNap.getDay();
+  if (elsoNapIndex === 0) elsoNapIndex = 7;
+  elsoNapIndex--;
+
+  const napokSzama = new Date(year, month + 1, 0).getDate();
+  const minD = pzMinDate();
+
+  for (let e = 0; e < elsoNapIndex; e++) {
+    html += '<div class="pz-cal-cell empty"></div>';
+  }
+
+  for (let nap = 1; nap <= napokSzama; nap++) {
+    const d = new Date(year, month, nap);
+    const datumStr = pzDateStr(d);
+    const isJovo = d >= minD;
+    const isZarva = pzIsZarva(datumStr);
+
+    let cellClass = 'pz-cal-cell';
+    let cellContent = '<span>' + nap + '</span>';
+    let onclick = '';
+
+    if (!isJovo) {
+      cellClass += ' disabled';
+    } else if (isZarva) {
+      cellClass += ' zarva';
+      cellContent += '<span class="pz-zarva-label">Zárva</span>';
+    } else {
+      cellClass += ' available';
+      onclick = ' onclick="pzCalSelect(\'' + datumStr + '\')"';
+    }
+
+    if (_pzSelectedBe && datumStr === _pzSelectedBe) cellClass += ' selected-start';
+    if (_pzSelectedKi && datumStr === _pzSelectedKi) cellClass += ' selected-end';
+    if (_pzSelectedBe && _pzSelectedKi && datumStr > _pzSelectedBe && datumStr < _pzSelectedKi) {
+      cellClass += ' in-range';
+    }
+
+    html += '<div class="' + cellClass + '"' + onclick + '>' + cellContent + '</div>';
+  }
+
+  html += '</div>';
+  gridEl.innerHTML = html;
+  _pzUpdateSelectedInfo();
+}
+
+function pzCalPrev() {
+  _pzViewMonth--;
+  if (_pzViewMonth < 0) { _pzViewMonth = 11; _pzViewYear--; }
+  renderPanzioCal();
+}
+
+function pzCalNext() {
+  _pzViewMonth++;
+  if (_pzViewMonth > 11) { _pzViewMonth = 0; _pzViewYear++; }
+  renderPanzioCal();
+}
+
+function pzCalSelect(datumStr) {
+  const errEl = document.getElementById('panzio-cal-error');
+  if (errEl) errEl.style.display = 'none';
+
+  if (!_pzSelectedBe || (_pzSelectedBe && _pzSelectedKi)) {
+    _pzSelectedBe = datumStr;
+    _pzSelectedKi = '';
+    _pzSyncInputs();
+    renderPanzioCal();
+    return;
+  }
+
+  if (datumStr <= _pzSelectedBe) {
+    _pzSelectedBe = datumStr;
+    _pzSelectedKi = '';
+    _pzSyncInputs();
+    renderPanzioCal();
+    return;
+  }
+
+  const rangeStart = new Date(_pzSelectedBe + 'T00:00:00');
+  const rangeEnd = new Date(datumStr + 'T00:00:00');
+  let zartTalalt = '';
+  const cur = new Date(rangeStart);
+  cur.setDate(cur.getDate() + 1);
+  while (cur < rangeEnd) {
+    const curStr = pzDateStr(cur);
+    if (pzIsZarva(curStr)) { zartTalalt = curStr; break; }
+    cur.setDate(cur.getDate() + 1);
+  }
+
+  if (zartTalalt) {
+    if (errEl) {
+      const zartSzep = zartTalalt.replace(/(\d{4})-(\d{2})-(\d{2})/, '$1. $2. $3.');
+      errEl.textContent = 'A kiválasztott időszakban zárt nap van (' + zartSzep + '). Válassz másik időszakot.';
+      errEl.style.display = 'block';
+    }
+    return;
+  }
+
+  _pzSelectedKi = datumStr;
+  _pzSyncInputs();
+  renderPanzioCal();
+}
+
+function _pzSyncInputs() {
+  const beEl = document.getElementById('calc-be');
+  const kiEl = document.getElementById('calc-ki');
+  if (beEl) {
+    beEl.value = _pzSelectedBe || '';
+    beEl.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  if (kiEl) {
+    kiEl.value = _pzSelectedKi || '';
+    kiEl.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+}
+
+function _pzUpdateSelectedInfo() {
+  const infoEl = document.getElementById('panzio-cal-selected');
+  if (!infoEl) return;
+  if (!_pzSelectedBe) {
+    infoEl.style.display = 'none';
+    return;
+  }
+  const beSzep = _pzSelectedBe.replace(/(\d{4})-(\d{2})-(\d{2})/, '$1. $2. $3.');
+  const kiSzep = _pzSelectedKi
+    ? _pzSelectedKi.replace(/(\d{4})-(\d{2})-(\d{2})/, '$1. $2. $3.')
+    : '<em style="color:var(--text-dim);font-style:normal;">válassz kiköltözést</em>';
+  infoEl.innerHTML =
+    '<button type="button" class="pz-cal-clear" onclick="pzCalClear()">Törlés</button>' +
+    'Beköltözés: <strong>' + beSzep + '</strong> → Kiköltözés: <strong>' + kiSzep + '</strong>';
+  infoEl.style.display = 'block';
+}
+
+function pzCalClear() {
+  _pzSelectedBe = '';
+  _pzSelectedKi = '';
+  _pzSyncInputs();
+  const errEl = document.getElementById('panzio-cal-error');
+  if (errEl) errEl.style.display = 'none';
+  renderPanzioCal();
+}
+
+loadPanzioCal();
 
 // ── Taxi szekció betöltés (bejelentkezett usernek) ──────────
 (async function panzioTaxiInit() {
