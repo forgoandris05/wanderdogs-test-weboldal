@@ -245,6 +245,18 @@
     .nk-cal-cell.selected { background:var(--gold) !important; color:var(--black) !important; border-color:var(--gold) !important; }
     .nk-cal-cell .spot-count { display:none; }
     @keyframes spin { to { transform:rotate(360deg); } }
+    @media (max-width: 700px) {
+      .nk-cal-grid, .nk-cal-header { gap: 2px; }
+      .nk-cal-cell {
+        min-width: 0;
+        min-height: 0;
+        font-size: 13px;
+        border-width: 1px;
+      }
+      .nk-cal-header span { font-size: 10px; padding: 4px 0; }
+      .nk-cal-nav .nk-cal-month { font-size: 14px; }
+      .nk-cal-nav button { width: 32px; height: 32px; font-size: 16px; }
+    }
   </style>
 </head>
 <body>
