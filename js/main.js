@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function wdGetUser() {
   try {
     var u = JSON.parse(localStorage.getItem('wd_user') || 'null');
-    if (u && u.token_created && (Date.now() - u.token_created > 23 * 3600 * 1000)) {
+    if (u && u.token_created && (Date.now() - u.token_created > 30 * 24 * 3600 * 1000)) {
       localStorage.removeItem('wd_user');
       return null;
     }
