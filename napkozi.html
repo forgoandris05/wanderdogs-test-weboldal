@@ -1136,11 +1136,34 @@ async function napkoziCheckout(tipus, extraParams) {
   }
   const isEgyszeriTipus = tipus && (tipus.startsWith('egyszeri') || tipus === 'egyszeri');
   let pendingBookingTime = '';
-  if (fizmod === 'kp' && isEgyszeriTipus) {
-    try {
-      const pb = JSON.parse(localStorage.getItem('wd_pending_booking') || '{}');
-      pendingBookingTime = pb.startTime || '';
-    } catch(e) {}
+  if (isEgyszeriTipus) {
+    // 1. DOM-ból építjük (a napkoziFoglalas mintájára)
+    if (typeof _selectedNapkoziDate !== 'undefined' && _selectedNapkoziDate) {
+      const isTaxiNk = (typeof _taxi !== 'undefined' && _taxi && _taxi !== 'notaxi');
+      if (isTaxiNk) {
+        pendingBookingTime = _selectedNapkoziDate + 'T07:30:00';
+      } else {
+        const oraEl  = document.getElementById('napkozi-ora');
+        const percEl = document.getElementById('napkozi-perc');
+        if (oraEl && percEl && oraEl.value && percEl.value) {
+          pendingBookingTime = _selectedNapkoziDate + 'T' +
+            String(oraEl.value).padStart(2, '0') + ':' +
+            String(percEl.value).padStart(2, '0') + ':00';
+        }
+      }
+    }
+    // 2. localStorage fallback
+    if (!pendingBookingTime) {
+      try {
+        const pb = JSON.parse(localStorage.getItem('wd_pending_booking') || '{}');
+        pendingBookingTime = pb.startTime || '';
+      } catch(e) {}
+    }
+    // 3. KP esetén kötelező — ha még üres, alert + return
+    if (fizmod === 'kp' && !pendingBookingTime) {
+      alert('Kérlek előbb válassz egy napot és időpontot a naptáron!');
+      return;
+    }
   }
   const payload = {
     action: 'napkozi_checkout',
