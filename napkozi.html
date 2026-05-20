@@ -1818,14 +1818,27 @@ function _applyNapkoziData(foglalasData, berletData, user) {
       const lista = document.getElementById('foglalt-napok-lista');
       const box   = document.getElementById('napkozi-foglalt-napok');
       if (lista && box) {
-        lista.innerHTML = '';
-        berletData.idopontok.forEach(function(d) {
-          const span = document.createElement('span');
-          span.style.cssText = 'background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.3);border-radius:6px;padding:4px 10px;font-size:13px;font-weight:600;color:var(--gold);';
-          span.textContent = d;
-          lista.appendChild(span);
+        // Csak jövőbeli (vagy mai) napok
+        const ma = new Date();
+        ma.setHours(0, 0, 0, 0);
+        const jovobeli = berletData.idopontok.filter(function(d) {
+          const m = String(d).match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+          if (!m) return true;
+          const dt = new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
+          return dt >= ma;
         });
-        box.style.display = 'block';
+        lista.innerHTML = '';
+        if (jovobeli.length === 0) {
+          box.style.display = 'none';
+        } else {
+          jovobeli.forEach(function(d) {
+            const span = document.createElement('span');
+            span.style.cssText = 'background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.3);border-radius:6px;padding:4px 10px;font-size:13px;font-weight:600;color:var(--gold);';
+            span.textContent = d;
+            lista.appendChild(span);
+          });
+          box.style.display = 'block';
+        }
       }
     }
   }
