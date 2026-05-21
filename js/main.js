@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const isOpen = navLinks.classList.toggle('open');
       burger.classList.toggle('open', isOpen);
       document.body.style.overflow = isOpen ? 'hidden' : '';
+      // Defenzív: minden <li>-t explicit megjelenítünk megnyitáskor (CSS override védelem)
+      navLinks.querySelectorAll(':scope > li').forEach(li => {
+        li.style.display = isOpen ? 'list-item' : '';
+      });
     });
 
     // Close on link click (mobile) — de nem dropdown toggle-nel
