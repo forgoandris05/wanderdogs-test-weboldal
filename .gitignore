@@ -1,0 +1,19 @@
+# GAS source — NE legyen public
+scripts/
+
+# Test artifacts
+node_modules/
+test-*.js
+test-*.json
+test-*.png
+shots/
+auth-state.json
+booking-auth-report.json
+package-lock.json
+
+# Generated docs
+*.pdf
+
+# Local utilities
+temp_*.js
+generate-*.py
