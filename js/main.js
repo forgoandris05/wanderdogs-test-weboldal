@@ -158,12 +158,32 @@ document.addEventListener('DOMContentLoaded', () => {
 function wdGetUser() {
   try {
     var u = JSON.parse(localStorage.getItem('wd_user') || 'null');
-    if (u && u.token_created && (Date.now() - u.token_created > 30 * 24 * 3600 * 1000)) {
+    if (!u) return null;
+    // Régi (pre-auth_token) record vagy korrupt → kezelje úgy mintha nem lenne login,
+    // különben a backend minden requestnél "Érvénytelen vagy lejárt munkamenet"-tel elutasítja.
+    if (!u.auth_token) {
+      localStorage.removeItem('wd_user');
+      return null;
+    }
+    if (u.token_created && (Date.now() - u.token_created > 30 * 24 * 3600 * 1000)) {
       localStorage.removeItem('wd_user');
       return null;
     }
     return u;
   } catch(e) { return null; }
+}
+
+// Globális session-error handler: ha bármely GAS válasz "lejárt munkamenet"-et tartalmaz,
+// töröljük a wd_user-t és átirányítunk login-ra. Hívd meg a fetch .then-jében.
+function wdHandleSessionError(result) {
+  if (result && result.error && /lejárt munkamenet|érvénytelen.*munkamenet/i.test(result.error)) {
+    localStorage.removeItem('wd_user');
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    alert('Lejárt a munkamenet. Kérlek jelentkezz be újra.');
+    window.location.href = 'bejelentkezes.html?return=' + encodeURIComponent(currentPage);
+    return true;
+  }
+  return false;
 }
 
 // ── SHA-256 jelszó hash (Web Crypto API) ─────────────────
