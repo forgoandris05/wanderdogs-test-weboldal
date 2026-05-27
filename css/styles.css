@@ -580,28 +580,39 @@ footer {
     display: list-item !important; margin-top: auto; padding-top: 16px;
     border-top: 1px solid var(--border-dim);
   }
-  .dropdown-menu {
+  /* MOBIL: dropdown ellaposítása - Szolgáltatások parent elrejtve,
+     a 8 szolgáltatás-link top-level itemként renderel a flexbox-ban */
+  .nav-links.open .nav-dropdown {
+    display: contents;
+  }
+  .nav-links.open .nav-dropdown > a {
+    display: none !important;
+  }
+  .nav-links.open .dropdown-menu {
+    display: contents !important;
     position: static !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-height: none !important;
     transform: none !important;
-    opacity: 0;
-    visibility: hidden;
-    max-height: 0;
-    overflow: hidden;
-    background: var(--black-4);
-    margin-top: 0;
-    border-radius: 8px;
-    padding: 0 8px;
-    transition: max-height 0.3s ease, opacity 0.2s, margin-top 0.2s, padding 0.2s;
   }
-  .nav-dropdown.open > .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    max-height: 500px;
-    margin-top: 12px;
-    padding: 8px;
+  .nav-links.open .dropdown-menu > li {
+    display: list-item !important;
+    width: 100%;
+    list-style: none;
   }
-  .nav-dropdown > a::after { transition: transform 0.2s; display: inline-block; }
-  .nav-dropdown.open > a::after { transform: rotate(180deg); }
+  .nav-links.open .dropdown-menu > li > a {
+    display: block !important;
+    font-size: 18px;
+    color: var(--text) !important;
+    padding: 8px 0 !important;
+    background: none !important;
+  }
 
   .page-hero { padding: 120px 20px 60px; }
   .section { padding: 20px 20px; }
