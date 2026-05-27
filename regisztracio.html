@@ -702,6 +702,20 @@
       }
       goToStep(2);
     } else if (fromStep === 2) {
+      // Cleanup: töröljük a teljesen üres extra kutya-blokkokat (user véletlenül
+      // nyomta meg a "+ Még egy kutyát is hozok" gombot). Az 1. blokk maradjon,
+      // arra dobjon hibát a validator ha üres (min. 1 kutya kötelező).
+      document.querySelectorAll('#kutyak-container .kutya-blokk').forEach(b => {
+        if (b.dataset.index === '0') return;
+        const _knev = b.querySelector('.kutya-nev').value.trim();
+        const _fajta = b.querySelector('.kutya-fajta').value.trim();
+        const _szuldat = b.querySelector('.kutya-szuldat').value;
+        if (!_knev && !_fajta && !_szuldat) b.remove();
+      });
+      const _tobbBtn = document.getElementById('tobbKutyaBtn');
+      if (_tobbBtn && document.querySelectorAll('#kutyak-container .kutya-blokk').length < 4) {
+        _tobbBtn.style.display = '';
+      }
       const kutyak = document.querySelectorAll('.kutya-blokk');
       for (let i = 0; i < kutyak.length; i++) {
         const b = kutyak[i];
