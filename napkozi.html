@@ -1554,8 +1554,15 @@ function napkoziFoglalas() {
         szovegEl.innerHTML = tipusSzov +
           'Bérletedből levontunk 1 alkalmat. Maradék: <strong>' + _escHtml(result.maradek) + ' alkalom</strong> · lejár: ' + _escHtml(result.lejar);
       }
+    } else if (typeof wdHandleSessionError === 'function' && wdHandleSessionError(result)) {
+      // Session error → main.js már átirányít login-ra
+      return;
     } else if (result.error && (result.error.includes('már van foglalásod') || result.error.includes('zárva') || result.error.includes('nincs hely'))) {
       // Dupla foglalás / zárt nap / tele → hibaüzenet + visszaállítás
+      _napkoziResetSzekciok();
+      alert(result.error);
+    } else if (result.error && !result.error.includes('Nem található aktív bérlet')) {
+      // Egyéb backend hiba (KP-függő, hálózati, stb.) - NE keverjük össze a "nincs bérlet"-tel
       _napkoziResetSzekciok();
       alert(result.error);
     } else {
