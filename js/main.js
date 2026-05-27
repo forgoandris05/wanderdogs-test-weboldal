@@ -7,6 +7,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── NAV AUTH STATE ───────────────────────────────────────
   try { wdNavAuth(); } catch(e) { console.error('wdNavAuth hiba:', e); }
 
+  // ── FLATTEN SUBMENU FOR MOBILE ───────────────────────────
+  // A Szolgáltatások dropdown linkjeit beklónozzuk top-level li-ként,
+  // hogy mobilon ne kelljen kibontani őket. Asztalon a clone-ok rejtve.
+  try {
+    const _navLinks = document.querySelector('.nav-links');
+    const _dropdown = _navLinks && _navLinks.querySelector('.nav-dropdown');
+    const _dropdownMenu = _dropdown && _dropdown.querySelector('.dropdown-menu');
+    if (_dropdownMenu) {
+      let _insertAfter = _dropdown;
+      Array.from(_dropdownMenu.children).forEach(srcLi => {
+        const srcA = srcLi.querySelector('a');
+        if (!srcA) return;
+        const cloneLi = document.createElement('li');
+        cloneLi.className = 'nav-mobile-flat';
+        const cloneA = document.createElement('a');
+        cloneA.href = srcA.getAttribute('href');
+        cloneA.textContent = srcA.textContent;
+        cloneLi.appendChild(cloneA);
+        _insertAfter.after(cloneLi);
+        _insertAfter = cloneLi;
+      });
+    }
+  } catch(e) { console.error('flattenNavForMobile hiba:', e); }
+
   // ── BURGER MENU ──────────────────────────────────────────
   const burger = document.querySelector('.nav-burger');
   const navLinks = document.querySelector('.nav-links');

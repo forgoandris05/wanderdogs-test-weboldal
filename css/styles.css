@@ -203,6 +203,7 @@ nav {
   .nav-auth-reg { font-size: 11px; padding: 5px 10px; }
 }
 .nav-mobile-kilepes { display: none; }
+.nav-mobile-flat { display: none; }
 
 .nav-burger {
   display: none; flex-direction: column; gap: 5px;
@@ -580,38 +581,22 @@ footer {
     display: list-item !important; margin-top: auto; padding-top: 16px;
     border-top: 1px solid var(--border-dim);
   }
-  /* MOBIL: dropdown ellaposítása - Szolgáltatások parent elrejtve,
-     a 8 szolgáltatás-link top-level itemként renderel a flexbox-ban */
+  /* MOBIL: a Szolgáltatások eredeti dropdown blokk rejtve.
+     Helyette a JS-ből injektált .nav-mobile-flat clone-ok látszanak
+     top-level li-ként (lásd .nav-mobile-flat szabályok lentebb). */
   .nav-links.open .nav-dropdown {
-    display: contents;
-  }
-  .nav-links.open .nav-dropdown > a {
     display: none !important;
   }
-  .nav-links.open .dropdown-menu {
-    display: contents !important;
-    position: static !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    max-height: none !important;
-    transform: none !important;
-  }
-  .nav-links.open .dropdown-menu > li {
+  .nav-links.open .nav-mobile-flat {
     display: list-item !important;
     width: 100%;
     list-style: none;
   }
-  .nav-links.open .dropdown-menu > li > a {
+  .nav-links.open .nav-mobile-flat > a {
     display: block !important;
     font-size: 18px;
-    color: var(--text) !important;
-    padding: 8px 0 !important;
-    background: none !important;
+    color: var(--text);
+    padding: 8px 0;
   }
 
   .page-hero { padding: 120px 20px 60px; }
