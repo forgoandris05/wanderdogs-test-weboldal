@@ -106,7 +106,7 @@
     <div class="berlet-box" id="egyszeri-box" style="display:none;">
       <h4>Fizetés részletei</h4>
       <div class="detail-row"><span>Típus</span><span id="d-egyszeri-tipus">Egyszeri napközi alkalom</span></div>
-      <div class="detail-row"><span>Összeg</span><span id="d-egyszeri-ar" style="color:var(--gold);font-weight:900;">7 000 Ft</span></div>
+      <div class="detail-row"><span>Összeg</span><span id="d-egyszeri-ar" style="color:var(--gold);font-weight:900;">8 000 Ft</span></div>
     </div>
 
     <!-- Kiegészítő taxi részletek -->
@@ -160,20 +160,21 @@ function isTaxiKieg(t) { return t.startsWith('taxi_'); }
 function isBerlet(t)   { return t.startsWith('4alk_') || t.startsWith('8alk_'); }
 
 const EGYSZERI_INFO = {
-  '1alk_1k_notaxi': { ar: '7 000 Ft',  leiras: 'Egyszeri napközi – 1 kutya, taxi nélkül' },
+  '1alk_1k_notaxi': { ar: '8 000 Ft',  leiras: 'Egyszeri napközi – 1 kutya, taxi nélkül' },
   '1alk_2k_notaxi': { ar: '13 500 Ft', leiras: 'Egyszeri napközi – 2 kutya, taxi nélkül' },
-  '1alk_1k_10km':   { ar: '10 300 Ft', leiras: 'Egyszeri napközi – 1 kutya, taxi ≤10km' },
-  '1alk_2k_10km':   { ar: '16 800 Ft', leiras: 'Egyszeri napközi – 2 kutya, taxi ≤10km' },
-  '1alk_1k_25km':   { ar: '12 500 Ft', leiras: 'Egyszeri napközi – 1 kutya, taxi >10km' },
-  '1alk_2k_25km':   { ar: '19 000 Ft', leiras: 'Egyszeri napközi – 2 kutya, taxi >10km' },
-  'egyszeri':       { ar: '7 000 Ft',  leiras: 'Egyszeri napközi alkalom' },
+  '1alk_3k_notaxi': { ar: '15 000 Ft', leiras: 'Egyszeri napközi – 3 kutya, taxi nélkül' },
+  '1alk_1k_10km':   { ar: '12 500 Ft', leiras: 'Egyszeri napközi – 1 kutya, taxi ≤10km' },
+  '1alk_2k_10km':   { ar: '18 000 Ft', leiras: 'Egyszeri napközi – 2 kutya, taxi ≤10km' },
+  '1alk_1k_25km':   { ar: '14 700 Ft', leiras: 'Egyszeri napközi – 1 kutya, taxi >10km' },
+  '1alk_2k_25km':   { ar: '20 200 Ft', leiras: 'Egyszeri napközi – 2 kutya, taxi >10km' },
+  'egyszeri':       { ar: '8 000 Ft',  leiras: 'Egyszeri napközi alkalom' },
 };
 
 const TAXI_KIEG_INFO = {
-  'taxi_1ut_10km':       { ar: '1 650 Ft', leiras: 'Kiegészítő taxi – 1 út, ≤10km' },
-  'taxi_odavissza_10km': { ar: '3 300 Ft', leiras: 'Kiegészítő taxi – oda-vissza, ≤10km' },
-  'taxi_1ut_25km':       { ar: '2 750 Ft', leiras: 'Kiegészítő taxi – 1 út, >10km' },
-  'taxi_odavissza_25km': { ar: '5 500 Ft', leiras: 'Kiegészítő taxi – oda-vissza, >10km' },
+  'taxi_1ut_10km':       { ar: '2 250 Ft', leiras: 'Kiegészítő taxi – 1 út, ≤10km' },
+  'taxi_odavissza_10km': { ar: '4 500 Ft', leiras: 'Kiegészítő taxi – oda-vissza, ≤10km' },
+  'taxi_1ut_25km':       { ar: '3 350 Ft', leiras: 'Kiegészítő taxi – 1 út, >10km' },
+  'taxi_odavissza_25km': { ar: '6 700 Ft', leiras: 'Kiegészítő taxi – oda-vissza, >10km' },
 };
 
 async function megerosit() {

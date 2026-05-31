@@ -575,9 +575,9 @@
           <label>Kutyák száma</label>
           <div id="kutya-checkboxok" style="margin-bottom:12px;"></div>
           <div class="dog-btns">
-            <button type="button" class="dog-btn active" data-kutya="1">🐕 1 kutya<br><small style="font-weight:400;font-size:11px">8 000 Ft/nap</small></button>
-            <button type="button" class="dog-btn" data-kutya="2">🐕🐕 2 kutya<br><small style="font-weight:400;font-size:11px">13 500 Ft/nap</small></button>
-            <button type="button" class="dog-btn" data-kutya="3">🐕🐕🐕 3 kutya<br><small style="font-weight:400;font-size:11px">15 000 Ft/nap</small></button>
+            <button type="button" class="dog-btn active" data-kutya="1">🐕 1 kutya<br><small style="font-weight:400;font-size:11px">9 000 Ft/nap</small></button>
+            <button type="button" class="dog-btn" data-kutya="2">🐕🐕 2 kutya<br><small style="font-weight:400;font-size:11px">15 000 Ft/nap</small></button>
+            <button type="button" class="dog-btn" data-kutya="3">🐕🐕🐕 3 kutya<br><small style="font-weight:400;font-size:11px">17 000 Ft/nap</small></button>
           </div>
         </div>
 
@@ -627,8 +627,8 @@
           <label>Kutyataxi (opcionális)</label>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
             <button type="button" class="taxi-opt-btn active" data-km="0">Nem kell taxi</button>
-            <button type="button" class="taxi-opt-btn" data-km="10">≤10 km – 3 300 Ft/út</button>
-            <button type="button" class="taxi-opt-btn" data-km="25">10–25 km – 5 500 Ft/út</button>
+            <button type="button" class="taxi-opt-btn" data-km="10">≤10 km – 4 500 Ft/út</button>
+            <button type="button" class="taxi-opt-btn" data-km="25">10–25 km – 6 700 Ft/út</button>
           </div>
           <div id="taxi-foglalas-wrap" style="display:none;padding:14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:10px;">
             <div style="font-size:12px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Melyik irányba kéred?</div>
@@ -716,7 +716,7 @@
           <div id="calc-empty-state" style="text-align:center;padding:16px 0 8px;">
             <div style="font-size:28px;margin-bottom:10px;">🐕</div>
             <div style="font-size:26px;font-weight:900;color:var(--gold);line-height:1;">
-              <span id="r-napidij-static">8 000</span> Ft
+              <span id="r-napidij-static">9 000</span> Ft
               <span style="font-size:13px;font-weight:400;color:var(--text-faint)">&nbsp;/ nap</span>
             </div>
             <p style="font-size:12px;color:var(--text-faint);margin-top:10px;line-height:1.5;">
@@ -801,8 +801,8 @@
       <!-- Távolság -->
       <div style="font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Távolság</div>
       <div style="display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;">
-        <button type="button" class="btn btn-outline panzio-taxi-km active" data-ptkm="10" onclick="panzioTaxiKm(this)" style="padding:8px 16px;font-size:14px;background:var(--gold);color:var(--black);border-color:var(--gold);">≤10 km – 3 300 Ft/út</button>
-        <button type="button" class="btn btn-outline panzio-taxi-km" data-ptkm="25" onclick="panzioTaxiKm(this)" style="padding:8px 16px;font-size:14px;">10-25 km – 5 500 Ft/út</button>
+        <button type="button" class="btn btn-outline panzio-taxi-km active" data-ptkm="10" onclick="panzioTaxiKm(this)" style="padding:8px 16px;font-size:14px;background:var(--gold);color:var(--black);border-color:var(--gold);">≤10 km – 4 500 Ft/út</button>
+        <button type="button" class="btn btn-outline panzio-taxi-km" data-ptkm="25" onclick="panzioTaxiKm(this)" style="padding:8px 16px;font-size:14px;">10-25 km – 6 700 Ft/út</button>
       </div>
 
       <!-- Cím -->
@@ -896,17 +896,18 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
         <h4 style="font-size: 13px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px;">Alap napidíjak</h4>
         <table class="price-table reveal">
           <tr><th>Kutya</th><th style="text-align:right">Napi ár</th></tr>
-          <tr><td>1 kutya</td><td>8 000 Ft / megkezdett nap</td></tr>
-          <tr><td>2 kutya</td><td>13 500 Ft / megkezdett nap</td></tr>
-          <tr><td>3+ kutya</td><td>Egyedi ár – hívj fel!</td></tr>
+          <tr><td>1 kutya</td><td>9 000 Ft / megkezdett nap</td></tr>
+          <tr><td>2 kutya</td><td>15 000 Ft / megkezdett nap</td></tr>
+          <tr><td>3 kutya</td><td>17 000 Ft / megkezdett nap</td></tr>
+          <tr><td>4+ kutya</td><td>Egyedi ár – hívj fel!</td></tr>
         </table>
 
         <h4 style="font-size: 13px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-top: 32px; margin-bottom: 16px;">Hosszú tartózkodás kedvezmény</h4>
         <table class="price-table reveal">
           <tr><th>Tartózkodás</th><th style="text-align:right">Kedvezmény</th></tr>
           <tr><td>1–7 nap</td><td>Alap ár</td></tr>
-          <tr><td>8–15 nap</td><td>10% kedvezmény</td></tr>
-          <tr><td>16–31 nap</td><td>20% kedvezmény</td></tr>
+          <tr><td>8–15 nap</td><td>5% kedvezmény</td></tr>
+          <tr><td>16–31 nap</td><td>15% kedvezmény</td></tr>
           <tr><td>32+ nap</td><td>30% kedvezmény</td></tr>
         </table>
       </div>
@@ -915,8 +916,8 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
         <table class="price-table reveal">
           <tr><th>Szolgáltatás</th><th style="text-align:right">Ár</th></tr>
           <tr><td>Étel biztosítás (prémium táp)</td><td>+1 000 Ft / nap / kutya</td></tr>
-          <tr><td>Problémás kutya <small style="font-weight:400">(alul szoc., félénk, ivaros)</small></td><td>10 000 Ft / nap</td></tr>
-          <tr><td>SOS fogadás <small style="font-weight:400">(24 órán belüli)</small></td><td>10 000 Ft / nap</td></tr>
+          <tr><td>Problémás kutya <small style="font-weight:400">(alul szoc., félénk, ivaros)</small></td><td>12 000 Ft / nap</td></tr>
+          <tr><td>SOS fogadás <small style="font-weight:400">(24 órán belüli)</small></td><td>12 000 Ft / nap</td></tr>
         </table>
 
         <div class="card reveal" style="margin-top: 24px; padding: 20px;">
@@ -997,7 +998,7 @@ let panzioCalc = null; // aktuális kalkuláció eredménye
 let selectedKutya = 1;
 let taxiKm = 0; // 0 = nem kell, 10 = 10km, 25 = 25km
 
-const TAXI_ARAK = { 10: 3300, 25: 5500 };
+const TAXI_ARAK = { 10: 4500, 25: 6700 };
 
 // ── Taxi opció gombok ────────────────────────────────────────
 document.querySelectorAll('.taxi-opt-btn').forEach(function(btn) {
@@ -1149,13 +1150,13 @@ function szamol() {
     return;
   }
 
-  const NAPIDIJ = { 1: 8000, 2: 13500, 3: 15000 };
-  const napidij = NAPIDIJ[selectedKutya] || 8000;
+  const NAPIDIJ = { 1: 9000, 2: 15000, 3: 17000 };
+  const napidij = NAPIDIJ[selectedKutya] || 9000;
 
   let kedvPct = 0;
   if (napok >= 32)      kedvPct = 30;
-  else if (napok >= 16) kedvPct = 20;
-  else if (napok >= 8)  kedvPct = 10;
+  else if (napok >= 16) kedvPct = 15;
+  else if (napok >= 8)  kedvPct = 5;
 
   const alap         = napok * napidij;
   const kedv         = Math.round(alap * kedvPct / 100);
@@ -1229,7 +1230,7 @@ function showEmpty(msg) {
   document.getElementById('calc-info').style.display        = 'none';
   document.getElementById('pay-btn').disabled               = true;
   // Napidíj frissítése az aktuális kutyaszám alapján
-  const napidij = ({1: 8000, 2: 13500, 3: 15000})[selectedKutya] || 8000;
+  const napidij = ({1: 9000, 2: 15000, 3: 17000})[selectedKutya] || 9000;
   document.getElementById('r-napidij-static').textContent   = fmt(napidij);
   if (msg) document.getElementById('calc-empty-state').querySelector('p').textContent = msg;
 }
@@ -1601,7 +1602,7 @@ szamol();
 
 let _ptKm = 10; // 10 vagy 25
 let _ptFoglalasok = []; // backend-ről jövő foglalások
-const PANZIO_TAXI_PRICES = { 10: 3300, 25: 5500 };
+const PANZIO_TAXI_PRICES = { 10: 4500, 25: 6700 };
 
 function panzioTaxiKm(btn) {
   document.querySelectorAll('.panzio-taxi-km').forEach(b => {
