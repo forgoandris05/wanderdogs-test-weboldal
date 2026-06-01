@@ -197,6 +197,28 @@
       display: none;
       border: 1px solid var(--border-dim);
     }
+    .foto-pick {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 2px 0 4px;
+    }
+    .foto-btn {
+      flex: 1 1 auto;
+      min-width: 120px;
+      padding: 11px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid var(--border-dim);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .foto-btn:hover { border-color: var(--gold); background: rgba(255,255,255,0.08); }
+    .foto-btn:active { transform: scale(0.98); }
+    .foto-btn.foto-cam { border-color: var(--gold); }
     /* ── Régi ügyfél toggle ── */
     .regi-toggle-wrap {
       max-width: 520px;
@@ -524,7 +546,11 @@
                 <div class="form-row">
                   <div class="form-group">
                     <label>Kombinált oltás fotó *</label>
-                    <input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="font-size:12px;">
+                    <div class="foto-pick">
+                      <input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="display:none;">
+                      <button type="button" class="foto-btn foto-cam">📷 Fotózás</button>
+                      <button type="button" class="foto-btn foto-gal">🖼 Galériából</button>
+                    </div>
                     <small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>
                     <img class="oltas-kombinalt-preview" alt="Előnézet">
                   </div>
@@ -536,7 +562,11 @@
                 <div class="form-row">
                   <div class="form-group">
                     <label>Veszettség oltás fotó *</label>
-                    <input type="file" accept="image/*" class="oltas-veszettség-kep" required style="font-size:12px;">
+                    <div class="foto-pick">
+                      <input type="file" accept="image/*" class="oltas-veszettség-kep" required style="display:none;">
+                      <button type="button" class="foto-btn foto-cam">📷 Fotózás</button>
+                      <button type="button" class="foto-btn foto-gal">🖼 Galériából</button>
+                    </div>
                     <small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>
                     <img class="oltas-veszettség-preview" alt="Előnézet">
                   </div>
@@ -856,7 +886,11 @@
         '<p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">A kutyák biztonsága érdekében csak érvényes oltással rendelkező kutyákat tudunk fogadni.</p>' +
         '<div class="form-row">' +
           '<div class="form-group"><label>Kombinált oltás fotó *</label>' +
-            '<input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="font-size:12px;">' +
+            '<div class="foto-pick">' +
+              '<input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="display:none;">' +
+              '<button type="button" class="foto-btn foto-cam">📷 Fotózás</button>' +
+              '<button type="button" class="foto-btn foto-gal">🖼 Galériából</button>' +
+            '</div>' +
             '<small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>' +
             '<img class="oltas-kombinalt-preview" alt="Előnézet">' +
           '</div>' +
@@ -864,7 +898,11 @@
         '</div>' +
         '<div class="form-row">' +
           '<div class="form-group"><label>Veszettség oltás fotó *</label>' +
-            '<input type="file" accept="image/*" class="oltas-veszettség-kep" required style="font-size:12px;">' +
+            '<div class="foto-pick">' +
+              '<input type="file" accept="image/*" class="oltas-veszettség-kep" required style="display:none;">' +
+              '<button type="button" class="foto-btn foto-cam">📷 Fotózás</button>' +
+              '<button type="button" class="foto-btn foto-gal">🖼 Galériából</button>' +
+            '</div>' +
             '<small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>' +
             '<img class="oltas-veszettség-preview" alt="Előnézet">' +
           '</div>' +
@@ -920,6 +958,21 @@
       attemptRead();
     });
   }
+
+  // ── Fotó gombok: Fotózás (kamera) vs Galériából ────────────
+  // Android 13+ Chrome az accept="image/*" inputhoz a Photo Picker-t nyitja
+  // (csak galéria, nincs kamera). A "Fotózás" gomb capture="environment"-tel
+  // közvetlenül a kamerát indítja; a "Galériából" eltávolítja a capture-t.
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.foto-btn');
+    if (!btn) return;
+    const grp = btn.closest('.foto-pick');
+    const input = grp ? grp.querySelector('input[type="file"]') : null;
+    if (!input) return;
+    if (btn.classList.contains('foto-cam')) input.setAttribute('capture', 'environment');
+    else input.removeAttribute('capture');
+    input.click();
+  });
 
   // ── Kép kiválasztás: AZONNALI feldolgozás + base64 cache ────
   // A fotót már kiválasztáskor base64-gyé alakítjuk (amikor a fájl handle
