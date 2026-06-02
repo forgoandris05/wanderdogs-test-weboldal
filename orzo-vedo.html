@@ -80,7 +80,7 @@
         <p style="font-size:12px; color:var(--text-faint); margin-bottom:12px; line-height:1.5;">
           Fizetés helyszínen, készpénzzel.
         </p>
-        <a id="orzo-foglal-btn" href="https://cal.com/timea-kucsera-6harfx/orzo-vedo-szombat" target="_blank" class="btn btn-gold btn-sm" rel="noopener">Foglalok időpontot</a>
+        <a id="orzo-foglal-btn" href="egyeni-ora.html?foglal=orzovedo#foglalas" class="btn btn-gold btn-sm">Jelentkezem időpontra</a>
       </div>
     </div>
   </div>
@@ -166,7 +166,7 @@ if (wdOltasBlokk('foglalas')) { /* blokkolva */ }
 
 (function() {
   const user = wdGetUser();
-  if (user && user.registered) return; // belépett → marad a Cal.com gomb
+  if (user && user.registered) return; // belépett → marad a "Jelentkezem" gomb (saját foglaló)
   const btn = document.getElementById('orzo-foglal-btn');
   if (!btn) return;
   btn.outerHTML =
