@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── NAV AUTH STATE ───────────────────────────────────────
   try { wdNavAuth(); } catch(e) { console.error('wdNavAuth hiba:', e); }
 
+  // ── CSÚSZÓ SESSION: token megújítás háttérben ────────────
+  try { wdRefreshToken(); } catch(e) { console.error('wdRefreshToken hiba:', e); }
+
   // ── FLATTEN SUBMENU FOR MOBILE ───────────────────────────
   // A Szolgáltatások dropdown linkjeit beklónozzuk top-level li-ként,
   // hogy mobilon ne kelljen kibontani őket. Asztalon a clone-ok rejtve.
@@ -155,6 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // WANDERDOGS – Regisztráció / Foglalás közös logika
 // ============================================================
 
+// GAS Web App URL (token_refresh + tiltolista_check ezt használja)
+var WD_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+
 function wdGetUser() {
   try {
     var u = JSON.parse(localStorage.getItem('wd_user') || 'null');
@@ -165,12 +171,36 @@ function wdGetUser() {
       localStorage.removeItem('wd_user');
       return null;
     }
-    if (u.token_created && (Date.now() - u.token_created > 30 * 24 * 3600 * 1000)) {
-      localStorage.removeItem('wd_user');
-      return null;
-    }
+    // Csúszó session: nincs fix frontend lejárat. Ha hiányzik a token_created
+    // (régi rekord), 0-ra állítjuk, hogy a wdRefreshToken azonnal lefusson és
+    // megújítsa a tokent (vagy tiszta login-átirányítást csináljon foglalás ELŐTT).
+    if (!u.token_created) u.token_created = 0;
     return u;
   } catch(e) { return null; }
+}
+
+// Csúszó session megújítás: oldalbetöltéskor, ha a token > 12 óránál régebbi,
+// csendben kér egy friss tokent a backendtől. Sikeres → localStorage frissül,
+// lejárt → wdHandleSessionError tiszta login-átirányítást csinál (nem foglalás közben).
+function wdRefreshToken() {
+  var u = wdGetUser();
+  if (!u || !u.email || !u.auth_token) return;
+  if (Date.now() - (u.token_created || 0) < 12 * 3600 * 1000) return; // throttle
+  fetch(WD_WEBAPP_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'token_refresh', email: u.email, auth_token: u.auth_token })
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (res && res.ok && res.auth_token) {
+        u.auth_token = res.auth_token;
+        u.token_created = Date.now();
+        localStorage.setItem('wd_user', JSON.stringify(u));
+      } else {
+        wdHandleSessionError(res);
+      }
+    })
+    .catch(function() { /* hálózati hiba – hagyjuk, legközelebb újrapróbálja */ });
 }
 
 // Globális session-error handler: ha bármely GAS válasz "lejárt munkamenet"-et tartalmaz,
@@ -347,8 +377,7 @@ function wdOltasBlokk(wrapperId) {
   }
 
   // 2. Aszinkron tiltólista check (GAS-tól)
-  var WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
-  fetch(WEBAPP_URL, {
+  fetch(WD_WEBAPP_URL, {
     method: 'POST',
     body: JSON.stringify({ action: 'tiltolista_check', email: user.email })
   }).then(function(r) { return r.json(); }).then(function(resp) {

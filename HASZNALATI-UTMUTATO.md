@@ -484,19 +484,20 @@ Minden Stripe link `?client_reference_id=TIPUS` parametert tartalmaz, ami azonos
 
 ## 12. Biztonsag
 
-### Auth token (munkamenet)
+### Auth token (csuszo munkamenet)
 
-- Bejelentkezeskor a rendszer egy **24 oras auth token**-t general (SHA-256 hash / HMAC)
+- Bejelentkezeskor a rendszer egy **auth token**-t general (SHA-256 hash / HMAC), ami **90 nap inaktivitasig** ervenyes
+- **Csuszo session:** minden oldalbetolteskor a frontend csendben megujitja a tokent (`token_refresh` action, max 12 oranta), igy aki rendszeresen hasznalja, gyakorlatilag SOHA nem jar le
 - Minden foglalasi keresnel a szerver ellenorzi a token ervenyesseget
 - Ha a token lejart: *"Ervenytelen vagy lejart munkamenet. Kerlek jelentkezz be ujra."*
 - A `berlet_check` es `berlet_foglalas` NEM hasznal auth-ot (kulon kezeles)
 - Vedett muveletek: kutya_hozzaad, kutya_torol, es minden foglalasi handler
 
-### Auto-logout (23 ora)
+### Auto-logout / lejart token kezeles
 
-- A frontend **23 ora** utan automatikusan kijelentkezteti az ugyfelet (1 ora puffer a 24 oras token-hez kepest)
-- Az ugyfél egyszeruen azt latja, hogy kijelentkeztettek -- ujra be kell lepnie
-- Ez megakadalyozza, hogy valaki lejart token-nel probaljon foglalni
+- A frontend nem dob ki fix ido utan; a megujitas (`wdRefreshToken`) tartja eletben a sessiont
+- Ha a token mar a 90 napos grace-en kivul van, a megujitas oldalbetolteskor (foglalas ELOTT) tiszta login-atiranyitast csinal, nem foglalas kozben
+- Regi rekord (token_created mezo nelkul) eseten is azonnal megujit vagy login-ra kuld, igy nincs "be vagyok jelentkezve de a backend elutasit" allapot
 
 ### Rate limiting
 

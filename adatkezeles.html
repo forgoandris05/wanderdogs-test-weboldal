@@ -313,7 +313,7 @@
   <p>A wanderdogsworld.hu weboldal <strong>nem használ cookie-kat</strong> marketing vagy nyomkövetési célokra.</p>
   <p>A weboldal az alábbi helyi tárolási megoldásokat alkalmazza:</p>
   <ul>
-    <li><strong>localStorage – hitelesítési token:</strong> a bejelentkezést követően egy hitelesítési token kerül tárolásra a böngésző localStorage-ában, amely <strong>23 óra</strong> elteltével automatikusan lejár. Ez kizárólag a munkamenet fenntartásához szükséges (technikai célú adatkezelés).</li>
+    <li><strong>localStorage – hitelesítési token:</strong> a bejelentkezést követően egy hitelesítési token kerül tárolásra a böngésző localStorage-ában. A token minden látogatáskor automatikusan megújul, és <strong>90 nap inaktivitás</strong> (használat nélkül eltelt idő) után jár le. Ez kizárólag a munkamenet fenntartásához szükséges (technikai célú adatkezelés).</li>
   </ul>
   <p>A localStorage tartalmát a böngésző beállításaiban bármikor törölheted.</p>
 
@@ -328,7 +328,7 @@
     <li>A jelszavak kizárólag SHA-256 hash formátumban kerülnek tárolásra</li>
     <li>A weboldal HTTPS titkosítással működik (SSL/TLS)</li>
     <li>A fizetési adatokat a PCI DSS tanúsított Stripe kezeli; bankkártya adatokat nem tárolunk</li>
-    <li>A hitelesítési token 23 óra után automatikusan lejár</li>
+    <li>A hitelesítési token minden látogatáskor megújul, és 90 nap inaktivitás után automatikusan lejár</li>
     <li>A Google szolgáltatások (Drive, Sheets, Calendar, Gmail) vállalati szintű titkosítással működnek</li>
     <li>Az adatokhoz kizárólag az adatkezelő jogosult hozzáférni</li>
   </ul>
