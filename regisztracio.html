@@ -547,11 +547,11 @@
                   <div class="form-group">
                     <label>Kombinált oltás fotó *</label>
                     <div class="foto-pick">
-                      <input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="display:none;">
+                      <input type="file" accept="image/*,.heic,.heif" class="oltas-kombinalt-kep" required style="display:none;">
                       <button type="button" class="foto-btn foto-cam">📷 Fotózás</button>
                       <button type="button" class="foto-btn foto-gal">🖼 Galériából</button>
                     </div>
-                    <small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>
+                    <small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG/HEIC</small>
                     <img class="oltas-kombinalt-preview" alt="Előnézet">
                   </div>
                   <div class="form-group">
@@ -563,11 +563,11 @@
                   <div class="form-group">
                     <label>Veszettség oltás fotó *</label>
                     <div class="foto-pick">
-                      <input type="file" accept="image/*" class="oltas-veszettség-kep" required style="display:none;">
+                      <input type="file" accept="image/*,.heic,.heif" class="oltas-veszettség-kep" required style="display:none;">
                       <button type="button" class="foto-btn foto-cam">📷 Fotózás</button>
                       <button type="button" class="foto-btn foto-gal">🖼 Galériából</button>
                     </div>
-                    <small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>
+                    <small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG/HEIC</small>
                     <img class="oltas-veszettség-preview" alt="Előnézet">
                   </div>
                   <div class="form-group">
@@ -1000,8 +1000,16 @@
       if (preview) preview.style.display = 'none';
       return;
     }
-    if (file.size > 15 * 1024 * 1024) {
-      showRegError(prefix + kepNevek[idx] + ' fotó túl nagy (max 15 MB). Kérlek válassz kisebb képet.');
+    const fileType = file.type.toLowerCase();
+    const fileName = file.name.toLowerCase();
+    const isHeic = fileType === 'image/heic' || fileType === 'image/heif' || fileName.endsWith('.heic') || fileName.endsWith('.heif');
+
+    const maxBytes = isHeic ? 20 * 1024 * 1024 : 15 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      const hibaSzoveg = isHeic
+        ? prefix + kepNevek[idx] + ' fotó túl nagy. iPhone Beállítások → Kamera → Formátum → válaszd a "Leginkább kompatibilis" opciót, majd készíts új fotót. Vagy csinálj képernyőképet az oltási könyvről.'
+        : prefix + kepNevek[idx] + ' fotó túl nagy (max 15 MB). Kérlek válassz kisebb képet.';
+      showRegError(hibaSzoveg);
       e.target.value = '';
       if (preview) preview.style.display = 'none';
       return;
@@ -1009,7 +1017,18 @@
 
     if (preview) preview.style.display = 'none';
     try {
-      const base64 = await resizeImageToBase64(file, 800);
+      let base64;
+      if (isHeic) {
+        // HEIC-et a böngésző nem tud canvas-on át feldolgozni - közvetlen base64 olvasás
+        base64 = await new Promise((res, rej) => {
+          const r = new FileReader();
+          r.onload = ev => res(ev.target.result.split(',')[1]);
+          r.onerror = () => rej(new Error('nem sikerült beolvasni a HEIC fotót. Csinálj képernyőképet és azt töltsd fel.'));
+          r.readAsDataURL(file);
+        });
+      } else {
+        base64 = await resizeImageToBase64(file, 800);
+      }
       e.target._cachedBase64 = base64;
       if (preview && base64) {
         preview.src = 'data:image/jpeg;base64,' + base64;
@@ -1168,7 +1187,8 @@
       kutyaNev: elsoKutya.nev,
       kutyak: kutyak.map((k, idx) => ({
         ...k,
-        oltasLejar: oltasAdatok[idx] ? oltasAdatok[idx].lejar : '',
+        oltasLejar: oltasAdatok[idx] ? oltasAdatok[idx].kombinalt_lejar : '',
+        veszLejar:  oltasAdatok[idx] ? oltasAdatok[idx].vesz_lejar      : '',
         oltasKepUrl: ''
       })),
       auth_token: (result && result.auth_token) || '',
