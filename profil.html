@@ -1155,6 +1155,7 @@ function showMsg(szoveg, tipus) {
   const el = document.getElementById('kutya-msg');
   el.textContent = szoveg;
   el.className = 'profil-msg ' + tipus;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function setButtons(disabled) {
