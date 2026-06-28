@@ -533,17 +533,17 @@
             </div>
             <div style="font-size:12px;font-weight:600;color:var(--gold);margin:12px 0 6px;">Kombinált oltás *</div>
             <div class="add-kutya-form">
-              <input type="date" id="uj-oltas-lejar" max="9999-12-31" style="flex:1;min-width:140px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;">
+              <input type="date" id="uj-oltas-lejar" title="Oltás beadásának dátuma" max="9999-12-31" style="flex:1;min-width:140px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;">
               <input type="file" accept="image/*,application/pdf,.heic,.heif" id="uj-oltas-kep" style="flex:1;min-width:140px;font-size:12px;color:var(--text-dim);">
             </div>
             <img id="uj-oltas-preview" style="display:none;max-width:120px;max-height:90px;border-radius:6px;margin-top:6px;" alt="Előnézet">
             <div style="font-size:12px;font-weight:600;color:var(--gold);margin:12px 0 6px;">Veszettség oltás *</div>
             <div class="add-kutya-form">
-              <input type="date" id="uj-vesz-lejar" max="9999-12-31" style="flex:1;min-width:140px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;">
+              <input type="date" id="uj-vesz-lejar" title="Oltás beadásának dátuma" max="9999-12-31" style="flex:1;min-width:140px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;">
               <input type="file" accept="image/*,application/pdf,.heic,.heif" id="uj-vesz-kep" style="flex:1;min-width:140px;font-size:12px;color:var(--text-dim);">
             </div>
             <img id="uj-vesz-preview" style="display:none;max-width:120px;max-height:90px;border-radius:6px;margin-top:6px;" alt="Előnézet">
-            <div style="font-size:11px;color:var(--text-faint);margin-top:8px;">Mindkét oltás lejárata + fotó (JPG/PNG/PDF/HEIC, max 15 MB) szükséges.</div>
+            <div style="font-size:11px;color:var(--text-faint);margin-top:8px;">Mindkét oltás beadás dátuma + fotó (JPG/PNG/PDF/HEIC, max 15 MB) szükséges. Az oltás a beadástól számítva 1 évig érvényes.</div>
             <div style="display:flex;gap:10px;margin-top:12px;">
               <button class="btn-hozzaad" id="btn-hozzaad" onclick="kutyaHozzaad()">Mentés</button>
               <button type="button" onclick="ujKutyaMegse()" style="background:var(--black-4);color:var(--text-dim);border:1px solid var(--border-dim);border-radius:8px;padding:10px 18px;font-size:14px;cursor:pointer;">Mégse</button>
@@ -592,10 +592,11 @@
 <div class="oltas-modal-overlay" id="oltas-modal">
   <div class="oltas-modal">
     <h3 id="oltas-modal-title">Oltási könyv frissítése</h3>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px;">Add meg az oltás beadásának dátumát. Az oltás a beadástól számítva 1 évig érvényes.</p>
     <input type="hidden" id="oltas-modal-idx">
     <div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:8px;">Kombinált oltás</div>
     <div class="form-group">
-      <label>Lejárata *</label>
+      <label>Beadás dátuma *</label>
       <input type="date" id="oltas-modal-lejar" max="9999-12-31">
     </div>
     <div class="form-group">
@@ -606,7 +607,7 @@
     </div>
     <div style="font-size:12px;font-weight:600;color:var(--gold);margin:12px 0 8px;">Veszettség oltás</div>
     <div class="form-group">
-      <label>Lejárata *</label>
+      <label>Beadás dátuma *</label>
       <input type="date" id="oltas-modal-vesz-lejar" max="9999-12-31">
     </div>
     <div class="form-group">
@@ -902,7 +903,7 @@ async function kutyaHozzaad() {
 
   if (!nev) { showMsg('Kérlek add meg a kutya nevét!', 'hiba'); return; }
   if (!lejar || !kepFile || !veszLejar || !veszKepFile) {
-    showMsg('Kérlek töltsd fel mindkét oltás fotóját és add meg a lejárati dátumokat!', 'hiba');
+    showMsg('Kérlek töltsd fel mindkét oltás fotóját és add meg a beadás dátumokat!', 'hiba');
     return;
   }
 
@@ -926,8 +927,8 @@ async function kutyaHozzaad() {
       body: JSON.stringify({
         action: 'kutya_hozzaad', email: user.email, auth_token: user.auth_token || '',
         nev, fajta, chip, szuldat,
-        oltas_lejar: lejar, oltas_kep_base64: kep64,
-        vesz_lejar: veszLejar, vesz_kep_base64: veszKep64
+        oltas_lejar: oltasBeadasbolLejarat(lejar), oltas_kep_base64: kep64,
+        vesz_lejar: oltasBeadasbolLejarat(veszLejar), vesz_kep_base64: veszKep64
       })
     });
     const result = await resp.json();
@@ -977,6 +978,15 @@ async function kutyaTorol(kutyaNev) {
 }
 
 // ── Oltás frissítés modal ─────────────────────────────────────
+// Oltás: beadás dátum (YYYY-MM-DD) → lejárat (beadás + 1 év)
+function oltasBeadasbolLejarat(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return dateStr;
+  d.setFullYear(d.getFullYear() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
 function oltasModalNyit(idx, kutyaNev) {
   document.getElementById('oltas-modal-title').textContent = 'Oltási könyv frissítése – ' + kutyaNev;
   document.getElementById('oltas-modal-idx').value = idx;
@@ -988,13 +998,7 @@ function oltasModalNyit(idx, kutyaNev) {
   document.getElementById('oltas-modal-vesz-preview').style.display = 'none';
   document.getElementById('oltas-modal-msg').textContent = '';
   document.getElementById('oltas-modal').classList.add('active');
-
-  // Ha van lejárat, előre kitölti
-  const kutyak = wdKutyak();
-  if (kutyak[idx]) {
-    if (kutyak[idx].oltasLejar) document.getElementById('oltas-modal-lejar').value = kutyak[idx].oltasLejar;
-    if (kutyak[idx].veszLejar)  document.getElementById('oltas-modal-vesz-lejar').value = kutyak[idx].veszLejar;
-  }
+  // A beadás dátum mezőt üresen hagyjuk (a tárolt érték lejárat, nem beadás).
 }
 
 function oltasModalBezar() {
@@ -1034,7 +1038,7 @@ async function oltasMent() {
   const msgEl = document.getElementById('oltas-modal-msg');
 
   if (!lejar || !veszLejar) {
-    msgEl.textContent = 'Kérlek add meg mindkét oltás lejárati dátumát!';
+    msgEl.textContent = 'Kérlek add meg mindkét oltás beadás dátumát!';
     msgEl.className = 'profil-msg hiba';
     return;
   }
@@ -1058,8 +1062,8 @@ async function oltasMent() {
       method: 'POST',
       body: JSON.stringify({
         action: 'oltas_frissites', email: user.email, auth_token: user.auth_token || '',
-        kutya_index: idx, oltas_lejar: lejar, oltas_kep_base64: kep64,
-        vesz_lejar: veszLejar, vesz_kep_base64: veszKep64
+        kutya_index: idx, oltas_lejar: oltasBeadasbolLejarat(lejar), oltas_kep_base64: kep64,
+        vesz_lejar: oltasBeadasbolLejarat(veszLejar), vesz_kep_base64: veszKep64
       })
     });
     const result = await resp.json();

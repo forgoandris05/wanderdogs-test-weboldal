@@ -542,7 +542,7 @@
               </div>
               <div class="oltas-section">
                 <div class="oltas-section-label">Oltási könyv</div>
-                <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">A kutyák biztonsága érdekében csak érvényes oltással rendelkező kutyákat tudunk fogadni.</p>
+                <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">A kutyák biztonsága érdekében csak érvényes oltással rendelkező kutyákat tudunk fogadni. Az oltás a beadástól számítva 1 évig érvényes.</p>
                 <div class="form-row">
                   <div class="form-group">
                     <label>Kombinált oltás fotó *</label>
@@ -555,7 +555,7 @@
                     <img class="oltas-kombinalt-preview" alt="Előnézet">
                   </div>
                   <div class="form-group">
-                    <label>Kombinált oltás lejárata *</label>
+                    <label>Kombinált oltás beadásának dátuma *</label>
                     <input type="date" class="oltas-kombinalt-lejar" max="9999-12-31" required>
                   </div>
                 </div>
@@ -571,7 +571,7 @@
                     <img class="oltas-veszettség-preview" alt="Előnézet">
                   </div>
                   <div class="form-group">
-                    <label>Veszettség oltás lejárata *</label>
+                    <label>Veszettség oltás beadásának dátuma *</label>
                     <input type="date" class="oltas-vesz-lejar" max="9999-12-31" required>
                   </div>
                 </div>
@@ -768,13 +768,13 @@
           return showRegError((kutyak.length > 1 ? sorsz + '. kutya: ' : '') + 'A kombinált oltás fotója kötelező.');
         }
         if (!oltasLejar) {
-          return showRegError((kutyak.length > 1 ? sorsz + '. kutya: ' : '') + 'A kombinált oltás lejárati dátuma kötelező.');
+          return showRegError((kutyak.length > 1 ? sorsz + '. kutya: ' : '') + 'A kombinált oltás beadás dátuma kötelező.');
         }
         if (!veszKep || veszKep.length === 0) {
           return showRegError((kutyak.length > 1 ? sorsz + '. kutya: ' : '') + 'A veszettség oltás fotója kötelező.');
         }
         if (!veszLejar) {
-          return showRegError((kutyak.length > 1 ? sorsz + '. kutya: ' : '') + 'A veszettség oltás lejárati dátuma kötelező.');
+          return showRegError((kutyak.length > 1 ? sorsz + '. kutya: ' : '') + 'A veszettség oltás beadás dátuma kötelező.');
         }
       }
       const problema = document.getElementById('regProblema').value.trim();
@@ -894,7 +894,7 @@
             '<small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>' +
             '<img class="oltas-kombinalt-preview" alt="Előnézet">' +
           '</div>' +
-          '<div class="form-group"><label>Kombinált oltás lejárata *</label><input type="date" class="oltas-kombinalt-lejar" max="9999-12-31" required></div>' +
+          '<div class="form-group"><label>Kombinált oltás beadásának dátuma *</label><input type="date" class="oltas-kombinalt-lejar" max="9999-12-31" required></div>' +
         '</div>' +
         '<div class="form-row">' +
           '<div class="form-group"><label>Veszettség oltás fotó *</label>' +
@@ -906,7 +906,7 @@
             '<small style="color:var(--text-faint);font-size:11px;">Max 15 MB, JPG/PNG</small>' +
             '<img class="oltas-veszettség-preview" alt="Előnézet">' +
           '</div>' +
-          '<div class="form-group"><label>Veszettség oltás lejárata *</label><input type="date" class="oltas-vesz-lejar" max="9999-12-31" required></div>' +
+          '<div class="form-group"><label>Veszettség oltás beadásának dátuma *</label><input type="date" class="oltas-vesz-lejar" max="9999-12-31" required></div>' +
         '</div>' +
       '</div>';
     container.appendChild(blokk);
@@ -914,6 +914,15 @@
       document.getElementById('tobbKutyaBtn').style.display = 'none';
     }
   });
+
+  // ── Oltás: beadás dátum (YYYY-MM-DD) → lejárat (beadás + 1 év) ────────
+  function oltasBeadasbolLejarat(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr + 'T00:00:00');
+    if (isNaN(d.getTime())) return dateStr;
+    d.setFullYear(d.getFullYear() + 1);
+    return d.toISOString().slice(0, 10);
+  }
 
   // ── Kép resize (max 1200px, JPEG ~200KB) → base64 ────────
   function resizeImageToBase64(file, maxSize) {
@@ -1094,7 +1103,7 @@
       return;
     }
     if (oltasHiba) {
-      showRegError('Kérjük töltsd fel mindkét oltás fotóját és add meg a lejárati dátumokat! (kombinált + veszettség)');
+      showRegError('Kérjük töltsd fel mindkét oltás fotóját és add meg a beadás dátumokat! (kombinált + veszettség)');
       return;
     }
     if (jelszo.length < 6) {
@@ -1128,7 +1137,7 @@
           try { vesz64 = await resizeImageToBase64(o.veszFile, 800); }
           catch (err) { throw new Error(prefix + 'veszettség oltás fotó ' + (err.message || err)); }
         }
-        oltasAdatok.push({ kombinalt_lejar: o.kombinalt_lejar, kombinalt_kep_base64: komb64, vesz_lejar: o.vesz_lejar, vesz_kep_base64: vesz64 });
+        oltasAdatok.push({ kombinalt_lejar: oltasBeadasbolLejarat(o.kombinalt_lejar), kombinalt_kep_base64: komb64, vesz_lejar: oltasBeadasbolLejarat(o.vesz_lejar), vesz_kep_base64: vesz64 });
       }
     } catch(imgErr) {
       showRegError(imgErr.message || 'Hiba a kép feldolgozásakor.');
