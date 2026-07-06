@@ -638,11 +638,11 @@
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
               <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-3);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
                 <input type="checkbox" id="taxi-foglalas-hozas" style="accent-color:var(--gold);width:16px;height:16px;" onchange="taxiFoglalasFrissit()">
-                <span>Hozáshoz <span style="font-size:12px;color:var(--text-faint);">(beköltözés napján)</span></span>
+                <span>Felszedéshez <span style="font-size:12px;color:var(--text-faint);">(beköltözés napján)</span></span>
               </label>
               <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-3);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
                 <input type="checkbox" id="taxi-foglalas-vives" style="accent-color:var(--gold);width:16px;height:16px;" onchange="taxiFoglalasFrissit()">
-                <span>Vivéshez <span style="font-size:12px;color:var(--text-faint);">(kiköltözés napján)</span></span>
+                <span>Hazafuvarhoz <span style="font-size:12px;color:var(--text-faint);">(kiköltözés napján)</span></span>
               </label>
             </div>
             <div>
@@ -793,11 +793,11 @@
       <div style="display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
           <input type="checkbox" id="panzio-taxi-hozas" style="accent-color:var(--gold);width:16px;height:16px;" onchange="panzioTaxiFrissit()">
-          <span>Beköltözés napján <span style="color:var(--text-faint);font-size:12px;" id="panzio-taxi-hozas-datum">(kutya hozás)</span></span>
+          <span>Beköltözés napján <span style="color:var(--text-faint);font-size:12px;" id="panzio-taxi-hozas-datum">(felszedés)</span></span>
         </label>
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
           <input type="checkbox" id="panzio-taxi-elvitel" style="accent-color:var(--gold);width:16px;height:16px;" onchange="panzioTaxiFrissit()">
-          <span>Kiköltözés napján <span style="color:var(--text-faint);font-size:12px;" id="panzio-taxi-elvitel-datum">(kutya hazavivés)</span></span>
+          <span>Kiköltözés napján <span style="color:var(--text-faint);font-size:12px;" id="panzio-taxi-elvitel-datum">(hazafuvar)</span></span>
         </label>
       </div>
 
@@ -1213,7 +1213,7 @@ function szamol() {
 
   const taxiRow = document.getElementById('r-taxi-row');
   if (taxiDij > 0) {
-    const iranyLabel = taxiHozas && taxiVives ? 'oda+vissza' : (taxiHozas ? 'hozás' : 'vivés');
+    const iranyLabel = taxiHozas && taxiVives ? 'oda+vissza' : (taxiHozas ? 'felszedés' : 'hazafuvar');
     taxiRow.style.display = 'flex';
     document.getElementById('r-taxi').textContent = '+' + fmt(taxiDij) + ' Ft (' + iranyLabel + ')';
   } else {
@@ -1653,14 +1653,14 @@ function panzioTaxiFoglalasValaszt() {
   const elvitelDatum = document.getElementById('panzio-taxi-elvitel-datum');
 
   if (isNaN(idx) || !_ptFoglalasok[idx]) {
-    hozasDatum.textContent  = '(kutya hozás)';
-    elvitelDatum.textContent = '(kutya hazavivés)';
+    hozasDatum.textContent  = '(felszedés)';
+    elvitelDatum.textContent = '(hazafuvar)';
     return;
   }
 
   const f = _ptFoglalasok[idx];
-  hozasDatum.textContent  = '(hozás – ' + f.erkezes + ')';
-  elvitelDatum.textContent = '(hazavivés – ' + f.tavozas + ')';
+  hozasDatum.textContent  = '(felszedés – ' + f.erkezes + ')';
+  elvitelDatum.textContent = '(hazafuvar – ' + f.tavozas + ')';
 
   // Tiltás ha az irány már foglalt a panzió foglalásnál
   const hozasCb   = document.getElementById('panzio-taxi-hozas');
@@ -1669,8 +1669,8 @@ function panzioTaxiFoglalasValaszt() {
   elvitelCb.disabled = !!f.taxi_vives;
   if (f.taxi_hozas)  { hozasCb.checked = false; }
   if (f.taxi_vives)  { elvitelCb.checked = false; }
-  hozasCb.closest('label').title   = f.taxi_hozas ? 'Hozás már foglalt a panzió foglalásnál' : '';
-  elvitelCb.closest('label').title = f.taxi_vives  ? 'Vivés már foglalt a panzió foglalásnál' : '';
+  hozasCb.closest('label').title   = f.taxi_hozas ? 'Felszedés már foglalt a panzió foglalásnál' : '';
+  elvitelCb.closest('label').title = f.taxi_vives  ? 'Hazafuvar már foglalt a panzió foglalásnál' : '';
   panzioTaxiFrissit();
 }
 
