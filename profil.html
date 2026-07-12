@@ -902,8 +902,13 @@ async function kutyaHozzaad() {
   const veszKepFile = document.getElementById('uj-vesz-kep').files[0] || null;
 
   if (!nev) { showMsg('Kérlek add meg a kutya nevét!', 'hiba'); return; }
-  if (!lejar || !kepFile || !veszLejar || !veszKepFile) {
-    showMsg('Kérlek töltsd fel mindkét oltás fotóját és add meg a beadás dátumokat!', 'hiba');
+  var hianyzik = [];
+  if (!lejar)       hianyzik.push('a kombinált oltás beadás dátuma');
+  if (!kepFile)     hianyzik.push('a kombinált oltás fotója');
+  if (!veszLejar)   hianyzik.push('a veszettség oltás beadás dátuma');
+  if (!veszKepFile) hianyzik.push('a veszettség oltás fotója');
+  if (hianyzik.length) {
+    showMsg('Még hiányzik: ' + hianyzik.join(', ') + '. A panzióhoz mindkét oltás fotója és dátuma kötelező.', 'hiba');
     return;
   }
 

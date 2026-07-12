@@ -77,6 +77,9 @@
     }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
+    /* Foglalok gomb scroll: a fix nav ne takarja a szekció tetejét */
+    #kalkulalok, #panzio-felmero-szekció, #panzio-loading { scroll-margin-top: 90px; }
+
     /* ── DOG BUTTONS ── */
     .dog-btns {
       display: flex; gap: 10px;
@@ -402,14 +405,14 @@
     <li><a href="workshopok.html">Workshopok</a></li>
     <li><a href="rolunk.html">Rólunk</a></li>
     <li><a href="https://wanderdogsworld.com/courses/" target="_blank">Kurzusok</a></li>
-    <li class="nav-cta-mobile"><a href="#kalkulalok" class="nav-cta">Foglalok</a></li>
+    <li class="nav-cta-mobile"><a href="#kalkulalok" class="nav-cta" onclick="panzioFoglalasScroll(event)">Foglalok</a></li>
   </ul>
   <div class="nav-right">
     <a href="tel:+36705626926" class="nav-phone">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.92a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
       0670/5626926
     </a>
-    <a href="#kalkulalok" class="nav-cta nav-cta-desktop">Foglalok</a>
+    <a href="#kalkulalok" class="nav-cta nav-cta-desktop" onclick="panzioFoglalasScroll(event)">Foglalok</a>
   </div>
   <button class="nav-burger" aria-label="Menü">
     <span></span><span></span><span></span>
@@ -424,7 +427,7 @@
     A kutya is megérdemel egy rendes nyaralást – vagy éppen te. Gondoskodó elhelyezés Solymáron, szakmai felügyelettel.
   </p>
   <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-    <a href="#kalkulalok" class="btn btn-gold btn-lg">Foglalok</a>
+    <a href="#kalkulalok" class="btn btn-gold btn-lg" onclick="panzioFoglalasScroll(event)">Foglalok</a>
     <a href="#hogyan" id="btn-hogyan" class="btn btn-outline btn-lg">Hogyan működik?</a>
   </div>
 </section>
@@ -527,6 +530,13 @@
 <div id="panzio-felmero-szekció" class="section-full" style="background: var(--black-2); display:none; padding-top:48px; padding-bottom:48px;">
   <div class="section">
     <div style="max-width:720px;">
+      <div style="background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:12px; padding:16px 20px; margin-bottom:28px; display:flex; gap:12px; align-items:flex-start;">
+        <span style="font-size:22px; line-height:1;">👋</span>
+        <div style="font-size:15px; color:var(--text); line-height:1.65;">
+          <strong>Nincs itt semmi hiba - ez az első lépés!</strong><br>
+          Ha még nem foglaltatok nálunk panziót, az online fizetés előtt egy rövid, <strong>ingyenes ismerkedő</strong> kell, hogy megismerjük a kutyát. A felmérő után a panzió foglalás és az online fizetés azonnal elérhető lesz nálad.
+        </div>
+      </div>
       <div class="overline">Új vendégeknek</div>
       <h2 class="section-title">Első alkalommal <span class="gold">ingyenes ismerkedő</span></h2>
       <p style="font-size: 16px; color: var(--text-dim); line-height: 1.75; margin: 20px 0 28px;">
@@ -995,6 +1005,18 @@ if (wdOltasBlokk('kalkulalok')) { /* blokkolva */ }
 
 // ── Apps Script URL ──────────────────────────────────────────
 const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+
+// ── "Foglalok" gomb: a ténylegesen látható szekcióhoz görget ──
+// (visszatérőnél a kalkulátor, új ügyfélnél a felmérő, közben a loading)
+function panzioFoglalasScroll(e) {
+  if (e) e.preventDefault();
+  var kalc    = document.getElementById('kalkulalok');
+  var felmero = document.getElementById('panzio-felmero-szekció');
+  var loading = document.getElementById('panzio-loading');
+  var vis = function(el){ return el && getComputedStyle(el).display !== 'none'; };
+  var target = vis(kalc) ? kalc : vis(felmero) ? felmero : vis(loading) ? loading : (kalc || felmero);
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 // ── Állapot ──────────────────────────────────────────────────
 let panzioCalc = null; // aktuális kalkuláció eredménye
