@@ -682,43 +682,98 @@
 <script>
 const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
 
-// ── Kép resize helper ─────────────────────────────────────────
-function resizeImageToBase64(file, maxSize) {
+// ── Kliens-oldali hiba log (fire-and-forget, sose blokkol) ────
+function kliensHibaLog(uzenet, file) {
+  try {
+    const u = wdGetUser() || {};
+    fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'kliens_hiba',
+        email: u.email || '',
+        oldal: 'profil',
+        uzenet: String(uzenet || '').slice(0, 300),
+        fajl_nev:   file ? file.name : '',
+        fajl_tipus: file ? (file.type || '(üres)') : '',
+        fajl_meret: file ? file.size : '',
+        user_agent: navigator.userAgent.slice(0, 250)
+      })
+    }).catch(function(){});
+  } catch(e) {}
+}
+
+// ── Fájl beolvasás dataURL-be (az EGYETLEN pont ami dobhat) ───
+function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
-    if (!file) { resolve(''); return; }
     const sizeMb = (file.size / 1024 / 1024).toFixed(1);
-    if (file.size > 15 * 1024 * 1024) {
-      reject(new Error('A fájl túl nagy (' + sizeMb + ' MB, max 15 MB).'));
-      return;
-    }
-    const reader = new FileReader();
-    const t = (file.type || '').toLowerCase();
-    // Image-szerű és reálisan dekódolható → resize. Minden más (PDF, HEIC, ismeretlen) → pass-through.
-    const isResizable = t.startsWith('image/') && t !== 'image/heic' && t !== 'image/heif';
-    reader.onload = function(e) {
-      const dataUrl = e.target.result; // teljes "data:<mime>;base64,<payload>" — a backend ebből olvassa a MIME-et
-      if (!isResizable) { resolve(dataUrl); return; }
-      const img = new Image();
-      img.onload = function() {
-        const canvas = document.createElement('canvas');
-        let w = img.width, h = img.height;
-        if (w > maxSize || h > maxSize) {
-          if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
-          else       { w = Math.round(w * maxSize / h); h = maxSize; }
-        }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', 0.75));
+    let readAttempt = 0;
+    (function attemptRead() {
+      readAttempt++;
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = function() {
+        if (readAttempt < 2) { setTimeout(attemptRead, 300); return; }
+        reject(new Error(
+          'Nem sikerült beolvasni: ' + file.name + ' (' + sizeMb + ' MB). ' +
+          'iCloud/OneDrive-felhőből? Tedd helyileg elérhetővé, vagy küldd át emailben.'
+        ));
       };
-      img.onerror = () => resolve(dataUrl); // dekódolás bukott (pl. nem-szabványos JPEG) → raw pass-through, backend menti
-      img.src = dataUrl;
-    };
-    reader.onerror = () => reject(new Error(
-      'Nem sikerült beolvasni: ' + file.name + ' (' + sizeMb + ' MB). ' +
-      'iCloud/OneDrive-felhőből? Tedd helyileg elérhetővé, vagy küldd át emailben.'
-    ));
-    reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
+    })();
   });
+}
+
+// Bitmap/Image → JPEG dataURL. Üres/hibás kimenetnél '' (nem dob).
+function bitmapToJpeg(src, maxSize) {
+  const sw = src.width, sh = src.height;
+  if (!sw || !sh) return '';
+  let w = sw, h = sh;
+  if (w > maxSize || h > maxSize) {
+    if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+    else       { w = Math.round(w * maxSize / h); h = maxSize; }
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  canvas.getContext('2d').drawImage(src, 0, 0, w, h);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+  if (!dataUrl || dataUrl.length < 1000) return ''; // iOS: túl nagy kép → üres canvas
+  return dataUrl;
+}
+
+// ── Kép feldolgozás: mindig ad használható base64-et ──────────
+// createImageBitmap (Safari HEIC-et is dekódol) → Image+canvas → nyers pass-through.
+// Csak akkor dob, ha a FileReader maga hal el. PDF-nél mindig pass-through.
+async function kepFeldolgozas(file, maxSize) {
+  if (!file) return '';
+  if (file.size > 20 * 1024 * 1024) {
+    throw new Error('A fájl túl nagy (' + (file.size / 1024 / 1024).toFixed(1) + ' MB, max 20 MB).');
+  }
+  const isPdf = (file.type || '').toLowerCase() === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+
+  if (!isPdf && typeof createImageBitmap === 'function') {
+    try {
+      const bitmap = await createImageBitmap(file);
+      const dataUrl = bitmapToJpeg(bitmap, maxSize);
+      if (bitmap.close) bitmap.close();
+      if (dataUrl) return dataUrl;
+    } catch(e) { /* megyünk tovább */ }
+  }
+
+  const raw = await fileToDataUrl(file); // ez dobhat - a hívó kezeli
+  if (isPdf) return raw;
+
+  try {
+    const dataUrl = await new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => { try { resolve(bitmapToJpeg(img, maxSize)); } catch(e) { resolve(''); } };
+      img.onerror = () => resolve('');
+      img.src = raw;
+    });
+    if (dataUrl) return dataUrl;
+  } catch(e) { /* tovább */ }
+
+  kliensHibaLog('Kép nem dekódolható, nyers pass-through', file);
+  return raw; // backend elmenti (HEIC/PDF is támogatott)
 }
 
 // ── Oltás státusz helper ──────────────────────────────────────
@@ -835,6 +890,17 @@ function kutyaListaFrissit() {
   lista.innerHTML = kutyak.map((k, idx) => {
     const st = oltasStatusz(k);
     const kepLink = k.oltasKepUrl ? ' <a href="' + k.oltasKepUrl + '" target="_blank" style="color:var(--gold);font-size:11px;">Megtekintés</a>' : '';
+    // Ha hiányzik valamelyik oltási fotó: mondjuk meg, és adjunk rá egy gombot.
+    // (Enélkül a user azt hiszi elrontott valamit, és törli a kutyát.)
+    const hianyzoFotok = [];
+    if (!k.oltasKepUrl)  hianyzoFotok.push('kombinált');
+    if (!k.veszettKep)   hianyzoFotok.push('veszettség');
+    const fotoFigyelmeztetes = hianyzoFotok.length
+      ? '<div style="margin-top:8px;font-size:12px;color:#fbbf24;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:8px;padding:8px 10px;line-height:1.5;">' +
+          '⚠️ Hiányzik az oltási fotó (' + hianyzoFotok.join(' + ') + '). Panzióhoz és napközihez szükséges. ' +
+          '<button class="btn-oltas-frissit" onclick="oltasModalNyit(' + idx + ', \'' + k.nev.replace(/'/g, "\\'") + '\')">Fotó feltöltése</button>' +
+        '</div>'
+      : '';
     return '<div class="kutya-sor" style="flex-wrap:wrap;">' +
       '<div class="kutya-sor-info" style="flex:1;">' +
         '<div class="kutya-sor-nev">' + k.nev + '</div>' +
@@ -844,6 +910,7 @@ function kutyaListaFrissit() {
           kepLink +
           ' <button class="btn-oltas-frissit" onclick="oltasModalNyit(' + idx + ', \'' + k.nev.replace(/'/g, "\\'") + '\')">Oltás</button>' +
         '</div>' +
+        fotoFigyelmeztetes +
       '</div>' +
       '<div style="display:flex;gap:6px;align-items:center;">' +
         '<button class="btn-kutya-szerkeszt" onclick="kutyaAdatokModalNyit(' + idx + ')">✏️</button>' +
@@ -918,9 +985,10 @@ async function kutyaHozzaad() {
 
   let kep64 = '', veszKep64 = '';
   try {
-    kep64     = await resizeImageToBase64(kepFile, 1200);
-    veszKep64 = await resizeImageToBase64(veszKepFile, 1200);
+    kep64     = await kepFeldolgozas(kepFile, 1200);
+    veszKep64 = await kepFeldolgozas(veszKepFile, 1200);
   } catch(e) {
+    kliensHibaLog('Kutya hozzáadás kép hiba: ' + (e.message || e), kepFile);
     showMsg(e.message || 'Kép feldolgozási hiba.', 'hiba');
     setButtons(false);
     return;
@@ -1056,9 +1124,10 @@ async function oltasMent() {
 
   let kep64 = '', veszKep64 = '';
   try {
-    if (kepFile)     kep64     = await resizeImageToBase64(kepFile, 1200);
-    if (veszKepFile) veszKep64 = await resizeImageToBase64(veszKepFile, 1200);
+    if (kepFile)     kep64     = await kepFeldolgozas(kepFile, 1200);
+    if (veszKepFile) veszKep64 = await kepFeldolgozas(veszKepFile, 1200);
   } catch(e) {
+    kliensHibaLog('Oltás frissítés kép hiba: ' + (e.message || e), kepFile || veszKepFile);
     msgEl.textContent = e.message; msgEl.className = 'profil-msg hiba'; saveBtn.disabled = false; saveBtn.textContent = 'Mentés'; return;
   }
 

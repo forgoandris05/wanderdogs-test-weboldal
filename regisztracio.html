@@ -887,7 +887,7 @@
         '<div class="form-row">' +
           '<div class="form-group"><label>Kombinált oltás fotó *</label>' +
             '<div class="foto-pick">' +
-              '<input type="file" accept="image/*" class="oltas-kombinalt-kep" required style="display:none;">' +
+              '<input type="file" accept="image/*,.heic,.heif" class="oltas-kombinalt-kep" required style="display:none;">' +
               '<button type="button" class="foto-btn foto-cam">📷 Fotózás</button>' +
               '<button type="button" class="foto-btn foto-gal">🖼 Galériából</button>' +
             '</div>' +
@@ -899,7 +899,7 @@
         '<div class="form-row">' +
           '<div class="form-group"><label>Veszettség oltás fotó *</label>' +
             '<div class="foto-pick">' +
-              '<input type="file" accept="image/*" class="oltas-veszettség-kep" required style="display:none;">' +
+              '<input type="file" accept="image/*,.heic,.heif" class="oltas-veszettség-kep" required style="display:none;">' +
               '<button type="button" class="foto-btn foto-cam">📷 Fotózás</button>' +
               '<button type="button" class="foto-btn foto-gal">🖼 Galériából</button>' +
             '</div>' +
@@ -924,48 +924,94 @@
     return d.toISOString().slice(0, 10);
   }
 
-  // ── Kép resize (max 1200px, JPEG ~200KB) → base64 ────────
-  function resizeImageToBase64(file, maxSize) {
-    return new Promise((resolve, reject) => {
-      if (!file) { resolve(''); return; }
-      if (file.size > 15 * 1024 * 1024) { reject(new Error('A kép túl nagy (max 15 MB).')); return; }
+  // ── Kliens-oldali hiba log (fire-and-forget, sose blokkol) ──
+  function kliensHibaLog(uzenet, file) {
+    try {
+      fetch(WEBAPP_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'kliens_hiba',
+          email: (document.getElementById('regEmail') || {}).value || '',
+          oldal: 'regisztracio',
+          uzenet: String(uzenet || '').slice(0, 300),
+          fajl_nev:    file ? file.name : '',
+          fajl_tipus:  file ? (file.type || '(üres)') : '',
+          fajl_meret:  file ? file.size : '',
+          user_agent:  navigator.userAgent.slice(0, 250)
+        })
+      }).catch(function(){});
+    } catch(e) {}
+  }
 
+  // ── Fájl beolvasás dataURL-be (az EGYETLEN pont ami dobhat) ──
+  function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
       let readAttempt = 0;
-      function attemptRead() {
+      (function attemptRead() {
         readAttempt++;
         const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = new Image();
-          img.onload = function() {
-            try {
-              const canvas = document.createElement('canvas');
-              let w = img.width, h = img.height;
-              if (w > maxSize || h > maxSize) {
-                if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
-                else       { w = Math.round(w * maxSize / h); h = maxSize; }
-              }
-              canvas.width = w; canvas.height = h;
-              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-              const dataUrl = canvas.toDataURL('image/jpeg', 0.60);
-              resolve(dataUrl.split(',')[1]); // pure base64
-            } catch(canvasErr) {
-              reject(new Error('nem sikerült feldolgozni. Kérlek válassz másik képet, vagy készíts róla képernyőképet és azt töltsd fel.'));
-            }
-          };
-          img.onerror = () => reject(new Error('formátumát a böngésző nem tudja megnyitni (gyakori iPhone HEIC fotóknál). Kérlek válassz másik képet, vagy készíts róla képernyőképet és azt töltsd fel.'));
-          img.src = e.target.result;
-        };
+        reader.onload = e => resolve(e.target.result);
         reader.onerror = function() {
-          if (readAttempt < 2) {
-            setTimeout(attemptRead, 300); // egyszeri újrapróba átmeneti olvasási hibára
-          } else {
-            reject(new Error('nem sikerült beolvasni. Próbáld újra, vagy válassz másik képet. Ha Facebookból/Messengerből nyitottad meg az oldalt, nyisd meg inkább Chrome-ban vagy Safariban.'));
-          }
+          if (readAttempt < 2) { setTimeout(attemptRead, 300); return; }
+          reject(new Error('nem sikerült beolvasni. Próbáld újra, vagy válassz másik képet. Ha Facebookból/Messengerből nyitottad meg az oldalt, nyisd meg inkább Chrome-ban vagy Safariban.'));
         };
         reader.readAsDataURL(file);
-      }
-      attemptRead();
+      })();
     });
+  }
+
+  // ── Kép feldolgozás: mindig ad használható base64-et ────────
+  // Sorrend: createImageBitmap (iOS Safari HEIC-et is dekódol) → Image+canvas
+  // → nyers pass-through. Csak akkor dob, ha a FileReader maga hal el.
+  // Visszatérés: teljes dataURL ("data:<mime>;base64,..."), a GAS ebből olvassa a MIME-et.
+  async function kepFeldolgozas(file, maxSize) {
+    if (!file) return '';
+
+    // 1) createImageBitmap: a legszélesebb formátum-támogatás, HEIC is (Safari)
+    if (typeof createImageBitmap === 'function') {
+      try {
+        const bitmap = await createImageBitmap(file);
+        const dataUrl = bitmapToJpeg(bitmap, maxSize);
+        if (bitmap.close) bitmap.close();
+        if (dataUrl) return dataUrl;
+      } catch(e) { /* nem baj, megyünk tovább */ }
+    }
+
+    // A további utakhoz kell a nyers dataURL
+    const raw = await fileToDataUrl(file); // ez dobhat - a hívó kezeli
+
+    // 2) Image + canvas (a régi út)
+    try {
+      const dataUrl = await new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => { try { resolve(bitmapToJpeg(img, maxSize)); } catch(e) { resolve(''); } };
+        img.onerror = () => resolve('');
+        img.src = raw;
+      });
+      if (dataUrl) return dataUrl;
+    } catch(e) { /* tovább */ }
+
+    // 3) Nyers pass-through - a backend elmenti (HEIC/PDF is támogatott)
+    kliensHibaLog('Kép nem dekódolható, nyers pass-through', file);
+    return raw;
+  }
+
+  // Bitmap/Image → JPEG dataURL. Üres/hibás kimenetnél '' (nem dob).
+  function bitmapToJpeg(src, maxSize) {
+    const sw = src.width, sh = src.height;
+    if (!sw || !sh) return '';
+    let w = sw, h = sh;
+    if (w > maxSize || h > maxSize) {
+      if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+      else       { w = Math.round(w * maxSize / h); h = maxSize; }
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(src, 0, 0, w, h);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+    // iOS-en túl nagy képnél a canvas üres lehet → "data:," rövid string
+    if (!dataUrl || dataUrl.length < 1000) return '';
+    return dataUrl;
   }
 
   // ── Fotó gombok: Fotózás (kamera) vs Galériából ────────────
@@ -1009,16 +1055,8 @@
       if (preview) preview.style.display = 'none';
       return;
     }
-    const fileType = file.type.toLowerCase();
-    const fileName = file.name.toLowerCase();
-    const isHeic = fileType === 'image/heic' || fileType === 'image/heif' || fileName.endsWith('.heic') || fileName.endsWith('.heif');
-
-    const maxBytes = isHeic ? 20 * 1024 * 1024 : 15 * 1024 * 1024;
-    if (file.size > maxBytes) {
-      const hibaSzoveg = isHeic
-        ? prefix + kepNevek[idx] + ' fotó túl nagy. iPhone Beállítások → Kamera → Formátum → válaszd a "Leginkább kompatibilis" opciót, majd készíts új fotót. Vagy csinálj képernyőképet az oltási könyvről.'
-        : prefix + kepNevek[idx] + ' fotó túl nagy (max 15 MB). Kérlek válassz kisebb képet.';
-      showRegError(hibaSzoveg);
+    if (file.size > 20 * 1024 * 1024) {
+      showRegError(prefix + kepNevek[idx] + ' fotó túl nagy (max 20 MB). iPhone Beállítások → Kamera → Formátum → válaszd a "Leginkább kompatibilis" opciót, majd készíts új fotót. Vagy csinálj képernyőképet az oltási könyvről.');
       e.target.value = '';
       if (preview) preview.style.display = 'none';
       return;
@@ -1026,28 +1064,17 @@
 
     if (preview) preview.style.display = 'none';
     try {
-      let base64;
-      if (isHeic) {
-        // HEIC-et a böngésző nem tud canvas-on át feldolgozni - közvetlen base64 olvasás
-        base64 = await new Promise((res, rej) => {
-          const r = new FileReader();
-          r.onload = ev => res(ev.target.result.split(',')[1]);
-          r.onerror = () => rej(new Error('nem sikerült beolvasni a HEIC fotót. Csinálj képernyőképet és azt töltsd fel.'));
-          r.readAsDataURL(file);
-        });
-      } else {
-        base64 = await resizeImageToBase64(file, 800);
-      }
-      e.target._cachedBase64 = base64;
-      if (preview && base64) {
-        preview.src = 'data:image/jpeg;base64,' + base64;
+      const dataUrl = await kepFeldolgozas(file, 1200);
+      e.target._cachedBase64 = dataUrl;
+      if (preview && dataUrl) {
+        preview.src = dataUrl;
         preview.style.display = 'block';
       }
       hideRegError();
     } catch(err) {
+      // A fájl inputot NEM ürítjük ki - a submit újra megpróbálja
       e.target._cachedBase64 = null;
-      e.target.value = '';
-      if (preview) preview.style.display = 'none';
+      kliensHibaLog('Kép feldolgozás hiba: ' + (err.message || err), file);
       showRegError(prefix + kepNevek[idx] + ' fotó ' + (err.message || 'nem sikerült feldolgozni.'));
     }
   });
@@ -1129,12 +1156,12 @@
         // nincs (pl. user a feldolgozás előtt submitált), fallback: olvassuk be most.
         let komb64 = o.kombinaltCache || '';
         if (!komb64 && o.kombinaltFile) {
-          try { komb64 = await resizeImageToBase64(o.kombinaltFile, 800); }
+          try { komb64 = await kepFeldolgozas(o.kombinaltFile, 1200); }
           catch (err) { throw new Error(prefix + 'kombinált oltás fotó ' + (err.message || err)); }
         }
         let vesz64 = o.veszCache || '';
         if (!vesz64 && o.veszFile) {
-          try { vesz64 = await resizeImageToBase64(o.veszFile, 800); }
+          try { vesz64 = await kepFeldolgozas(o.veszFile, 1200); }
           catch (err) { throw new Error(prefix + 'veszettség oltás fotó ' + (err.message || err)); }
         }
         oltasAdatok.push({ kombinalt_lejar: oltasBeadasbolLejarat(o.kombinalt_lejar), kombinalt_kep_base64: komb64, vesz_lejar: oltasBeadasbolLejarat(o.vesz_lejar), vesz_kep_base64: vesz64 });
@@ -1152,7 +1179,7 @@
     let result = null;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      const timeoutId = setTimeout(() => controller.abort(), 120000);
       const resp = await fetch(WEBAPP_URL, {
         method: 'POST',
         signal: controller.signal,
@@ -1178,15 +1205,15 @@
       }
       regOk = true;
     } catch(err) {
-      if (err.name === 'AbortError') {
-        // Timeout — valószínűleg sikerült, csak a szerver lassú volt (kép feltöltés + email küldés)
-        regOk = true;
-      } else {
-        showRegError('Kapcsolati hiba. Kérjük próbáld újra.');
-        btn.disabled = false;
-        btn.textContent = 'Regisztrálok →';
-        return;
-      }
+      // Timeoutnál NEM hazudunk sikert: token nélkül "bejelentkezve" maradna a user,
+      // és utána minden művelet "lejárt munkamenet"-tel bukna.
+      kliensHibaLog('Regisztrációs POST hiba: ' + (err.name || '') + ' ' + (err.message || ''), null);
+      showRegError(err.name === 'AbortError'
+        ? 'A regisztráció túl sokáig tartott (lassú kapcsolat vagy nagy fotó). Lehet, hogy mégis sikerült: próbálj bejelentkezni. Ha nem megy, próbáld újra kisebb fotóval.'
+        : 'Kapcsolati hiba. Kérjük próbáld újra.');
+      btn.disabled = false;
+      btn.textContent = 'Regisztrálok →';
+      return;
     }
 
     localStorage.setItem('wd_user', JSON.stringify({
