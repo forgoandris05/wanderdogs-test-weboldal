@@ -142,21 +142,30 @@ async function megerosit() {
     return;
   }
 
-  try {
-    const resp = await fetch(WEBAPP_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'panzio_confirm', session_id: sessionId }),
-    });
-    const result = await resp.json();
-
-    if (result.ok) {
-      showSuccess(result);
-    } else {
-      showError(result.error || 'A fizetés nem igazolható. Ha levonás történt, kérlek vedd fel velünk a kapcsolatot.');
+  // Több próbálkozás: lassú kapcsolat / átmeneti szerverhiba ne bukjon el egyből.
+  // A foglalást a Stripe webhook a háttérben akkor is rögzíti, ha ez a lap nem érne végig,
+  // ezért egy sikertelen confirm sem jelenti azt, hogy elveszett a fizetés.
+  const varakozasok = [0, 2000, 5000];  // 3 próbálkozás
+  let utolsoHiba = '';
+  for (let i = 0; i < varakozasok.length; i++) {
+    if (varakozasok[i]) await new Promise(r => setTimeout(r, varakozasok[i]));
+    try {
+      const resp = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'panzio_confirm', session_id: sessionId }),
+      });
+      const result = await resp.json();
+      if (result.ok) { showSuccess(result); return; }
+      utolsoHiba = result.error || '';
+      // ok:false lehet átmeneti (fizetés még nem propagált a Stripe-nál) → próbáljuk újra
+    } catch (err) {
+      utolsoHiba = 'halozat';
+      // hálózati hiba → újrapróbálkozás
     }
-  } catch (err) {
-    showError('Hálózati hiba. Ha fizettél, ellenőrizd az emailed – ott mindenképpen megkap a visszaigazolás.');
   }
+
+  // Minden próbálkozás elfogyott: a fizetés attól még lehet sikeres és a webhook rögzíti.
+  showError('A visszaigazolás feldolgozása most nem sikerült, de ha a fizetés lement, a foglalásod rögzül és a visszaigazoló emailt hamarosan megkapod. Ha 10 percen belül nem jön email, kérlek írj nekünk: 0670/5626926.');
 }
 
 function showSuccess(result) {
