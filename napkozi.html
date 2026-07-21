@@ -173,6 +173,13 @@
     }
     .konfig-row { display:flex; align-items:center; gap:16px; margin-bottom:16px; flex-wrap:wrap; }
     .konfig-label { font-size:14px; color:var(--text-dim); min-width:170px; font-weight:600; }
+    /* Felvételi cím mező, amikor a naptár szekcióba (a foglalás gomb fölé) kerül:
+       a szomszédos megjegyzés-mezőhöz illeszkedik – label fölül, 560px, középen.
+       A .konfig-row bal-jobb elrendezése ide nem illik (ott lógna balra). */
+    .helyszin-kiemelt { display:block !important; max-width:560px; margin:20px auto 0 !important; }
+    .helyszin-kiemelt .konfig-label { display:block; min-width:auto; margin-bottom:8px;
+                                      color:var(--gold); font-weight:700; font-size:13px; }
+    .helyszin-kiemelt > div { max-width:none !important; flex:none !important; }
     .konfig-opts { display:flex; gap:8px; flex-wrap:wrap; }
     .konfig-btn {
       padding:9px 20px; border-radius:100px; border:1px solid var(--border-dim);
@@ -1420,15 +1427,22 @@ function nkCalSelect(datumStr, el) {
   // insertBefore megőrzi a meglévő input event listenert, nem kell új mező.
   const hRow = document.getElementById('helyszin-row');
   if (hRow && btnWrapper && btnWrapper.parentNode) {
+    // Az eredeti pozíciót megjegyezzük, hogy vissza tudjuk tenni a konfigurátorba
+    // (bérlet nélküli usernél ott kell lennie – különben elveszne a mező).
+    if (!hRow._eredetiSzulo) {
+      hRow._eredetiSzulo    = hRow.parentNode;
+      hRow._eredetiKovetkezo = hRow.nextElementSibling;
+    }
     if (isTaxi) {
       if (hRow.nextElementSibling !== btnWrapper) {
         btnWrapper.parentNode.insertBefore(hRow, btnWrapper);
       }
-      hRow.style.display = 'flex';
+      hRow.classList.add('helyszin-kiemelt');   // középre igazított megjelenés
+      hRow.style.display = 'block';
       const hIn = document.getElementById('helyszin-input');
       if (hIn && _helyszin && !hIn.value) hIn.value = _helyszin;
     } else {
-      hRow.style.display = 'none';
+      _helyszinRowVissza();
     }
   }
   const mejWrap = document.getElementById('berlet-megjegyzes-wrap');
@@ -1444,8 +1458,22 @@ function nkCalSelect(datumStr, el) {
   }
 }
 
+// ── Felvételi cím mező vissza az eredeti helyére (konfigurátorba) ──
+// A taxi mód a foglalás gomb fölé mozgatja; ha kikapcsolják vagy resetelünk,
+// vissza kell kerülnie, különben a bérlet nélküli user konfigurátorából eltűnik.
+function _helyszinRowVissza() {
+  const hRow = document.getElementById('helyszin-row');
+  if (!hRow) return;
+  hRow.classList.remove('helyszin-kiemelt');
+  hRow.style.display = 'none';
+  if (hRow._eredetiSzulo && hRow.parentNode !== hRow._eredetiSzulo) {
+    hRow._eredetiSzulo.insertBefore(hRow, hRow._eredetiKovetkezo || null);
+  }
+}
+
 // ── Szekciók visszaállítása hiba esetén ───────────────────────
 function _napkoziResetSzekciok() {
+  _helyszinRowVissza();
   _bookingHandled = false;
   _selectedNapkoziDate = '';
   document.getElementById('napkozi-siker').style.display = 'none';
