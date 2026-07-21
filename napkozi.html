@@ -1413,6 +1413,24 @@ function nkCalSelect(datumStr, el) {
   // Foglalás gomb + megjegyzés megjelenítése
   const btnWrapper = document.getElementById('napkozi-foglal-btn-wrapper');
   if (btnWrapper) btnWrapper.style.display = 'block';
+
+  // Taxi esetén a felvételi cím mezőt a foglalás gomb FÖLÉ tesszük, hogy bérletes
+  // usernél is látható és kitölthető legyen (a konfigurátor bérletnél rejtve van,
+  // ezért ott ragadt mezőt a user nem tudta megadni → néma gomb).
+  // insertBefore megőrzi a meglévő input event listenert, nem kell új mező.
+  const hRow = document.getElementById('helyszin-row');
+  if (hRow && btnWrapper && btnWrapper.parentNode) {
+    if (isTaxi) {
+      if (hRow.nextElementSibling !== btnWrapper) {
+        btnWrapper.parentNode.insertBefore(hRow, btnWrapper);
+      }
+      hRow.style.display = 'flex';
+      const hIn = document.getElementById('helyszin-input');
+      if (hIn && _helyszin && !hIn.value) hIn.value = _helyszin;
+    } else {
+      hRow.style.display = 'none';
+    }
+  }
   const mejWrap = document.getElementById('berlet-megjegyzes-wrap');
   if (mejWrap) mejWrap.style.display = 'block';
 
@@ -1469,11 +1487,22 @@ function napkoziFoglalas() {
 
   // Taxi validáció: helyszín kötelező
   const isTaxiBooking = _taxi && _taxi !== 'notaxi';
-  if (isTaxiBooking && !_helyszin.trim()) {
+  if (isTaxiBooking && !(_helyszin || '').trim()) {
     const hInput = document.getElementById('helyszin-input');
     const hHiba = document.getElementById('helyszin-hiba');
-    if (hInput) { hInput.focus(); hInput.style.borderColor = '#ff6b6b'; }
+    const hRowV = document.getElementById('helyszin-row');
+    // A mező rejtve lehet (bérletes usernél a konfigurátor rejtett) – hozzuk elő,
+    // különben a hibajelzés láthatatlan és a gomb "nem csinál semmit".
+    if (hRowV) hRowV.style.display = 'flex';
     if (hHiba) hHiba.style.display = 'block';
+    // A LÁTHATÓ hibasorba is kiírjuk (ez a gomb fölött van, mindig látszik)
+    const errEl = document.getElementById('napkozi-foglal-error');
+    if (errEl) { errEl.textContent = 'Add meg a taxi felvételi címet!'; errEl.style.display = 'block'; }
+    if (hInput) {
+      hInput.style.borderColor = '#ff6b6b';
+      try { hInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch(e) {}
+      try { hInput.focus({ preventScroll: true }); } catch(e) { hInput.focus(); }
+    }
     return;
   }
 
@@ -1644,6 +1673,9 @@ document.getElementById('helyszin-input').addEventListener('input', function() {
   this.style.borderColor = 'var(--gold)';
   const hHiba = document.getElementById('helyszin-hiba');
   if (hHiba) hHiba.style.display = 'none';
+  // a gomb fölötti látható hibasort is töröljük, ha ott a cím-hiba volt
+  const errEl = document.getElementById('napkozi-foglal-error');
+  if (errEl && /felvételi címet/.test(errEl.textContent || '')) errEl.style.display = 'none';
   prefsSave();
 });
 document.getElementById('kutya-neve-input').addEventListener('input', e => {
@@ -1811,7 +1843,12 @@ function _applyNapkoziData(foglalasData, berletData, user) {
     if (berletData.kutya_neve) _kutya_neve = berletData.kutya_neve;
     _kutya    = berletData.kutya    || '1';
     _taxi     = berletData.taxi     || 'notaxi';
-    _helyszin = berletData.helyszin || '';
+    // FONTOS: a mentett helyszínre is essünk vissza. Ha a backend taxis bérletet ad
+    // vissza helyszín nélkül, a cím elveszne – a konfigurátor pedig bérletnél rejtve van,
+    // így a user meg sem tudná adni → néma "nem történik semmi" a foglalás gombon.
+    _helyszin = berletData.helyszin || (savedPrefs && savedPrefs.helyszin) || '';
+    var hInputBerlet = document.getElementById('helyszin-input');
+    if (hInputBerlet && _helyszin) hInputBerlet.value = _helyszin;
 
     showBanner(
       '<p style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">Aktív bérletedből még</p>' +
