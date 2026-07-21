@@ -764,9 +764,11 @@
               </label>
             </div>
           </div>
-          <button type="button" class="pay-btn" id="pay-btn" disabled onclick="fizetesIndit()" style="margin-top:16px;">
+          <button type="button" class="pay-btn" id="pay-btn" onclick="fizetesIndit()" style="margin-top:16px;">
             Fizetek →
           </button>
+          <!-- Élő hiánylista: megmondja mi hiányzik még, hogy ne néma gomb legyen -->
+          <p id="pay-hianyzik" style="display:none;margin-top:8px;font-size:12px;color:var(--gold);line-height:1.5;text-align:center;"></p>
           <div class="stripe-note" id="panzio-stripe-note" style="margin-top:8px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Biztonságos fizetés – Stripe
@@ -1278,38 +1280,94 @@ function showEmpty(msg) {
   document.getElementById('calc-empty-state').style.display = 'block';
   document.getElementById('calc-breakdown').style.display   = 'none';
   document.getElementById('calc-info').style.display        = 'none';
-  document.getElementById('pay-btn').disabled               = true;
   // Napidíj frissítése az aktuális kutyaszám alapján
   const napidij = ({1: 9000, 2: 15000, 3: 17000})[selectedKutya] || 9000;
   document.getElementById('r-napidij-static').textContent   = fmt(napidij);
   if (msg) document.getElementById('calc-empty-state').querySelector('p').textContent = msg;
+  frissitGomb();  // a gomb NEM tiltódik le – a hiánylista mondja meg mi kell még
+}
+
+// ── Mi hiányzik még a foglaláshoz? ────────────────────────────
+// EGY forrás: ezt használja a gomb alatti élő lista ÉS a Fizetek gomb kattintása is.
+// Minden elem: { szoveg, id } – az id-ra tudunk odagörgetni és kiemelni.
+// FONTOS: a gombot SOHA nem tiltjuk le emiatt (néma szürke gomb = "nem visz el fizetni" panasz),
+// helyette megmondjuk mi hiányzik és odavisszük a usert.
+function panzioHianyzoMezok() {
+  const hianyzik = [];
+  const ertek = function(id) {
+    const el = document.getElementById(id);
+    return el ? (el.value || '').trim() : '';
+  };
+
+  if (!panzioCalc) {
+    hianyzik.push({ szoveg: 'a foglalás dátumai', id: 'calc-be' });
+  }
+  if (!ertek('calc-be-h')) hianyzik.push({ szoveg: 'a beköltözés időpontja', id: 'calc-be-h' });
+  if (!ertek('calc-ki-h')) hianyzik.push({ szoveg: 'a kiköltözés időpontja', id: 'calc-ki-h' });
+
+  const kutyaOk = ertek('f-kutya') || document.querySelectorAll('#kutya-valaszto input:checked').length > 0;
+  if (!kutyaOk) hianyzik.push({ szoveg: 'a kutya kiválasztása', id: 'kutya-valaszto' });
+
+  // Taxi: ha kértek taxit, kell irány + cím
+  if (taxiKm > 0) {
+    const tHozas = document.getElementById('taxi-foglalas-hozas');
+    const tVives = document.getElementById('taxi-foglalas-vives');
+    if (!((tHozas && tHozas.checked) || (tVives && tVives.checked))) {
+      hianyzik.push({ szoveg: 'a taxi iránya (hozás vagy vitel)', id: 'taxi-foglalas-hozas' });
+    }
+    if (!ertek('taxi-foglalas-cim')) {
+      hianyzik.push({ szoveg: 'a taxi címe', id: 'taxi-foglalas-cim' });
+    }
+  }
+
+  // Pót elérhetőség: csak akkor kötelező, ha a mező látszik (nincs még mentve)
+  const potWrapEl  = document.getElementById('pot-elerhetoseg-wrap');
+  const potVisible = potWrapEl && potWrapEl.style.display !== 'none';
+  if (potVisible && !ertek('f-pot-elerhetoseg')) {
+    hianyzik.push({ szoveg: 'a pót elérhetőség telefonszáma', id: 'f-pot-elerhetoseg' });
+  }
+
+  const elfogEl = document.getElementById('elfogadom');
+  if (!elfogEl || !elfogEl.checked) {
+    hianyzik.push({ szoveg: 'a lemondási feltételek elfogadása', id: 'elfogadom' });
+  }
+
+  // Név/email a profilból jön (rejtett mezők) – ha hiányzik, a profilra kell küldeni
+  if (!ertek('f-nev') || !ertek('f-email')) {
+    hianyzik.push({ szoveg: 'a profil adataid (név, email)', id: null });
+  }
+
+  return hianyzik;
 }
 
 function frissitGomb() {
-  const nev     = document.getElementById('f-nev').value.trim();
-  const kutya   = document.getElementById('f-kutya').value.trim();
-  const email   = document.getElementById('f-email').value.trim();
-  const elfog   = document.getElementById('elfogadom').checked;
-  // Ha checkbox lista van, az ott kiválasztott kutyákat is elfogadjuk
-  const kutyaOk = kutya || document.querySelectorAll('#kutya-valaszto input:checked').length > 0;
-
-  const beH     = document.getElementById('calc-be-h').value;
-  const kiH     = document.getElementById('calc-ki-h').value;
-
-  let taxiOk = true;
-  if (taxiKm > 0) {
-    const tHozas = document.getElementById('taxi-foglalas-hozas').checked;
-    const tVives = document.getElementById('taxi-foglalas-vives').checked;
-    const tCim   = (document.getElementById('taxi-foglalas-cim').value || '').trim();
-    taxiOk = (tHozas || tVives) && tCim.length > 0;
+  // A gomb NEM lesz letiltva – helyette a hiánylistát mutatjuk alatta.
+  const hianyzik = panzioHianyzoMezok();
+  const hintEl = document.getElementById('pay-hianyzik');
+  if (hintEl) {
+    if (hianyzik.length) {
+      hintEl.textContent = 'Még hiányzik: ' + hianyzik.map(function(h) { return h.szoveg; }).join(', ');
+      hintEl.style.display = 'block';
+    } else {
+      hintEl.style.display = 'none';
+      hintEl.textContent = '';
+    }
   }
+}
 
-  const potWrapEl  = document.getElementById('pot-elerhetoseg-wrap');
-  const potVisible = potWrapEl && potWrapEl.style.display !== 'none';
-  const potOk      = !potVisible || ((document.getElementById('f-pot-elerhetoseg').value || '').trim().length > 0);
-
-  const minden = panzioCalc && nev && kutyaOk && email && elfog && beH && kiH && taxiOk && potOk;
-  document.getElementById('pay-btn').disabled = !minden;
+// Hiányzó mezőhöz görgetés + rövid kiemelés, hogy tuti észrevegye
+function panzioMezoKiemel(id) {
+  if (!id) return;
+  const el = document.getElementById(id);
+  if (!el) return;
+  const cel = (id === 'f-pot-elerhetoseg')
+    ? (document.getElementById('pot-elerhetoseg-wrap') || el)
+    : el;
+  try { cel.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch(e) {}
+  const regi = el.style.boxShadow;
+  el.style.boxShadow = '0 0 0 3px var(--gold)';
+  setTimeout(function() { el.style.boxShadow = regi; }, 2500);
+  if (typeof el.focus === 'function') { try { el.focus({ preventScroll: true }); } catch(e) {} }
 }
 
 function fmt(n) {
@@ -1339,7 +1397,16 @@ async function fizetesIndit() {
     window.location.href = 'bejelentkezes.html?return=panzio.html';
     return;
   }
-  if (!panzioCalc) return;
+  // (a hiányzó panzioCalc-ot a lenti hiánylista kezeli – NE legyen néma return)
+
+  // ── Mi hiányzik? Konkrétan megmondjuk és odavisszük (nem néma tiltás) ──
+  const hianyzik = panzioHianyzoMezok();
+  if (hianyzik.length) {
+    frissitGomb();  // a lista alul is frissüljön
+    alert('A foglaláshoz még hiányzik:\n\n• ' + hianyzik.map(function(h) { return h.szoveg; }).join('\n• '));
+    panzioMezoKiemel(hianyzik[0].id);
+    return;
+  }
 
   const nev     = document.getElementById('f-nev').value.trim();
   const kutyaNev= document.getElementById('f-kutya').value.trim() ||
@@ -1356,10 +1423,6 @@ async function fizetesIndit() {
     window.location.href = 'profil.html';
     return;
   }
-  if (!document.getElementById('elfogadom').checked) {
-    alert('Kérlek fogadd el a lemondási feltételeket!');
-    return;
-  }
 
   // Előző hiba elrejtése
   document.getElementById('panzio-tele-hiba').style.display = 'none';
@@ -1369,6 +1432,10 @@ async function fizetesIndit() {
   btn.disabled = true;
   btn.textContent = fizmod === 'kp' ? 'Foglalás rögzítése...' : 'Csatlakozás Stripe-hoz...';
 
+  // FONTOS: innentől MINDEN a try-ban van (a payload építés is), különben egy váratlan
+  // JS/DOM hiba némán megállítaná a függvényt és a gomb örökre "Csatlakozás Stripe-hoz..."
+  // maradna – a user szemszögéből "nem visz el fizetni".
+  try {
   const payload = {
     action:    'panzio_checkout',
     nev,
@@ -1400,7 +1467,6 @@ async function fizetesIndit() {
   const _potVal = payload.pot_elerhetoseg;
   if (_potVal) localStorage.setItem('wd_pot_elerhetoseg', _potVal);
 
-  try {
     const resp = await fetch(WEBAPP_URL, {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -1457,8 +1523,14 @@ szamol();
   if (savedPot) {
     if (potHidden) potHidden.value = savedPot;
     // wrap marad display:none
-  } else {
-    if (potWrap) potWrap.style.display = 'block';
+  } else if (potWrap) {
+    // Kötelező mező – vizuálisan kiemeljük, hogy ne lehessen átsiklani felette
+    // (ez volt a "nem visz el fizetni" panasz fő oka: észrevétlen kötelező mező)
+    potWrap.style.display      = 'block';
+    potWrap.style.padding      = '14px';
+    potWrap.style.border       = '1px solid var(--gold)';
+    potWrap.style.borderRadius = '10px';
+    potWrap.style.background   = 'rgba(255, 214, 0, 0.06)';
   }
 
   const kutyak = wdKutyak();
