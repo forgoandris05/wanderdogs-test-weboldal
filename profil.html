@@ -166,17 +166,29 @@
       inset: 0;
       background: rgba(0,0,0,0.7);
       z-index: 1000;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      /* padding-bottom szandekosan 0: igy a sticky gombsor a kepernyo aljaig er,
+         a modal margin-bottom-ja adja a gorgetes vegen a levegot. */
+      padding: 24px 16px 0;
+      box-sizing: border-box;
     }
     .oltas-modal-overlay.active { display: flex; }
     .oltas-modal {
+      --modal-pad-x: 32px;
+      --modal-pad-y: 32px;
+      /* margin: auto 0 -> kozepre igazit ha van hely, de tulcsordulaskor
+         0-ra esik vissza (az align-items:center-rel ellentetben nem vag le). */
+      margin: auto 0;
       background: var(--black-3);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 32px;
+      padding: var(--modal-pad-y) var(--modal-pad-x);
       max-width: 420px;
-      width: 90%;
+      width: 100%;
+      box-sizing: border-box;
     }
     .oltas-modal h3 {
       font-size: 16px;
@@ -204,10 +216,19 @@
       box-sizing: border-box;
     }
     .oltas-modal .form-group input:focus { outline: none; border-color: var(--gold); }
+    /* Sticky footer: a Mentes gomb telefonon is mindig lathato maradjon,
+       akkor is ha a feltoltott fotok preview-ja megnyujtja a modalt. */
     .oltas-modal-btns {
       display: flex;
       gap: 10px;
-      margin-top: 18px;
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+      background: var(--black-3);
+      border-top: 1px solid var(--border-dim);
+      border-radius: 0 0 15px 15px;
+      margin: 18px calc(-1 * var(--modal-pad-x)) calc(-1 * var(--modal-pad-y));
+      padding: 12px var(--modal-pad-x) var(--modal-pad-y);
     }
     .oltas-modal-btns button {
       flex: 1;
@@ -324,17 +345,25 @@
       inset: 0;
       background: rgba(0,0,0,0.7);
       z-index: 1000;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 24px 16px 0;
+      box-sizing: border-box;
     }
     .kutya-modal-overlay.active { display: flex; }
     .kutya-modal {
+      --modal-pad-x: 32px;
+      --modal-pad-y: 32px;
+      margin: auto 0;
       background: var(--black-3);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 32px;
+      padding: var(--modal-pad-y) var(--modal-pad-x);
       max-width: 400px;
-      width: 90%;
+      width: 100%;
+      box-sizing: border-box;
     }
     .kutya-modal h3 {
       font-size: 16px;
@@ -365,7 +394,14 @@
     .kutya-modal-btns {
       display: flex;
       gap: 10px;
-      margin-top: 18px;
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+      background: var(--black-3);
+      border-top: 1px solid var(--border-dim);
+      border-radius: 0 0 15px 15px;
+      margin: 18px calc(-1 * var(--modal-pad-x)) calc(-1 * var(--modal-pad-y));
+      padding: 12px var(--modal-pad-x) var(--modal-pad-y);
     }
     .kutya-modal-btns button {
       flex: 1;
@@ -382,6 +418,12 @@
     .profil-msg-kutya-modal { font-size: 13px; margin-top: 10px; min-height: 18px; }
     .profil-msg-kutya-modal.ok   { color: #86efac; }
     .profil-msg-kutya-modal.hiba { color: #fca5a5; }
+
+    /* Mobilon szukebb modal padding, hogy a tartalom + a Mentes gomb elferjen */
+    @media (max-width: 768px) {
+      .oltas-modal-overlay, .kutya-modal-overlay { padding: 16px 12px 0; }
+      .oltas-modal, .kutya-modal { --modal-pad-x: 16px; --modal-pad-y: 20px; }
+    }
 
     .btn-kutya-szerkeszt {
       background: none;
