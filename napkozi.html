@@ -1136,14 +1136,20 @@ async function napkoziCheckout(tipus, extraParams) {
     const checked = [...kutyaSel.querySelectorAll('input[type=checkbox]:checked')].map(cb => cb.value);
     if (checked.length > 0) _kutya_neve = checked.join(', ');
   }
-  const kutyaNeve = _kutya_neve || '';
+  // Explicit felülírás (kiegészítő taxi: a saját kutya-checkboxai számítanak)
+  const kutyaNeve = (extraParams && extraParams.kutya_neve) || _kutya_neve || '';
   if (!kutyaNeve.trim()) {
     alert('Kérlek válaszd ki, melyik kutyádat hozod!');
     return;
   }
   let pendingBookingTime = '';
+  // 0. Explicit felülírás (kiegészítő taxi: a saját nap-választója az erős érték,
+  //    NEM a napközi naptár _selectedNapkoziDate-je, ami taxi vásárláskor üres/elavult)
+  if (extraParams && extraParams.pending_booking_time) {
+    pendingBookingTime = extraParams.pending_booking_time;
+  }
   // 1. DOM-ból építjük (a napkoziFoglalas mintájára) — minden tipusra fut
-  if (typeof _selectedNapkoziDate !== 'undefined' && _selectedNapkoziDate) {
+  if (!pendingBookingTime && typeof _selectedNapkoziDate !== 'undefined' && _selectedNapkoziDate) {
     const isTaxiNk = (typeof _taxi !== 'undefined' && _taxi && _taxi !== 'notaxi');
     if (isTaxiNk) {
       pendingBookingTime = _selectedNapkoziDate + 'T07:30:00';
@@ -1789,7 +1795,17 @@ function taxiKiegFizet() {
   localStorage.setItem('wd_taxi_kieg_cim', cim);
   localStorage.setItem('wd_taxi_kieg_idopont', idopont);
   localStorage.setItem('wd_taxi_kieg_kutyak', kutyaNevek.join(', '));
-  napkoziCheckout(tipus, { helyszin: cim, taxiOda: String(oda), taxiVissza: String(vissza) });
+  // A választott napot KÖTELEZŐ átadni: enélkül a Stripe metadata üres marad, és a
+  // webhook (böngésző nélkül) nem tudja, melyik napra szól a taxi → nincs naptár,
+  // a Taxi Menetrendbe pedig a mai dátum kerül.
+  const taxiOraSuffix = (vissza && !oda) ? 'T17:00:00' : 'T08:00:00';
+  napkoziCheckout(tipus, {
+    helyszin: cim,
+    taxiOda: String(oda),
+    taxiVissza: String(vissza),
+    pending_booking_time: idopont + taxiOraSuffix,
+    kutya_neve: kutyaNevek.join(', '),
+  });
   return false; // prevent default navigation
 }
 
