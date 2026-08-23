@@ -61,12 +61,7 @@
       <div class="overline">Mire számíthatsz</div>
       <h2 class="section-title">Strukturált <span class="gold">fejlődés</span></h2>
     </div>
-    <div class="grid-3" style="margin-top: 40px;">
-      <div class="card reveal reveal-delay-1">
-        <div class="card-icon">📚</div>
-        <h4 style="margin-bottom: 8px;">Alapozó tanfolyam</h4>
-        <p style="font-size: 14px; color: var(--text-dim);">Többhetes program a legfontosabb alapokkal – kezdőknek és friss gazdiknak.</p>
-      </div>
+    <div class="grid-2" style="margin-top: 40px;">
       <div class="card reveal reveal-delay-2">
         <div class="card-icon">🎯</div>
         <h4 style="margin-bottom: 8px;">Lépésről lépésre</h4>
@@ -170,6 +165,7 @@
 <script>
 const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
 var _tfKivalasztott = null;
+var _tfKedvPct = 0;
 if (wdOltasBlokk('tanfolyam-foglalas')) { /* blokkolva – nincs érvényes oltási könyv */ }
 
 (function() {
@@ -206,7 +202,8 @@ if (wdOltasBlokk('tanfolyam-foglalas')) { /* blokkolva – nincs érvényes olt�
         '<p style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">📅 Kezdés: ' + _escHtml(e.datum) + '</p>' +
         '<p style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">🔁 ' + (e.alkalmak || '?') + ' alkalom &nbsp;·&nbsp; ' + _escHtml(e.idoCimke || '') + '</p>' +
         (e.leiras ? '<p style="font-size:13px;color:var(--text-dim);margin-top:10px;line-height:1.6;">' + _escHtml(e.leiras.slice(0, 180)) + (e.leiras.length > 180 ? '…' : '') + '</p>' : '') +
-        '<p style="font-size:20px;font-weight:800;color:var(--gold);margin-top:12px;">' + (e.ar ? e.ar.toLocaleString('hu-HU') + ' Ft' : '-') + '</p>' +
+        '<p style="font-size:20px;font-weight:800;color:var(--gold);margin-top:12px;">' + (e.ar ? e.ar.toLocaleString('hu-HU') + ' Ft' : '-') +
+        (e.ar ? '<span style="font-size:13px;font-weight:600;color:var(--text-dim);"> / kutya</span>' : '') + '</p>' +
         '</div>';
       if (e.szabad <= 0) {
         card.style.opacity = '0.5'; card.style.cursor = 'default';
@@ -223,9 +220,9 @@ if (wdOltasBlokk('tanfolyam-foglalas')) { /* blokkolva – nincs érvényes olt�
 
 function tfKartvaKivalaszt(e) {
   _tfKivalasztott = e;
+  _tfKedvPct = 0;
   var wrapper = document.getElementById('tf-form-wrapper');
   document.getElementById('tf-form-cim').textContent = e.nev + ' – ' + e.datum;
-  document.getElementById('tf-ar-display').textContent = e.ar ? e.ar.toLocaleString('hu-HU') + ' Ft' : '';
   var user = wdGetUser();
   if (!user || !user.registered) {
     document.getElementById('tf-auth-prompt').style.display = 'block';
@@ -243,14 +240,16 @@ function tfKartvaKivalaszt(e) {
         var cb = document.createElement('input');
         cb.type = 'checkbox'; cb.value = k.nev; cb.checked = kutyakLista.length === 1;
         cb.style.cssText = 'width:16px;height:16px;accent-color:var(--gold);';
+        cb.onchange = tfArFrissit;   // több kutya = arányosan több a díj
         lbl.appendChild(cb);
         lbl.appendChild(document.createTextNode(k.nev));
         kutyakDiv.appendChild(lbl);
       });
     } else {
-      kutyakDiv.innerHTML = '<input type="text" id="tf-kutya-input" placeholder="Kutya neve" style="width:100%;padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;">';
+      kutyakDiv.innerHTML = '<input type="text" id="tf-kutya-input" placeholder="Kutya neve (több kutya esetén vesszővel elválasztva)" oninput="tfArFrissit()" style="width:100%;padding:10px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;color:var(--text);font-size:14px;">';
     }
   }
+  tfArFrissit();
   tfKedvezmenyLekeres(e);
   wrapper.style.display = 'block';
   wrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -259,10 +258,40 @@ function tfKartvaKivalaszt(e) {
 // Tanfolyamnál nincs készpénz, mindig online megy
 function getTfFizmod() { return 'online'; }
 
+// Hány kutyát jelölt be? (Az ár kutyánként megy.)
+function tfKutyaSzam() {
+  var lista = document.getElementById('tf-kutyak-list');
+  if (!lista) return 1;
+  var pipalt = lista.querySelectorAll('input[type=checkbox]:checked');
+  if (pipalt.length > 0) return pipalt.length;
+  var szoveg = lista.querySelector('input[type=text]');
+  if (szoveg && szoveg.value.trim()) {
+    var db = szoveg.value.split(',').filter(function(k) { return k.trim(); }).length;
+    return db > 0 ? db : 1;
+  }
+  return 1;
+}
+
+// Ár kiírása: alapdíj × kutyák száma, majd a kedvezmény
+function tfArFrissit() {
+  var arEl = document.getElementById('tf-ar-display');
+  if (!arEl || !_tfKivalasztott || !_tfKivalasztott.ar) return;
+  var db      = tfKutyaSzam();
+  var teljes  = _tfKivalasztott.ar * db;
+  var vegso   = _tfKedvPct > 0 ? Math.round(teljes * (100 - _tfKedvPct) / 100) : teljes;
+  var reszlet = db > 1
+    ? '<span style="display:block;font-size:13px;font-weight:600;color:var(--text-dim);margin-bottom:2px;">' +
+      _tfKivalasztott.ar.toLocaleString('hu-HU') + ' Ft × ' + db + ' kutya</span>'
+    : '';
+  arEl.innerHTML = reszlet + (_tfKedvPct > 0
+    ? '<span style="text-decoration:line-through;color:var(--text-dim);font-size:15px;font-weight:600;">' +
+      teljes.toLocaleString('hu-HU') + ' Ft</span> &nbsp; ' + vegso.toLocaleString('hu-HU') + ' Ft'
+    : vegso.toLocaleString('hu-HU') + ' Ft');
+}
+
 // Email alapú kedvezmény lekérdezése (pl. Puppy után 20% az Alapozóra)
 function tfKedvezmenyLekeres(e) {
   var kedvEl = document.getElementById('tf-kedvezmeny');
-  var arEl   = document.getElementById('tf-ar-display');
   kedvEl.style.display = 'none';
   var user = wdGetUser();
   if (!user || !user.email || !e || !e.ar) return;
@@ -273,12 +302,10 @@ function tfKedvezmenyLekeres(e) {
   .then(function(resp) {
     var pct = (resp && resp.kedvezmeny) || 0;
     if (pct <= 0) return;
-    var uj = Math.round(e.ar * (100 - pct) / 100);
+    _tfKedvPct = pct;
     kedvEl.textContent = '🎟️ ' + pct + '% kedvezményed van erre a tanfolyamra';
     kedvEl.style.display = 'block';
-    arEl.innerHTML =
-      '<span style="text-decoration:line-through;color:var(--text-dim);font-size:15px;font-weight:600;">' +
-      e.ar.toLocaleString('hu-HU') + ' Ft</span> &nbsp; ' + uj.toLocaleString('hu-HU') + ' Ft';
+    tfArFrissit();
   })
   .catch(function() { /* kedvezmény nélkül megy tovább */ });
 }
