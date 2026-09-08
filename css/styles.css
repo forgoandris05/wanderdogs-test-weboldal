@@ -196,11 +196,11 @@ nav {
 .nav-auth-reg:hover { background: #ffe033; }
 
 @media (max-width: 768px) {
-  .nav-auth { gap: 6px; }
+  .nav-auth { gap: 4px; }
   .nav-auth-name { font-size: 12px; }
   .nav-auth-kilepes { display: none; }
-  .nav-auth-belepes { font-size: 12px; padding: 5px 8px; }
-  .nav-auth-reg { font-size: 11px; padding: 5px 10px; }
+  .nav-auth-belepes { font-size: 12px; padding: 5px 6px; }
+  .nav-auth-reg { font-size: 11px; padding: 5px 9px; }
 }
 .nav-mobile-kilepes { display: none; }
 .nav-mobile-flat { display: none; }
@@ -540,15 +540,33 @@ footer {
 }
 
 @media (max-width: 768px) {
-  nav { padding: 0 20px; overflow: visible !important; }
+  /* A nav backdrop-filterje containing blockot csinal a fixed gyerekeknek,
+     ezert a lenyilo menu a 72px-es navsavba volt bezarva (egy csikban latszott).
+     Mobilon kikapcsoljuk: a nav hattere ugyis 95%-ban atlatszatlan fekete. */
+  nav {
+    padding: 0 14px; overflow: visible !important;
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+    background: rgba(0,0,0,0.97);
+  }
   .nav-links:not(.open) { display: none; }
   .nav-right .nav-phone { display: none; }
   .nav-cta-desktop { display: none !important; }
-  .nav-burger { display: flex; }
+  .nav-burger { display: flex; flex-shrink: 0; }
+  /* Keskeny telefonon a logo + belepes/regisztracio kitolta a burgert a
+     kepernyorol (390px-en mar levagta). Mobilon kisebb logo es szukebb kozok. */
+  /* A flex:0 1 auto vegso biztositek nagyon keskeny (<340px) kijelzon:
+     inkabb a logo vagodjon, mint hogy a burger csusszon ki a kepernyorol. */
+  .nav-logo {
+    font-size: 15px; letter-spacing: 0.06em; gap: 6px;
+    flex: 0 1 auto; min-width: 0; overflow: hidden;
+  }
+  .nav-right { gap: 10px; flex-shrink: 0; }
 
   .nav-links.open {
     display: flex !important; flex-direction: column; align-items: flex-start;
     position: fixed; top: 72px; left: 0; right: 0; bottom: 0;
+    height: auto; max-height: calc(100dvh - 72px);
+    -webkit-overflow-scrolling: touch;
     background: #000000;
     padding: 14px 24px;
     gap: 4px; overflow-y: auto;
@@ -598,6 +616,16 @@ footer {
     color: var(--text);
     padding: 6px 0;
   }
+
+  /* A .btn white-space:nowrap-ja miatt a hosszu CTA-k (pl. workshopok:
+     "Jelentkezes es tobb informacio Facebookon") kilogtak a kepernyorol. */
+  .btn { white-space: normal; max-width: 100%; text-align: center; justify-content: center; }
+  .btn-lg { padding: 16px 24px; }
+
+  /* Szeles tablazatok (pl. adatkezeles) mobilon levagodtak. A .price-table
+     mar sajat overflow-x wrapperben van, azt nem bantjuk.
+     Sajat vizszintes gorgetest kapnak, a lap nem csuszik el tolük. */
+  table:not(.price-table) { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
   .page-hero { padding: 120px 20px 60px; }
   .section { padding: 20px 20px; }
