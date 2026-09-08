@@ -582,8 +582,20 @@
       </div>
     </a>
 
+    <a href="tanfolyamok.html" class="service-card reveal" id="tf-service-card">
+      <div class="service-card-top">
+        <span class="service-emoji">🎓</span>
+        <h3>Tanfolyamok</h3>
+        <p>Wander Puppy és Wander Alapozó – hétköznapi és hétvégi csoportban. Komplex, többhetes program, kis létszámmal.</p>
+      </div>
+      <div class="service-card-footer">
+        <div class="service-price" id="tf-service-ar">Kis létszám</div>
+        <span class="service-link">Foglalj →</span>
+      </div>
+    </a>
+
     <!-- ── Sor 3: Taxi, Túra, VIP ── -->
-    <a href="kutyataxi.html" class="service-card reveal">
+    <a href="kutyataxi.html" class="service-card reveal reveal-delay-1">
       <div class="service-card-top">
         <span class="service-emoji">🚐</span>
         <h3>Kutya taxi</h3>
@@ -595,7 +607,7 @@
       </div>
     </a>
 
-    <a href="kutyatura.html" class="service-card reveal reveal-delay-1">
+    <a href="kutyatura.html" class="service-card reveal reveal-delay-2">
       <div class="service-card-top">
         <span class="service-emoji">🥾</span>
         <h3>Wander kutyás túra</h3>
@@ -607,7 +619,7 @@
       </div>
     </a>
 
-    <div class="service-card reveal reveal-delay-2" style="opacity:0.45;cursor:default;">
+    <div class="service-card reveal" style="opacity:0.45;cursor:default;">
       <div class="service-card-top">
         <span class="service-emoji">👑</span>
         <h3>VIP / Intenzív program</h3>
@@ -853,6 +865,25 @@
   setTimeout(function() {
     setInterval(cycle, 2800);
   }, 2500);
+})();
+
+/* ── TANFOLYAM KÁRTYA: ár a Sheetből, nem bedrótozva ── */
+(function() {
+  var el = document.getElementById('tf-service-ar');
+  if (!el) return;
+  var WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+  fetch(WEBAPP_URL, { method:'POST', body: JSON.stringify({ action:'tanfolyam_check' }) })
+    .then(function(r) { return r.json(); })
+    .then(function(resp) {
+      if (!resp || !resp.ok || !resp.esemenyek || !resp.esemenyek.length) return;
+      var arak = resp.esemenyek.map(function(e) { return e.ar; }).filter(function(a) { return a > 0; });
+      if (!arak.length) return;
+      var min = Math.min.apply(null, arak), max = Math.max.apply(null, arak);
+      var szoveg = min === max ? min.toLocaleString('hu-HU') + ' Ft'
+                               : min.toLocaleString('hu-HU') + '–' + max.toLocaleString('hu-HU') + ' Ft';
+      el.innerHTML = szoveg + '<span>/kutya</span>';
+    })
+    .catch(function() { /* marad a statikus szöveg */ });
 })();
 
 /* ── CONTACT FORM SUBMIT ── */
