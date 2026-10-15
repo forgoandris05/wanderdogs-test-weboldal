@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Szolgáltatások dropdown toggle mobilon
     document.querySelectorAll('.nav-dropdown > a').forEach(function(link) {
       link.addEventListener('click', function(e) {
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth <= 1100) {
           e.preventDefault();
           link.parentElement.classList.toggle('open');
         }
