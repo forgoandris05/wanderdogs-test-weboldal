@@ -195,7 +195,7 @@ nav {
 }
 .nav-auth-reg:hover { background: #ffe033; }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .nav-auth { gap: 4px; }
   .nav-auth-name { font-size: 12px; }
   .nav-auth-kilepes { display: none; }
@@ -539,7 +539,10 @@ footer {
   .gallery-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 768px) {
+/* A nav asztali valtozata ~1050px szelesseg alatt kicsuszik (Belepes/Regisztracio
+   a kepernyon kivul): fekvo telefonon (844/932px) emiatt nem lehetett belepni,
+   regisztralni, foglalni. Ezert a burger menu 1100px-ig ervenyes. */
+@media (max-width: 1100px) {
   /* A nav backdrop-filterje containing blockot csinal a fixed gyerekeknek,
      ezert a lenyilo menu a 72px-es navsavba volt bezarva (egy csikban latszott).
      Mobilon kikapcsoljuk: a nav hattere ugyis 95%-ban atlatszatlan fekete. */
@@ -616,7 +619,9 @@ footer {
     color: var(--text);
     padding: 6px 0;
   }
+}
 
+@media (max-width: 768px) {
   /* A .btn white-space:nowrap-ja miatt a hosszu CTA-k (pl. workshopok:
      "Jelentkezes es tobb informacio Facebookon") kilogtak a kepernyorol. */
   .btn { white-space: normal; max-width: 100%; text-align: center; justify-content: center; }
@@ -677,6 +682,12 @@ img, video { max-width: 100%; }
   .footer-bottom a { display: inline-block; padding: 12px 6px; }
   .nav-logo { padding: 12px 0; }
   .footer-socials a { width: 44px; height: 44px; }
+
+  /* Arlista-tablak: a 400px-es min-width miatt az utolso oszlop (ar) a
+     kepernyon kivul maradt allo telefonon, ezert beleferjen a kepernyobe */
+  .price-table { min-width: 0 !important; }
+  .price-table th, .price-table td { padding-left: 8px !important; padding-right: 8px !important; }
+  .price-table th { letter-spacing: 0.05em !important; }
 
   /* Olvashato apro betuk */
   .overline, .badge, .footer-col h4 { font-size: 12px; }
