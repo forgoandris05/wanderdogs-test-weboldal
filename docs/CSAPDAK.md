@@ -45,8 +45,9 @@ Ha új hibát javítasz, ide írd fel ugyanebben a formában - ez a rendszer "em
 - A naptár/menetrend író helperek adjanak vissza `true`/`false`-t, és `false` esetén a hívó küldjön riasztást. Egy `Logger.log('... nem kritikus')` mögé elrejtett hiba addig nem derül ki, amíg az ügyfél nem szól.
 
 ### B2. Deduplikációs kulcs = az esemény azonosítója, NEM a mai dátum
-- **Tünet:** az oltási emlékeztető minden nap újra kiment, mert a "már küldtük" jelölő a mai dátumot tárolta.
-- **Szabály:** a Script Propertiesben a **lejárat dátumát** (vagy foglalás ID-t) tárold. Így csak akkor megy új email, ha az adat tényleg megváltozott.
+- **Tünet (régi, javított):** az oltási emlékeztető minden nap újra kiment, mert a "már küldtük" jelölő a mai dátumot tárolta.
+- **Szabály:** a dedup kulcs az esemény egyedi azonosítója legyen (lejárat dátuma, foglalás ID, session_id).
+- **Mai állapot:** a kód az oltási emlékeztetőt a Gmailben keresi tárgy alapján (lásd EMAILEK.md). Ennek az a korlátja, hogy a tárgy nem tartalmaz dátumot, így a következő évi lejáratnál a régi levél miatt nem megy új emlékeztető.
 
 ---
 

@@ -10,8 +10,9 @@ Ez a mappa azoknak szól, akik a Wanderdogs weboldalt és a mögötte futó rend
 |---|------|--------------|
 | 1 | [ARCHITEKTURA.md](ARCHITEKTURA.md) | **Mindig, mielőtt bármit módosítasz.** A rendszer 5 rétege és hogyan függenek össze. |
 | 2 | [CSAPDAK.md](CSAPDAK.md) | Mielőtt kódot írsz. 20+ valós hiba tanulsága, szabályokba szedve. |
-| 3 | [MUNKAMENET.md](MUNKAMENET.md) | Mielőtt először módosítasz és élesítesz: hogyan dolgozunk, hogyan megy ki egy változtatás. |
-| 4 | [HOZZAFERESEK.md](HOZZAFERESEK.md) | Ki mihez fér hozzá, és mit kell beállítani, hogy az `info.wanderdogs@gmail.com` mindenhez hozzáférjen. |
+| 3 | [EMAILEK.md](EMAILEK.md) | Ha emailt, emlékeztetőt vagy időzített triggert érintesz: az összes levél, tárgy, trigger és dedup. |
+| 4 | [MUNKAMENET.md](MUNKAMENET.md) | Mielőtt először módosítasz és élesítesz: hogyan dolgozunk, hogyan megy ki egy változtatás. |
+| 5 | [HOZZAFERESEK.md](HOZZAFERESEK.md) | Ki mihez fér hozzá, és mit kell beállítani, hogy az `info.wanderdogs@gmail.com` mindenhez hozzáférjen. |
 
 A repó gyökerében lévő régebbi fájlok:
 
