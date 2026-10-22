@@ -54,7 +54,7 @@ Egyetlen nagy projekt (~11 000 sor, ~210 függvény). **A forráskód nincs a re
 
 `SHEET_ID`, `SITE_URL`, `TIMI_EMAIL`, `AUTH_SECRET` (a bejelentkezési token aláírása), `STRIPE_WH_SECRET` (a webhook közös titka), Stripe kulcsok személyenként (`STRIPE_KEY_DAVID` / `STRIPE_SECRET_KEY`, `STRIPE_KEY_TIMI`, `STRIPE_KEY_VIKI`), `MARKETING_TOKEN_SECRET`, `EGYENI_CALENDAR_ID`, `TAXI_CALENDAR_ID`, `NAPKOZI_PANZIO_CALENDAR_ID`, `NAPKOZI_CALENDAR_ID`, `OLTASI_FOLDER_ID` (Drive mappa az oltási fotóknak), `FORM_ID`, `KUTYATURA_DATUM`, `KUTYATURA_HELYSZIN`. A Számlázz.hu kulcsok is Script Properties-ben vannak (a nevek a kód `SZAMLAZO_PROP` táblájában).
 
-> A Gmail OAuth scope `mail.google.com` - **ne csökkentsd `gmail.send`-re** (egy korábbi session-ben derült ki, hogy a szűkebb scope-pal a rendszer nem működik jól).
+> A Gmail OAuth scope `mail.google.com` - **ne csökkentsd `gmail.send`-re** (az oltási emlékeztető dedupja `GmailApp.search`-öt használ, ahhoz a teljes scope kell).
 
 ## 3. CRM = a Google Sheet "Wanderdogs CRM"
 
@@ -90,7 +90,9 @@ Fontos tudnivalók:
 1. **Ügyfélnek** visszaigazolás,
 2. **Timinek** értesítés (a `TIMI_EMAIL` címre).
 
-Plusz: oltási emlékeztetők (30 nappal lejárat előtt és lejárat után; deduplikálva a lejárat dátumával), esemény-emlékeztetők, onboarding-sorozat, jelszó-reset.
+A teljes lista tárggyal, függvénnyel és triggerrel: [EMAILEK.md](EMAILEK.md).
+
+Plusz: oltási emlékeztetők (30 nappal lejárat előtt és lejárat után; deduplikálás Gmail-kereséssel, lásd EMAILEK.md), esemény-emlékeztetők, onboarding-sorozat, jelszó-reset.
 
 Naptárfájl (`.ics`) a levelekben: a Gmail elnyeli a `METHOD:REQUEST` fájlt - `METHOD:PUBLISH` kell, `ATTENDEE` nélkül, a blob contentType legyen simán `text/calendar`, és mellé mindig tegyél egy sima Google Naptár linket is. (A csoportos, kutyatúra és őrző-védő levelek még a régi módszert használják - javításra vár.)
 
