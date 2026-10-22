@@ -8,8 +8,8 @@ Cél: az `info.wanderdogs@gmail.com` címen (a Wanderdogs céges cím) mindenhez
 
 | Rendszer | Mire kell | Kell hozzá | Állapot |
 |---|---|---|---|
-| **GitHub repó** (`forgoandris05/wanderdogs-test-weboldal`) | weboldal kód, GitHub Pages | collaborator (Write) meghívás | lásd alább |
-| **Google Sheet "Wanderdogs CRM"** | adatbázis, CRM | Szerkesztő megosztás | lásd alább |
+| **GitHub repó** (`forgoandris05/wanderdogs-test-weboldal`) | weboldal kód, GitHub Pages | collaborator (Write) meghívás | **teendő:** ma csak `forgoandris05` a collaborator; az info címhez még nincs GitHub-felhasználónév |
+| **Google Sheet "Wanderdogs CRM"** | adatbázis, CRM | - | **az `info.wanderdogs@gmail.com` a tulajdonosa** (ellenőrizve 2026-10-22), nincs teendő |
 | **Apps Script projekt** (a Sheet-hez vagy önállóan) | a teljes backend kód + Script Properties + triggerek + telepítések | Szerkesztő megosztás az Apps Script projekten (kézzel) | **kézzel kell** |
 | **Google Naptárak** (Napközi & Panzió, Egyéni, Taxi) | foglalások | a naptárak megosztása (Módosíthat) | kézzel |
 | **Google Drive oltási fotó mappa** (`OLTASI_FOLDER_ID`) | ügyfelek oltási fotói (személyes adat) | mappa megosztás | kézzel |
@@ -29,7 +29,7 @@ Cél: az `info.wanderdogs@gmail.com` címen (a Wanderdogs céges cím) mindenhez
 5. A repó jelenleg **publikus** (a GitHub Pages ingyenes hostingja miatt) - olvasni bárki tudja, írni csak a collaboratorok.
 
 ### Google Sheet (CRM)
-Megnyitás → **Megosztás** → `info.wanderdogs@gmail.com` → **Szerkesztő**. Figyelem: a 🔐 Felhasználók fül ügyfelek személyes adatait és jelszó-hash-eit tartalmazza - csak megbízható emberekkel oszd meg, és GDPR szempontból az adatkezelési tájékoztatóval (`adatkezeles.html`) összhangban kezeld.
+Az `info.wanderdogs@gmail.com` a Sheet tulajdonosa, ezért ott nincs teendő. Más embernek (pl. külső fejlesztőnek) való megosztáshoz: megnyitás → **Megosztás** → `info.wanderdogs@gmail.com` → **Szerkesztő**. Figyelem: a 🔐 Felhasználók fül ügyfelek személyes adatait és jelszó-hash-eit tartalmazza - csak megbízható emberekkel oszd meg, és GDPR szempontból az adatkezelési tájékoztatóval (`adatkezeles.html`) összhangban kezeld.
 
 ### Apps Script
 script.google.com → a projekt → jobb felül **Megosztás** (vagy a projekt beállításai) → hozzáadás **Szerkesztőként**. Csak a projekt tulajdonosa tud megosztani. Ha az Apps Script a Sheethez kötött (Bővítmények → Apps Script), a Sheet szerkesztői automatikusan hozzáférnek a kódhoz - ezt érdemes ellenőrizni.
