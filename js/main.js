@@ -272,11 +272,11 @@ function wdHamarosan(e) {
   if (existing) existing.remove();
   var t = document.createElement('div');
   t.id = 'wd-toast';
-  t.textContent = 'Hamarosan! 🐾';
+  t.textContent = 'Hamarosan, dolgozunk rajta ;) 🐾';
   t.style.cssText = 'position:fixed;top:90px;left:50%;transform:translateX(-50%);background:var(--black-3);color:var(--gold);border:1px solid var(--border);padding:14px 32px;border-radius:12px;font-size:15px;font-weight:700;z-index:9999;animation:toastIn .3s ease;';
   document.body.appendChild(t);
-  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; }, 1800);
-  setTimeout(function(){ t.remove(); }, 2200);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; }, 3000);
+  setTimeout(function(){ t.remove(); }, 3400);
 }
 
 // ── Kilépés ───────────────────────────────────────────────

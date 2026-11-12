@@ -404,7 +404,7 @@
     <li><a href="tanfolyamok.html">Tanfolyamok</a></li>
     <li><a href="workshopok.html">Workshopok</a></li>
     <li><a href="rolunk.html">Rólunk</a></li>
-    <li><a href="https://wanderdogsworld.com/courses/" target="_blank">Kurzusok</a></li>
+    <li><a href="#" onclick="wdHamarosan(event)">Kurzusok</a></li>
     <li class="nav-cta-mobile"><a href="#kalkulalok" class="nav-cta" onclick="panzioFoglalasScroll(event)">Foglalok</a></li>
   </ul>
   <div class="nav-right">
@@ -442,8 +442,8 @@
     <div class="grid-4" style="margin-top: 40px;">
       <div class="card reveal reveal-delay-1">
         <div class="card-icon">🏡</div>
-        <h4 style="margin-bottom: 8px;">Igény szerinti elhelyezés</h4>
-        <p style="font-size: 14px; color: var(--text-dim);">Igény szerint szoba kennellel is.</p>
+        <h4 style="margin-bottom: 8px;">A kutya igényeinek és viselkedésének megfelelő elhelyezés</h4>
+        <p style="font-size: 14px; color: var(--text-dim);">Beltéri elhelyezés, szükség esetén külön kennelben.</p>
       </div>
       <div class="card reveal reveal-delay-2">
         <div class="card-icon">👀</div>
@@ -540,7 +540,7 @@
       <div class="overline">Új vendégeknek</div>
       <h2 class="section-title">Első alkalommal <span class="gold">ingyenes ismerkedő</span></h2>
       <p style="font-size: 16px; color: var(--text-dim); line-height: 1.75; margin: 20px 0 28px;">
-        Ha a kutyád még nem volt nálunk panzióban, szeretjük, ha először ingyenesen eljöttök ismerkedni. Megnézzük, hogyan érzi magát a környezetben, és megbeszéljük a részleteket.
+        Új vendégek számára a panziós foglalás előtt kötelező az ingyenes ismerkedő és alkalmassági felmérés. Megnézzük, hogyan érzi magát a környezetben, és megbeszéljük a részleteket.
       </p>
       <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px;">
         <li style="display: flex; align-items: center; gap: 10px; font-size: 15px;">
@@ -649,11 +649,11 @@
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
               <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-3);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
                 <input type="checkbox" id="taxi-foglalas-hozas" style="accent-color:var(--gold);width:16px;height:16px;" onchange="taxiFoglalasFrissit()">
-                <span>Felszedéshez <span style="font-size:12px;color:var(--text-faint);">(beköltözés napján)</span></span>
+                <span>A kutya otthoni felvételéhez <span style="font-size:12px;color:var(--text-faint);">(beköltözés napján)</span></span>
               </label>
               <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-3);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
                 <input type="checkbox" id="taxi-foglalas-vives" style="accent-color:var(--gold);width:16px;height:16px;" onchange="taxiFoglalasFrissit()">
-                <span>Hazafuvarhoz <span style="font-size:12px;color:var(--text-faint);">(kiköltözés napján)</span></span>
+                <span>A kutya hazaszállításához <span style="font-size:12px;color:var(--text-faint);">(kiköltözés napján)</span></span>
               </label>
             </div>
             <div>
@@ -665,7 +665,7 @@
 
         <!-- Pót elérhetőség – első foglalásnál kötelező, visszatérő usernél rejtett -->
         <div id="pot-elerhetoseg-wrap" style="margin-top:18px; display:none;">
-          <label style="display:block;font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px;">🆘 Pót elérhetőség <span style="font-weight:400;color:var(--text-dim);font-size:12px;">(kötelező)</span></label>
+          <label style="display:block;font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px;">🆘 Vészhelyzet esetén értesítendő személy <span style="font-weight:400;color:var(--text-dim);font-size:12px;">(kötelező)</span></label>
           <p style="font-size:12px;color:var(--text-faint);margin-bottom:8px;line-height:1.5;">Kit hívjunk, ha veled nem tudunk kapcsolatba lépni? Add meg a telefonszámát! (pl. 06301234567)</p>
           <input type="tel" id="f-pot-elerhetoseg"
             placeholder="Telefonszám"
@@ -739,7 +739,7 @@
           </div>
           <div id="p-kedvezmeny-sor" style="display:none; background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:8px; padding:8px 14px; font-size:13px; color:var(--gold); margin-bottom:12px;"></div>
           <div class="calc-breakdown" id="calc-breakdown" style="display:none;">
-            <div class="calc-row"><span id="r-ejszakak-label">Megkezdett napok</span><span id="r-ejszakak">–</span></div>
+            <div class="calc-row"><span id="r-ejszakak-label">Megkezdett panziós napok</span><span id="r-ejszakak">–</span></div>
             <div class="calc-row"><span id="r-napidij-label">Napidíj</span><span id="r-napidij">–</span></div>
             <div class="calc-row discount" id="r-kedv-row" style="display:none;"><span>Hosszú tartózkodás kedvezmény</span><span id="r-kedvezmeny">–</span></div>
             <div class="calc-row discount" id="r-torzs-row" style="display:none;"><span>Törzsvásárló kedvezmény</span><span id="r-torzs-kedv">–</span></div>
@@ -932,14 +932,14 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
         <table class="price-table reveal">
           <tr><th>Szolgáltatás</th><th style="text-align:right">Ár</th></tr>
           <tr><td>Étel biztosítás (prémium táp)</td><td>+1 000 Ft / nap / kutya</td></tr>
-          <tr><td>Problémás kutya <small style="font-weight:400">(alul szoc., félénk, ivaros)</small></td><td>12 000 Ft / nap</td></tr>
-          <tr><td>SOS fogadás <small style="font-weight:400">(24 órán belüli)</small></td><td>12 000 Ft / nap</td></tr>
+          <tr><td>Egyedi gondozást igénylő kutya <small style="font-weight:400">(hiányosan szocializált, félénk, ivaros)</small></td><td>12 000 Ft / nap</td></tr>
+          <tr><td>Sürgősségi panziós elhelyezés <small style="font-weight:400">(24 órán belüli)</small></td><td>12 000 Ft / nap</td></tr>
         </table>
 
         <div class="card reveal" style="margin-top: 24px; padding: 20px;">
           <div style="font-size: 20px; margin-bottom: 10px;">⏰</div>
-          <h4 style="font-size: 14px; margin-bottom: 8px;">11:00 check-out szabály</h4>
-          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.6;">Ha a kutyád 11:00 <strong>előtt</strong> kerül át, az nem számít új napnak. Ha 11:00 <strong>után</strong>, az egész nap felszámolásra kerül.</p>
+          <h4 style="font-size: 14px; margin-bottom: 8px;">Panziós napok elszámolása</h4>
+          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.6;">A távozás napján <strong>11:00 előtt</strong> történő átvétel esetén az adott napra nem számítunk fel újabb napidíjat. <strong>11:00 órakor vagy azt követően</strong> történő átvétel esetén további egy napidíj fizetendő.</p>
         </div>
         <div class="card reveal reveal-delay-1" style="margin-top: 16px; padding: 20px;">
           <div style="font-size: 20px; margin-bottom: 10px;">⚠️</div>
