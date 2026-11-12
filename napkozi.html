@@ -328,7 +328,7 @@
         <h4>Nyitvatartás</h4>
         <ul>
           <li><span class="dot">🕗</span> Napközi ideje: 8:00–17:00</li>
-          <li><span class="dot">⏰</span> Plusz óra: 2 000 Ft/megkezdett óra</li>
+          <li><span class="dot">⏰</span> Nyitvatartáson kívüli felügyelet díja: 2 000 Ft/megkezdett óra</li>
           <li><span class="dot">📅</span> Keddtől péntekig elérhető</li>
           <li><span class="dot">📍</span> Solymár (pontos cím bejelentkezéskor)</li>
         </ul>
@@ -337,7 +337,7 @@
         <h4>Bérlet érvényessége</h4>
         <ul>
           <li><span class="dot">📆</span> 5 hét a vásárlástól számítva</li>
-          <li><span class="dot">🏨</span> Kitolódik, ha a kutya ez alatt panziónál van</li>
+          <li><span class="dot">🏨</span> A bérlet érvényessége a panziós tartózkodás időtartamával meghosszabbodik.</li>
           <li><span class="dot">🔄</span> Nem vész el betegedés esetén (megbeszélés alapján)</li>
           <li><span class="dot">💳</span> Előre online fizetéssel érvényes</li>
         </ul>
@@ -355,7 +355,7 @@
         <h4>Taxi opció</h4>
         <ul>
           <li><span class="dot">🚐</span> Budapest és Pest megye</li>
-          <li><span class="dot">🕗</span> Reggeli felvevés: 7:00–10:00, hazafuvar: 16:00–19:00</li>
+          <li><span class="dot">🕗</span> Reggeli felvétel: 7:00–10:00, hazafuvar: 16:00–19:00</li>
           <li><span class="dot">💰</span> A taxis bérlet tartalmazza a kutyataxit</li>
         </ul>
       </div>
@@ -413,7 +413,7 @@
             </li>
             <li style="display:flex; align-items:flex-start; gap:12px;">
               <span style="flex-shrink:0; width:26px; height:26px; background:var(--gold); color:#000; font-weight:800; font-size:13px; border-radius:50%; display:flex; align-items:center; justify-content:center;">3</span>
-              <span style="color:var(--text); font-size:14px; line-height:1.5;">Leokézod - a bérletből automatikusan levonunk 1 alkalmat</span>
+              <span style="color:var(--text); font-size:14px; line-height:1.5;">Megerősíted a foglalást - a bérletből automatikusan levonunk 1 alkalmat</span>
             </li>
           </ol>
         </div>
@@ -570,7 +570,7 @@
       <p id="cal-intro-text" style="color:var(--text-dim);font-size:14px;margin-bottom:12px;"></p>
       <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,215,0,0.07); border:1px solid rgba(255,215,0,0.25); border-radius:8px; padding:9px 14px; margin-bottom:18px;">
         <span style="font-size:15px;">⏰</span>
-        <span style="font-size:13px; color:var(--text-dim);">Foglalás <strong style="color:var(--gold);">előző nap 17:00-ig</strong> lehetséges.</span>
+        <span style="font-size:13px; color:var(--text-dim);">Napközis időpont legkésőbb az <strong style="color:var(--gold);">előző napon 17:00 óráig</strong> foglalható.</span>
       </div>
       <!-- Naptár grid -->
       <div id="napkozi-calendar" style="max-width:560px;margin:0 auto;">
@@ -645,7 +645,7 @@
         <div style="display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;">
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
             <input type="checkbox" id="taxi-kieg-oda" style="accent-color:var(--gold);width:16px;height:16px;" onchange="taxiKiegFrissit()">
-            Oda út <span style="color:var(--text-faint);font-size:12px;">(reggeli felszedés)</span>
+            Oda út <span style="color:var(--text-faint);font-size:12px;">(reggeli felvétel)</span>
           </label>
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:var(--black-4);border:1px solid var(--border-dim);border-radius:8px;font-size:14px;color:var(--text);">
             <input type="checkbox" id="taxi-kieg-vissza" style="accent-color:var(--gold);width:16px;height:16px;" onchange="taxiKiegFrissit()">
@@ -731,7 +731,7 @@
         <div class="pkg-price">28 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>4 nap napközi (8:00–17:00)</li>
-          <li>5 hétig felhasználható</li>
+          <li>A vásárlás napjától számított 5 hétig érvényes.</li>
           <li>7 000 Ft / nap (8 000 helyett)</li>
           <li>Csak 1 kutya</li>
         </ul>
@@ -745,7 +745,7 @@
         <div class="pkg-price">45 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>4 nap napközi (8:00–17:00)</li>
-          <li>5 hétig felhasználható</li>
+          <li>A vásárlás napjától számított 5 hétig érvényes.</li>
           <li>11 250 Ft / nap / 2 kutya</li>
           <li>Mindkét kutyára érvényes</li>
         </ul>
@@ -759,7 +759,7 @@
         <div class="pkg-price">48 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>8 nap napközi (8:00–17:00)</li>
-          <li>5 hétig felhasználható</li>
+          <li>A vásárlás napjától számított 5 hétig érvényes.</li>
           <li>6 000 Ft / nap (8 000 helyett)</li>
           <li>Legkedvezőbb egykutyás ár</li>
         </ul>
@@ -773,7 +773,7 @@
         <div class="pkg-price">76 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>8 nap napközi (8:00–17:00)</li>
-          <li>5 hétig felhasználható</li>
+          <li>A vásárlás napjától számított 5 hétig érvényes.</li>
           <li>9 500 Ft / nap / 2 kutya</li>
           <li>Legjobb 2 kutyás ár</li>
         </ul>
@@ -788,9 +788,9 @@
         <div class="pkg-price">42 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>4 nap napközi (8:00–17:00)</li>
-          <li>Reggeli felszedés + esti hazafuvar</li>
+          <li>Reggeli felvétel + esti hazafuvar</li>
           <li>10 km-en belüli távolság</li>
-          <li>5 hétig felhasználható</li>
+          <li>A vásárlás napjától számított 5 hétig érvényes.</li>
         </ul>
         <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('4alk_1k_10km')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
@@ -802,7 +802,7 @@
         <div class="pkg-price">67 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>4 nap napközi (8:00–17:00)</li>
-          <li>Reggeli felszedés + esti hazafuvar</li>
+          <li>Reggeli felvétel + esti hazafuvar</li>
           <li>10 km-en belüli távolság</li>
           <li>Mindkét kutyára érvényes</li>
         </ul>
@@ -816,9 +816,9 @@
         <div class="pkg-price">76 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>8 nap napközi (8:00–17:00)</li>
-          <li>Reggeli felszedés + esti hazafuvar</li>
+          <li>Reggeli felvétel + esti hazafuvar</li>
           <li>10 km-en belüli távolság</li>
-          <li>Legjobb ár taxival</li>
+          <li>Kedvezményes bérlet kutyaszállítással</li>
         </ul>
         <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('8alk_1k_10km')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
@@ -830,7 +830,7 @@
         <div class="pkg-price">120 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>8 nap napközi (8:00–17:00)</li>
-          <li>Reggeli felszedés + esti hazafuvar</li>
+          <li>Reggeli felvétel + esti hazafuvar</li>
           <li>10 km-en belüli távolság</li>
           <li>Legjobb 2 kutyás taxival</li>
         </ul>
@@ -845,9 +845,9 @@
         <div class="pkg-price">52 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>4 nap napközi (8:00–17:00)</li>
-          <li>Reggeli felszedés + esti hazafuvar</li>
+          <li>Reggeli felvétel + esti hazafuvar</li>
           <li>10 km-nél távolabbi helyszín</li>
-          <li>5 hétig felhasználható</li>
+          <li>A vásárlás napjától számított 5 hétig érvényes.</li>
         </ul>
         <button class="pkg-btn napkozi-pay-btn" onclick="napkoziCheckout('4alk_1k_25km')" style="cursor:pointer;border:none;">Megveszem →</button>
       </div>
@@ -859,7 +859,7 @@
         <div class="pkg-price">83 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>4 nap napközi (8:00–17:00)</li>
-          <li>Reggeli felszedés + esti hazafuvar</li>
+          <li>Reggeli felvétel + esti hazafuvar</li>
           <li>10 km-nél távolabbi helyszín</li>
           <li>Mindkét kutyára érvényes</li>
         </ul>
@@ -873,7 +873,7 @@
         <div class="pkg-price">96 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>8 nap napközi (8:00–17:00)</li>
-          <li>Reggeli felszedés + esti hazafuvar</li>
+          <li>Reggeli felvétel + esti hazafuvar</li>
           <li>10 km-nél távolabbi helyszín</li>
           <li>Legjobb ár >10km-es taxival</li>
         </ul>
@@ -887,7 +887,7 @@
         <div class="pkg-price">152 000 Ft <small>/ bérlet</small></div>
         <ul class="pkg-details">
           <li>8 nap napközi (8:00–17:00)</li>
-          <li>Reggeli felszedés + esti hazafuvar</li>
+          <li>Reggeli felvétel + esti hazafuvar</li>
           <li>10 km-nél távolabbi helyszín</li>
           <li>Teljes kényelmi csomag</li>
         </ul>
@@ -908,7 +908,7 @@
         <div class="overline">Új vendégeknek</div>
         <h2 class="section-title">Első alkalommal <span class="gold">ingyenes ismerkedő</span></h2>
         <p style="font-size: 16px; color: var(--text-dim); line-height: 1.75; margin: 20px 0 28px;">
-          Ha a kutyád még nem volt nálunk napköziben, szeretjük, ha először ingyenesen eljöttök ismerkedni. Megnézzük, hogyan viselkedik a csapatban, és megbeszéljük a részleteket.
+          Új vendégek számára az első napközis foglalás előtt kötelező az ingyenes ismerkedő és alkalmassági felmérés. Megnézzük, hogyan viselkedik a csapatban, és megbeszéljük a részleteket.
         </p>
         <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px;">
           <li style="display: flex; align-items: center; gap: 10px; font-size: 15px;">
@@ -930,7 +930,7 @@
           <li>Válaszd ki a fizetési opciót: bérlet vagy egyszeri alkalom</li>
           <li>Az alkalom automatikusan foglalva van</li>
           <li>Kapsz megerősítő emailt</li>
-          <li>Kutyusod jól érzi magát, te élvezed a felszabadult hétköznapokat!</li>
+          <li>A kutyád jól érzi magát, te élvezed a felszabadult hétköznapokat!</li>
         </ol>
       </div>
     </div>
@@ -979,7 +979,7 @@
     </div>
 
     <div class="card reveal" style="margin-top:24px;padding:16px 20px;text-align:center;">
-      <p style="font-size:14px;color:var(--text-dim);">⏰ Plusz óra: <strong style="color:var(--gold);">2 000 Ft</strong> / megkezdett óra</p>
+      <p style="font-size:14px;color:var(--text-dim);">⏰ Nyitvatartáson kívüli felügyelet díja: <strong style="color:var(--gold);">2 000 Ft</strong> / megkezdett óra</p>
     </div>
   </div>
 </div>
