@@ -1370,7 +1370,8 @@ function renderNapkoziCalendar() {
     const foglalt = napAdat ? napAdat.foglalt : 0;
     const szabad  = napAdat ? napAdat.szabad : 50;
     const tele    = szabad <= 0;
-    let zarva = napAdat ? napAdat.zarva : false;
+    // Ünnepi zárás a weboldalon is (a szerveren ugyanez a lista van, ez tartalék). Csak az adott napokra.
+    let zarva = (napAdat ? napAdat.zarva : false) || ['2026-12-24', '2026-12-25', '2027-01-01'].indexOf(datumStr) !== -1;
     if (!zarva && !napAdat) {
       // Backend 5 héten túli napok: ZARVA intervallumból ellenőrzés
       for (let zi = 0; zi < _napkoziZarvaIntervallumok.length; zi++) {

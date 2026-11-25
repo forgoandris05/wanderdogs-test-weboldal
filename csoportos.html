@@ -601,6 +601,8 @@ function loadSzombatok() {
       const label = d.getFullYear() + '. ' + honapNevek[d.getMonth()] + ' ' + d.getDate() + '. (szombat)';
       const opt = document.createElement('option');
       opt.value = sz.datum;
+      // Téli szünet a weboldalon is (a szerveren ugyanez a lista van, ez tartalék): dec. 20 - jan. 8.
+      sz.zarva = sz.zarva || (sz.datum >= '2026-12-20' && sz.datum <= '2027-01-08');
       if (sz.zarva) {
         opt.textContent = label + ((sz.datum >= '2026-12-20' && sz.datum <= '2027-01-08') ? ' – ZÁRVA (téli szünet)' : ' – ZÁRVA');
         opt.disabled = true;
