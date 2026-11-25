@@ -41,6 +41,29 @@ A teszt backend ugyanaz a kód, mint az éles, csak teszt beállításokkal.
 
 Az éles kód változása után a 1. lépést újra kell futtatni, és a teszt projektbe újra bemásolni.
 
+## Gyors út (clasp-pal, ezt használjuk)
+
+Kell hozzá: a teszt tábla-másolat, a teszt kulcsok fájlja, és egy `npx @google/clasp login`.
+
+1. `node v2/make-test-backend.js ...` (a fenti 1. lépés): teszt kód + **teszt őr**. Az őr minden
+   belépési ponton (`doPost`, `doGet`, napi karbantartás) leállítja a kódot, ha a beállításokban
+   az éles tábla, az éles oldal, `sk_live_` Stripe kulcs vagy Számlázz.hu kulcs van, vagy ha a
+   `TESZT_MOD=igen` hiányzik.
+2. `node v2/make-test-setup.js <kulcsfájl> <kimenet> <teszt-tábla-id> <teszt-oldal>`: a
+   beállító függvény. Csak `sk_test_` kulcsokat vesz át, az éleseket nem olvassa ki.
+3. `scripts/teszt-clasp/` (gitignore-olt): `Code.js`, `Beallito.js`, `appsscript.json`.
+   `npx @google/clasp create --type standalone --title "Wanderdogs TESZT backend"`, majd
+   `npx @google/clasp push` és `npx @google/clasp deploy`.
+4. Az Apps Script szerkesztőben egyszer: `TESZT_BEALLITAS`, aztán `TESZT_ADATTISZTITAS`
+   (kitörli az ügyféladatokat a másolatból), jóváhagyni az engedélyeket. Utána a
+   `Beallito.js` fájlt törölni a projektből (titkokat tartalmaz).
+5. A webalkalmazás URL-je a `js/config.js` `WD_TEST_API` sorába.
+6. A teszt módú Stripe webhookot a teszt backend URL-jére kötni, a `whsec_` értéket
+   `STRIPE_WH_SECRET` néven felvenni. A napi időzítőt (trigger) a teszt projektben NEM
+   kapcsoljuk be.
+
+Teszt közben a Cal.com linkek (napközi felmérő) még az élesre mutatnak, azokat nem használjuk.
+
 ## Az előnézeti oldal
 
 A fejlesztői ág NEM megy a GitHub Pages-re (az csak a `main`-t szolgálja ki). Helyben:

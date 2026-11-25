@@ -46,6 +46,25 @@ swap('Timi email', /info\.wanderdogs@gmail\.com/g, testEmail, 1);
 swap('Oldal-cím alapérték', /https:\/\/wanderdogsworld\.hu/g, testSite.replace(/\/$/, ''), 2);
 swap('Számlázz.hu cím', /https:\/\/www\.szamlazz\.hu\/szamla\//g, 'https://teszt-szamla-letiltva.invalid/szamla/', 1);
 
+// Őr: a teszt példány megáll, ha bármi éles értéket talál a beállításaiban.
+swap('doPost őr', /function doPost\(e\) \{/g, 'function doPost(e) {\n  _tesztOrseg_();', 1);
+swap('doGet őr', /function doGet\(e\) \{/g, 'function doGet(e) {\n  _tesztOrseg_();', 1);
+swap('napi karbantartás őr', /function napiKarbantartas\(\) \{/g, 'function napiKarbantartas() {\n  _tesztOrseg_();', 1);
+
+const guard =
+  '\n// ---- TESZT ŐR: éles érték esetén minden belépési pont leáll ----\n' +
+  'function _tesztOrseg_() {\n' +
+  "  var LIVE_SHEET_ID = '1vrPjCGQJmQZ0R3jIG7dh4jb1NtymxpKSUHM6ElANNIY';\n" +
+  '  var p = PropertiesService.getScriptProperties().getProperties();\n' +
+  "  if (p.TESZT_MOD !== 'igen') throw new Error('TESZT ŐR: a TESZT_MOD=igen beállítás hiányzik.');\n" +
+  "  if (p.SHEET_ID === LIVE_SHEET_ID) throw new Error('TESZT ŐR: az éles CRM tábla van beállítva.');\n" +
+  "  if (/wanderdogsworld\\.hu/.test(p.SITE_URL || '')) throw new Error('TESZT ŐR: a SITE_URL az éles oldal.');\n" +
+  '  Object.keys(p).forEach(function (k) {\n' +
+  "    if (/^(sk|rk)_live_/.test(String(p[k]))) throw new Error('TESZT ŐR: éles Stripe kulcs a(z) ' + k + ' beállításban.');\n" +
+  "    if (/^SZAMLAZZ_KULCS/.test(k) && p[k]) throw new Error('TESZT ŐR: Számlázz.hu kulcs be van állítva: ' + k);\n" +
+  '  });\n' +
+  '}\n';
+
 const header =
   '// ============================================================\n' +
   '// TESZT BACKEND - generálva az éles kódból (v2/make-test-backend.js)\n' +
@@ -53,7 +72,7 @@ const header =
   '// Script Properties: teszt SHEET_ID, teszt naptárak, sk_test_ Stripe\n' +
   '// kulcsok, SITE_URL = a teszt oldal. SZAMLAZZ_KULCS_* NE legyen beállítva.\n' +
   '// ============================================================\n';
-src = header + src;
+src = header + src + guard;
 
 fs.writeFileSync(outPath, src, 'utf8');
 console.log(report.join('\n'));
