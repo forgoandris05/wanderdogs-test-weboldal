@@ -388,6 +388,7 @@
       .cta-banner { padding: 48px 24px; }
     }
   </style>
+<script src="js/config.js"></script>
 </head>
 <body>
 
@@ -871,7 +872,7 @@
 (function() {
   var el = document.getElementById('tf-service-ar');
   if (!el) return;
-  var WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+  var WEBAPP_URL = window.WD_API;
   fetch(WEBAPP_URL, { method:'POST', body: JSON.stringify({ action:'tanfolyam_check' }) })
     .then(function(r) { return r.json(); })
     .then(function(resp) {
@@ -891,7 +892,7 @@
   const form = document.getElementById('contactForm');
   const success = document.getElementById('cfSuccess');
   if (!form) return;
-  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+  const WEBAPP_URL = window.WD_API;
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();

@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css?v=20261015">
+<script src="js/config.js"></script>
 </head>
 <body>
 
@@ -212,7 +213,7 @@
 // ── Oltási könyv ellenőrzés ──────────────────────────────────
 if (wdOltasBlokk('foglalas')) { /* blokkolva */ }
 
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+const WEBAPP_URL = window.WD_API;
 
 // Zárt nap ellenőrzés
 fetch(WEBAPP_URL, { method: 'POST', body: JSON.stringify({ action: 'zarva_check', szolgaltatas: 'terapia' }) })

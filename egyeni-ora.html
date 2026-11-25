@@ -152,6 +152,7 @@
       .egyeni-two-col { grid-template-columns: 1fr !important; gap: 24px !important; }
     }
   </style>
+<script src="js/config.js"></script>
 </head>
 <body>
 
@@ -633,7 +634,7 @@
   // ── Oltási könyv ellenőrzés ──────────────────────────────────
   if (wdOltasBlokk('foglalas')) { /* blokkolva */ }
 
-  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+  const WEBAPP_URL = window.WD_API;
 
   // ── Szolgáltatás-katalógus (frontend) ──
   const EGYENI_SLUG_INFO = {

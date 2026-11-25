@@ -70,6 +70,7 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (max-width: 600px) { .success-card { padding: 36px 24px; } }
   </style>
+<script src="js/config.js"></script>
 </head>
 <body>
 
@@ -117,7 +118,7 @@
 </div>
 
 <script>
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+const WEBAPP_URL = window.WD_API;
 
 async function megerosit() {
   const params    = new URLSearchParams(window.location.search);

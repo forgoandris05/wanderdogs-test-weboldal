@@ -378,6 +378,7 @@
       .pz-cal-nav button { width: 32px; height: 32px; font-size: 16px; }
     }
   </style>
+<script src="js/config.js"></script>
 </head>
 <body>
 
@@ -1007,7 +1008,7 @@ if(u&&u.registered){document.write('<style>#hogyan,#btn-hogyan{display:none!impo
 if (wdOltasBlokk('kalkulalok')) { /* blokkolva */ }
 
 // ── Apps Script URL ──────────────────────────────────────────
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+const WEBAPP_URL = window.WD_API;
 
 // ── "Foglalok" gomb: a ténylegesen látható szekcióhoz görget ──
 // (visszatérőnél a kalkulátor, új ügyfélnél a felmérő, közben a loading)

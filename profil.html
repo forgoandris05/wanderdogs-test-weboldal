@@ -439,6 +439,7 @@
     }
     .btn-kutya-szerkeszt:hover { background: rgba(255,215,0,0.08); }
   </style>
+<script src="js/config.js"></script>
 </head>
 <body>
 
@@ -722,7 +723,7 @@
 
 <script src="js/main.js?v=20261015"></script>
 <script>
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+const WEBAPP_URL = window.WD_API;
 
 // ── Kliens-oldali hiba log (fire-and-forget, sose blokkol) ────
 function kliensHibaLog(uzenet, file) {

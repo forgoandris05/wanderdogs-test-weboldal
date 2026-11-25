@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================================
 
 // GAS Web App URL (token_refresh + tiltolista_check ezt használja)
-var WD_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+var WD_WEBAPP_URL = window.WD_API;
 
 function wdGetUser() {
   try {

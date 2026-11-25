@@ -87,6 +87,7 @@
       .csoportos-foglalas-box { padding: 32px 20px !important; }
     }
   </style>
+<script src="js/config.js"></script>
 </head>
 <body>
 
@@ -453,7 +454,7 @@
 // ── Oltási könyv ellenőrzés ──────────────────────────────────
 if (wdOltasBlokk('foglalas')) { /* blokkolva */ }
 
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBukirAEnVuUKT5KD-xi0Iq1LKw3o8xTs4e_X6MVVN8bPDUUQIf/exec';
+const WEBAPP_URL = window.WD_API;
 const AR_PER_KUTYA = 7000;
 
 (function() {
