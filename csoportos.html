@@ -318,6 +318,13 @@
 
       <!-- Belépett: foglalás form (JS tölti ki) -->
       <div id="csoportos-booking-form" style="display: none; text-align: left;">
+        <!-- Téli szünet (Timi szövege), 2027. január 8-ig látszik -->
+        <div id="csoportos-teli-szunet" style="margin:0 0 14px;padding:12px 14px;border:1px solid rgba(255,82,82,0.4);border-radius:10px;background:rgba(255,82,82,0.08);color:#ff5252;font-size:13px;font-weight:600;line-height:1.7;">
+          🎓 KUTYAISKOLA<br>
+          🎄 December 19. – Karácsonyi suli<br>
+          ❄️ Ezt követően téli szünetet tartunk.<br>
+          🐕 Január 9. – Az új év első kutyaiskolai foglalkozása!
+        </div>
         <!-- Szombat dropdown -->
         <label style="display:block; font-size:13px; font-weight:700; color:var(--text-dim); margin-bottom:8px;">Válassz időpontot:</label>
         <select id="csoportos-datum" style="width:100%; padding:12px 16px; background:var(--black-4); border:1px solid var(--border-dim); border-radius:10px; color:var(--text); font-size:15px; margin-bottom:20px; cursor:pointer;">
@@ -457,6 +464,11 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8zaEjbwwIFybTIQBuk
 const AR_PER_KUTYA = 7000;
 
 (function() {
+  // A téli szünet tájékoztató január 9-től eltűnik
+  if (new Date() >= new Date('2027-01-09T00:00:00')) {
+    const szunet = document.getElementById('csoportos-teli-szunet');
+    if (szunet) szunet.remove();
+  }
   const user = wdGetUser();
   if (!user || !user.registered) return;
 
@@ -589,8 +601,10 @@ function loadSzombatok() {
       const label = d.getFullYear() + '. ' + honapNevek[d.getMonth()] + ' ' + d.getDate() + '. (szombat)';
       const opt = document.createElement('option');
       opt.value = sz.datum;
+      // Téli szünet a weboldalon is (a szerveren ugyanez a lista van, ez tartalék): dec. 20 - jan. 8.
+      sz.zarva = sz.zarva || (sz.datum >= '2026-12-20' && sz.datum <= '2027-01-08');
       if (sz.zarva) {
-        opt.textContent = label + ' – ZÁRVA';
+        opt.textContent = label + ((sz.datum >= '2026-12-20' && sz.datum <= '2027-01-08') ? ' – ZÁRVA (téli szünet)' : ' – ZÁRVA');
         opt.disabled = true;
       } else if (sz.szabad <= 0) {
         opt.textContent = label + ' – BETELT';
