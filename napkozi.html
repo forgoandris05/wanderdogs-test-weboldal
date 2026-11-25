@@ -582,6 +582,8 @@
       </div>
 
       <!-- Időpont választó (taxi nélkül) -->
+      <!-- Napspecifikus figyelmeztetés (pl. szilveszter), a kiválasztott naphoz -->
+      <div id="napkozi-nap-megjegyzes" style="display:none;margin:16px auto 0;max-width:560px;padding:10px 14px;border:1px solid rgba(255,82,82,0.4);border-radius:10px;background:rgba(255,82,82,0.08);color:#ff5252;font-size:13px;font-weight:600;line-height:1.5;text-align:left;"></div>
       <div id="napkozi-ido-valaszto" style="display:none; margin-top:20px; text-align:center;">
         <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--text);font-family:inherit;">Mikor jöttök? *</div>
         <div style="display:inline-flex;gap:12px;align-items:center;">
@@ -1421,8 +1423,32 @@ function nkCalNext() {
   renderNapkoziCalendar();
 }
 
+// Napspecifikus szabály: dec. 31. szilveszteri napközi 8:00-14:00. A piros sor megjelenik, és az érkezési
+// óra listából eltűnnek a 14 óra utáni időpontok (normál napokon 08-16 marad).
+function nkNapMegjegyzes(datumStr) {
+  const szilveszter = (datumStr === '2026-12-31');
+  const box = document.getElementById('napkozi-nap-megjegyzes');
+  if (box) {
+    box.style.display = szilveszter ? 'block' : 'none';
+    box.textContent = szilveszter
+      ? '⚠️ SZILVESZTERI NAPKÖZI 8:00–14:00. Érkezni 8:00 és 14:00 között lehet. A kutyataxi is csak ebben az idősávban közlekedik.'
+      : '';
+  }
+  const ora = document.getElementById('napkozi-ora');
+  if (ora) {
+    const maxOra = szilveszter ? 13 : 16;
+    Array.prototype.forEach.call(ora.options, function(o) {
+      const tiltott = parseInt(o.value, 10) > maxOra;
+      o.disabled = tiltott;
+      o.hidden = tiltott;
+    });
+    if (parseInt(ora.value, 10) > maxOra) ora.value = ('0' + maxOra).slice(-2);
+  }
+}
+
 function nkCalSelect(datumStr, el) {
   _selectedNapkoziDate = datumStr;
+  nkNapMegjegyzes(datumStr);
   // Hiba elrejtése
   const errEl = document.getElementById('napkozi-foglal-error');
   if (errEl) errEl.style.display = 'none';
@@ -1502,6 +1528,7 @@ function _napkoziResetSzekciok() {
   if (mejWrapReset) mejWrapReset.style.display = 'none';
   var idoV = document.getElementById('napkozi-ido-valaszto');
   if (idoV) idoV.style.display = 'none';
+  nkNapMegjegyzes('');
   loadNapkoziNapok();
 }
 
