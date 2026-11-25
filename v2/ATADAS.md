@@ -66,3 +66,33 @@ Timiék külön Claude fiókot kapnának, hogy ők is részt vegyenek az átáll
 beállítások Andris gépén vannak, ezért a csapat külön gépen vagy külön Windows felhasználóval
 dolgozzon, és csak a teszt kulcsokat kapja meg. Részletek a beszélgetésben: a közös
 `~/.claude` mappa, a MCP kapcsolatok (Drive, Gmail) és a titkok mind az Andris profilján élnek.
+
+## Követelmények a megbeszélésből (Downloads/Wdogs megbeszeles.docx, "jövőre")
+Rendszerezve, a dokumentum sorrendjében (a "Dávid:" rész a dokumentumban üres).
+
+**Jóváhagyás és kutyák**
+- Elfogadó rendszer: adott időszakra kit fogadnak el. Ideiglenesen foglalási email, a csapat
+  emailt kap, hogy visszaigazolja (pipa/iksz).
+- Nem kell minden gazdit jóváhagyni, csak párat: külön fül a szürke listás kutyáknak.
+- Regisztrációnál kötelező részletes kutyaadat (fiú/lány, viszony, járt-e máshol napközibe/panzióba),
+  ebből automatikusan szürke lista.
+- Kutya kártya a fiókban, vizuálisabb, designosabb.
+- Jövőre nem fogadnak ivaros kutyákat (nagy szöveg).
+
+**Foglalás és ár**
+- Csak készpénz (KP) is marad. "Nem lehet lemondani" ÉS "lemondó rendszer is kéne, az ügyfelek
+  le tudják mondani": ELLENTMONDÁS, tisztázni kell (határidő, visszatérítés).
+- Kiemelt időszakok és limitált helyek, időszakos felár (hétvége, nyár, ünnepnapok).
+- Extra szolgáltatások (karomvágás, 2000 Ft/kutya), napközi foglalásnál felkínálva, mint a
+  gyorsétteremben. Taxinál az időpont megadása kötelező. A megjegyzés doboz foglalás előtt
+  ugorjon fel.
+- Stripe: fizetések lebontása névvel.
+
+**Felmérő**
+- Új fül: felmérések, pipa/nem pipa, a jóváhagyáshoz hasonló logika. Felmérő csak napközi
+  közben, kedd-péntek. Cal.com-ról saját foglalásra.
+
+**Egyéb**
+- Telefonos optimalizálás (valami nem látszik).
+- Angol oldal átirányításának kivétele.
+- Email leiratkozás.
